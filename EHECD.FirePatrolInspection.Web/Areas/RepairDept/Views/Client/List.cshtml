@@ -1,0 +1,215 @@
+﻿@{
+    ViewBag.Title = "人员管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/ueditor/ueditor.config.js"></script>
+<script src="~/Content/ueditor/ueditor.all.min.js"></script>
+<div id="datagrid_list_toolbar_client">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="showSetDialog(0,'添加人员')">添加</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="Edit()">编辑</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-lock',plain:true" onclick="Reset()">重置密码</a>&nbsp;&nbsp;
+    <form id="search_form_client">
+        <input type="hidden" name="condition.iType" value="2" />
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入账号/姓名'" class="easyui-textbox"/>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_client"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_client').datagrid({
+            checkbox: true,
+            // singleSelect: true, //是否单选
+            title: '人员管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_client",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_client").serializeObject(),
+            url: '/RepairDept/Client/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'ID', checkbox: true 
+                    },
+                    {
+						field: 'sPhone', title: '账号/手机号', width: 200
+                    },
+                    {
+						field: 'sName', title: '姓名', width: 200
+                    }
+                ]
+            ],
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('hideColumn', 'ID');
+                    $(this).datagrid('appendRow', { sPhone: '<div style="text-align:center;color:#7f99be">暂无人员信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sPhone', colspan: 2 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).datagrid('showColumn', 'ID');
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_client").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_client').datagrid('load', $("#search_form_client").serializeObject());
+        $('#datagrid_client').datagrid('clearSelections');
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_client').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个人员!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个人员!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无人员!', 'warning');
+            return;
+        }
+        showDialog(rows[0].ID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无人员!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看人员详情',
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/RepairDept/Client/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //编辑功能
+    function Edit() {
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个人员!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个人员!', 'warning');
+            return;
+        }
+        showSetDialog(rows[0].ID, '编辑人员');
+    }
+    //打开编辑页面
+    function showSetDialog(id, title) {
+        window.setWindow = $('<div />').dialog({
+            title: title,
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/RepairDept/Client/Set/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_client',
+                    handler: function(e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function(e) {
+                        setWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function() {
+                setWindow.dialog('destroy');
+            }
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_client').datagrid('clearSelections');
+    }
+
+    // 重置密码
+    function Reset() {
+        var selectIds = [];
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                selectIds.push(rows[i].ID);
+            }
+        }
+
+        //判断是否选择数据
+        if (selectIds.length < 1) {
+            msgShow('提示', '至少选择一条信息进行重置密码操作', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定重置所有选中的数据的密码，共" + selectIds.length + "条数目？", function (ok) {
+            if (ok) {
+                $.post('/RepairDept/Client/Reset', { sIds: selectIds.join() }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+                        clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+</script>

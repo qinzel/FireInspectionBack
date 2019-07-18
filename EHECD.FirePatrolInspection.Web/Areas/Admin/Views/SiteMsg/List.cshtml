@@ -1,0 +1,271 @@
+﻿@{
+    ViewBag.Title = "站内信管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/backstage/js/My97DatePicker/WdatePicker.js"></script>
+<script src="~/Content/ueditor/ueditor.config.js"></script>
+<script src="~/Content/ueditor/ueditor.all.min.js"></script>
+
+<div id="datagrid_list_toolbar_sitemsg">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="showSetDialog(0, '发送站内信')">发送</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="Delete()">删除</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Detail()">查看详情</a>&nbsp;&nbsp;
+    <form id="search_form_sitemsg">
+        <span style="margin-left: 5px">发送时间：</span>
+        <input type="text" id="dStartTime" name="condition.dStartTime" readonly="readonly" placeholder="开始时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />&nbsp;~
+        <input type="text" id="dEndTime" name="condition.dEndTime" readonly="readonly" placeholder="结束时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />&nbsp;&nbsp;
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_sitemsg"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_sitemsg').datagrid({
+            checkbox: true,
+            // singleSelect: true, //是否单选
+            title: '站内信管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_sitemsg",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_sitemsg").serializeObject(),
+            url: '/Admin/SiteMsg/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'ID', checkbox: true 
+                    },
+                    {
+                        field: 'iType', title: '收信人', width: 200, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            var val = "";
+                            switch (parseInt(value)) {
+                                case 0:
+                                    var dept = row["sReceiveDept"];
+                                    if (dept == "0,1,2,3,4") {
+                                        val = "所有人";
+                                    }
+                                    else {
+                                        var rel = [];
+                                        if (dept.indexOf("0") > -1) {
+                                            rel.push("点检员");
+                                        }
+                                        if (dept.indexOf("1") > -1) {
+                                            rel.push("使用单位");
+                                        }
+                                        if (dept.indexOf("2") > -1) {
+                                            rel.push("消防部门");
+                                        }
+                                        if (dept.indexOf("3") > -1) {
+                                            rel.push("维护公司");
+                                        }
+                                        if (dept.indexOf("4") > -1) {
+                                            rel.push("值班人员");
+                                        }
+                                        val = rel.join(',');
+                                    }
+                                    break;
+                                case 1:
+                                    val = row["sReceiveClient"];
+                                    break;
+                            }
+                            return val.length > 20 ? val.substr(0, 20) + '...' : val;
+                        }
+                    },
+                    {
+                        field: 'dCreateTime', title: '发送时间', width: 150
+                    },
+                    {
+                        field: 'sOperator', title: '发送人', width: 100
+                    },
+                    {
+                        field: 'sTitle', title: '标题', width: 300, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            return value.length > 20 ? value.substr(0, 20) + '...' : value;
+                        }
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDialog(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('hideColumn', 'ID');
+                    $(this).datagrid('appendRow', { iType: '<div style="text-align:center;color:#7f99be">暂无站内信信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'iType', colspan: 4 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).datagrid('showColumn', 'ID');
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+
+        $("#search_form_sitemsg").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_sitemsg').datagrid('load', $("#search_form_sitemsg").serializeObject());
+        $('#datagrid_sitemsg').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_sitemsg').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_sitemsg').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个站内信!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个站内信!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无站内信!', 'warning');
+            return;
+        }
+        showDialog(rows[0].ID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无站内信!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看站内信详情',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/Admin/SiteMsg/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //编辑功能
+    function Edit() {
+        var rows = $('#datagrid_sitemsg').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个站内信!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个站内信!', 'warning');
+            return;
+        }
+        showSetDialog(rows[0].ID, '编辑站内信');
+    }
+    //打开编辑页面
+    function showSetDialog(id, title) {
+        window.setWindow = $('<div />').dialog({
+            title: title,
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/Admin/SiteMsg/Set/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '发送',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_sitemsg',
+                    handler: function(e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function(e) {
+                        setWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                UE.getEditor("sContent").destroy(); //关闭后摧毁编辑器
+                setWindow.dialog('destroy');
+            }
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_sitemsg').datagrid('clearSelections');
+    }
+	
+	 //删除站内信
+    function Delete() {
+        var selectIds = [];
+        var rows = $('#datagrid_sitemsg').datagrid("getSelections");
+        if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                selectIds.push(rows[i].ID);
+            }
+        }
+
+        //判断是否选择数据
+        if (selectIds.length < 1) {
+            msgShow('提示', '至少选择一条信息进行删除操作', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定删除所有选中的信息共" + selectIds.length + "条数目？", function(ok) {
+            if (ok) {
+                $.post('/Admin/SiteMsg/Delete', { sIds: selectIds.join() }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+						clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+</script>

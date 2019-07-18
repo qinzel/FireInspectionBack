@@ -1,0 +1,124 @@
+﻿				
+@{
+    ViewBag.Title = "设置单位信息";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Unit
+<form id="form_unit">
+    <input type="hidden" name="ID" value="@Model.ID"/>
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 80px">单位名称：</td>
+                <td>
+					<input type="text" name="sName" value="@Model.sName" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml','maxLength[30]'],required:true" missingmessage="请输入单位名称."/>
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 80px">单位地址：</td>
+                <td>
+					<input type="text" name="sAddress" value="@Model.sAddress" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml','maxLength[40]'],required:true" missingmessage="请输入单位地址."/>
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 80px">平台管理员：</td>
+                <td>
+					<input type="text" name="sAdminName" value="@Model.sAdminName" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml','maxLength[20]'],required:true" missingmessage="请输入平台管理员."/>
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 80px">联系电话：</td>
+                <td>
+					<input type="text" name="sContact" value="@Model.sContact" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['phone', 'maxLength[11]'],required:true" missingmessage="请输入联系电话."/>
+                </td>
+            </tr>
+			@if (Model.iType == 2)
+            {
+                <tr>
+                    <td style="width: 80px">法人：</td>
+                    <td>
+                        <input type="text" name="sLegalPerson" value="@Model.sLegalPerson" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml','maxLength[20]'],required:true" missingmessage="请输入法人." />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 80px">资质：</td>
+                    <td>
+                        <input type="text" name="sQualifications" value="@Model.sQualifications" style="width:300px;height:60px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml','maxLength[30]'],required:true,multiline:true" missingmessage="请输入资质." />
+                    </td>
+                </tr>
+            }
+			<tr>
+                <td style="width: 80px">@(Model.iType == 2 ? "营业执照" : "证件照")：</td>
+                <td>
+                    <div id="imgsrc" title="图片"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<input type="hidden" value="@Model.sCredentials" id="v-imgsrc" />
+@Html.Action("FilesInit", "Uediter", new { area = "", module = "FPIUnit", field = "Unit" })
+<script>
+    $(function () {
+        var img = $('#v-imgsrc').val();
+        img = img ? img.split(',') : [];
+        UE.ehecd_upload_image_init('imgsrc', img, 3);
+
+        window.saveModel = function() {
+            if (!$("#form_unit").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+
+            var valid_rule = /^(13[0-9]|14[5-9]|15[012356789]|166|17[0-8]|18[0-9]|19[8-9])[0-9]{8}$/;// 手机号码校验规则
+            if (!valid_rule.test($.trim($("#form_unit [name = 'sContact']").val()))) {
+                msgShow('提示', '手机号码格式有误!', 'warning');
+                return;
+            }
+
+            var imgList = $('#imgsrc ul li:gt(0)');
+            var imgAry = [];
+            for (var i = 0; i < imgList.length; i++) {
+                imgAry.push($(imgList[i]).find('img').attr('src'));
+            }
+
+            var data = $("#form_unit").serialize();
+            data += "&sCredentials=" + imgAry.join(',');
+
+            if (imgAry == undefined || imgAry.length == 0) {
+                msgShow('提示', '请选择图片!', 'warning');
+                return;
+            }
+
+            $("#save_window_okbtn_unit").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Unit/Set", //用与处理ajax的地址及函数
+                data: data,
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_unit').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.setWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_unit').linkbutton('enable');
+                }
+            });
+        }
+    });
+</script>

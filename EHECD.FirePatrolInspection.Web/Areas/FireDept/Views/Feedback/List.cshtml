@@ -1,0 +1,219 @@
+﻿@{
+    ViewBag.Title = "意见反馈管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/backstage/js/My97DatePicker/WdatePicker.js"></script>
+
+<div id="datagrid_list_toolbar_feedback">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Detail()">查看详情</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="Reply()">回复</a>
+    <form id="search_form_feedback">
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入标题/账号'" class="easyui-textbox"/>
+        <span style="margin-left: 5px">发布时间：</span>
+        <input type="text" id="dStartTime" name="condition.dStartTime" readonly="readonly" placeholder="开始时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />&nbsp;~
+        <input type="text" id="dEndTime" name="condition.dEndTime" readonly="readonly" placeholder="结束时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />&nbsp;&nbsp;
+        <span style="margin-left: 5px">回复状态：</span>
+        <select name="condition.bIsReplyStatus" class="query-sel">
+            <option value="">全部</option>
+            <option value="0">未回复</option>
+            <option value="1">已回复</option>
+        </select>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_feedback"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_feedback').datagrid({
+            singleSelect: true, //是否单选
+            title: '意见反馈管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_feedback",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_feedback").serializeObject(),
+            url: '/FireDept/Feedback/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'sClientName', title: '账号', width: 150
+                    },
+                    {
+                        field: 'sTitle', title: '反馈标题', width: 200, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            return value.length > 20 ? value.substr(0, 20) + '...' : value;
+                        }
+                    },
+                    {
+                        field: 'dCreateTime', title: '反馈时间', width: 150
+                    },
+                    {
+                        field: 'bIsReplyStatus', title: '回复状态', width: 100, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (value) {
+                                return "已回复";
+                            }
+                            return "未回复";
+                        }
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDialog(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('appendRow', { sClientName: '<div style="text-align:center;color:#7f99be">暂无意见反馈信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sClientName', colspan: 4 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+
+        $("#search_form_feedback").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_feedback').datagrid('load', $("#search_form_feedback").serializeObject());
+        $('#datagrid_feedback').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_feedback').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_feedback').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个意见反馈!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个意见反馈!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无意见反馈!', 'warning');
+            return;
+        }
+        showDialog(rows[0].ID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无意见反馈!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看意见反馈详情',
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/FireDept/Feedback/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //反馈回复
+    function Reply() {
+        var rows = $('#datagrid_feedback').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个意见反馈!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个意见反馈!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无意见反馈!', 'warning');
+            return;
+        }
+        if (rows[0].bIsReplyStatus) {
+            msgShow('提示', '该反馈已回复!', 'warning');
+            return;
+        }
+        showSetDialog(rows[0].ID);
+    }
+
+    //打开编辑页面
+    function showSetDialog(id) {
+        window.setWindow = $('<div />').dialog({
+            title: "反馈回复",
+            iconCls: 'icon-save',
+            width: 500,
+            height: 300,
+            closed: false,
+            cache: false,
+            href: '/FireDept/Feedback/Reply/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_feedback',
+                    handler: function(e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function(e) {
+                        setWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function() {
+                setWindow.dialog('destroy');
+            }
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_feedback').datagrid('clearSelections');
+    }
+</script>

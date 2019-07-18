@@ -1,0 +1,69 @@
+﻿				
+@{
+    ViewBag.Title = "设置设备指标";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_DeviceParam
+<form id="form_deviceparam">
+    <input type="hidden" name="ID" value="@Model.ID"/>
+    <input type="hidden" name="iUseDeptID" value="@(Model.ID == 0 ? 0 : Model.iUseDeptID)" />
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 15%">指标名称：</td>
+                <td>
+					<input type="text" name="sName" value="@Model.sName" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml'],required:true" missingmessage="请输入设备指标指标名称."/>
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 15%">所属分类：</td>
+                <td>
+                    @Html.DropDownList("iDeviceTypeID", ViewBag.typelist as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "iDeviceTypeID" })
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script>
+    $(function () {
+        window.saveModel = function () {
+            if (!$("select[name=iDeviceTypeID]").val().length) {
+                msgShow('提示', '请选择所属分类!', 'warning');
+                return;
+            }
+            if (!$("#form_deviceparam").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+            $("#save_window_okbtn_deviceparam").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/UseDept/DeviceParam/Set", //用与处理ajax的地址及函数
+                data: $("#form_deviceparam").serialize(),
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_deviceparam').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.setWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_deviceparam').linkbutton('enable');
+                }
+            });
+        }
+    });
+</script>

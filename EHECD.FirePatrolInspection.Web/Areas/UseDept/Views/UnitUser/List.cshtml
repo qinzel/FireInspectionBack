@@ -1,0 +1,239 @@
+﻿@{
+    ViewBag.Title = "操作员管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*请全局替换 testControllerName 为当前操作controller 名称*@
+<div id="datagrid_list_toolbar_user">
+    <form id="search_form_user">
+        <span>模糊查询：</span><input name="keyword" type="text" data-options="prompt:'模糊查询关键字'" class="easyui-textbox" />
+        <span>所属角色：</span>
+        @Html.DropDownList("iUnitRoleID", ViewBag.RoleSelectList as IEnumerable<SelectListItem>, new { @class = "easyui-combobox", editable = "false", panelHeight = "auto", style = "width: 150px;" })
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="ehecd.user.datagridReload();">查询</a>
+    </form>
+    <a class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-lock',plain:true" onclick="ehecd.user.resetpwd()">重置密码</a>
+    <a class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-add',plain:true" onclick="ehecd.user.add()">新增</a>
+    <a class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-edit',plain:true" onclick="ehecd.user.edit()">修改</a>
+    <a class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-remove',plain:true" onclick="ehecd.user.delete()">删除</a>
+    <a class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-redo',plain:true" onclick="ehecd.user.clearSelect()">清空选择</a>
+</div>
+<table id="datagrid_list_user" data-options="fit:true,toolbar:'#datagrid_list_toolbar_user'"></table>
+<div id="reset_window_user"></div>
+<div id="edit_window_user"></div>
+<script type="text/javascript">
+    (function () {
+        ehecd.user = {};
+        var search_form_user = $("#search_form_user");
+        var config = {
+            url: {
+                getGridData: '/UseDept/UnitUser/GetGridData',
+                optionResetWindow: '/UseDept/UnitUser/Reset?id=',
+                optionEidtWindow: '/UseDept/UnitUser/Edit?id=',
+                optionDelete: '/UseDept/UnitUser/Delete'
+            }
+        };
+        var datagrid = $('#datagrid_list_user').datagrid({
+            checkbox: true,
+            //singleSelect: true, //是否单选
+            title: '操作员管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true,//行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: search_form_user.serializeObject(),
+            url: config.url.getGridData,
+            fit: true,//自动大小 
+            idField: 'ID',
+            frozenColumns: [[
+                { field: '', checkbox: true }
+            ]],
+            columns: [[
+                { field: 'sLoginName', title: '用户名', width: 100, sortable: true },
+                { field: 'sRealName', title: '真实姓名', width: 100, sortable: true },
+                { field: 'sRoleName', title: '所属角色', width: 150, sortable: true, formatter: renderRole }
+            ]],
+            onDblClickRow: function (rowIndex, rowData) {
+            }
+        });
+
+        search_form_user.keydown(function (e) {//回车搜索
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                ehecd.user.datagridReload();
+                return;
+            }
+        });
+
+        function renderRole(value, row, index) {
+            if (row.iUserType == 0) {
+                return value;
+            } else {
+                return "后台管理员";
+            }
+        }
+
+        var datagridReload = function() {
+            datagrid.datagrid('reload', search_form_user.serializeObject());
+            datagrid.datagrid('clearSelections');
+        };
+        //重新加载数据
+        ehecd.user.datagridReload = datagridReload;
+
+        //重置密码窗口
+        var restWindow = undefined;
+        //关闭重置密码窗口
+        ehecd.user.closerestWindow = function () {
+            restWindow && restWindow.dialog('close');
+        };
+        //重置密码
+        ehecd.user.resetpwd = function() {
+            getSelectRows();
+            //判断是否选择数据
+            if (selectRows.length != 1) {
+                msgShow('提示', '请选择一行信息再操作！', 'warning');
+                return;
+            }
+           restWindow =   $('#reset_window_user').dialog({
+               title: '重置【' + selectRows[0].sLoginName + '】密码',
+                iconCls: 'icon-save',
+                width: 500,
+                height: 200,
+                closed: false,
+                cache: false,
+                href: config.url.optionResetWindow + selectRows[0].ID,
+                modal: true,
+                buttons: [{
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'reset_window_okbtn_user',
+                    handler: function (e) {
+                        if (ehecd.user.resetModel) {
+                            ehecd.user.resetModel();
+                        } else {
+                            restWindow.dialog('close');
+                        }
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    id: 'reset_window_nobtn_user',
+                    handler: function (e) {
+                        restWindow.dialog('close');
+                    }
+                }]
+            });
+        };
+
+        ehecd.user.add = function() {
+            showEditDialog('新增信息', '');
+        };
+        ehecd.user.edit = function() {
+            getSelectRows();
+            //判断是否选择数据
+            if (selectRows.length != 1) {
+                msgShow('提示', '请选择一行信息再操作！', 'warning');
+                return;
+            }
+            if (selectRows[0].iUserType == 1) {
+                msgShow('提示', '无法对后台管理员进行修改操作！', 'warning');
+                return;
+            }
+            showEditDialog('编辑【' + selectRows[0].sLoginName + '】信息', selectRows[0].ID);
+        };
+        ehecd.user.delete = function () {
+            getSelectRows();
+            //判断是否选择数据
+            if (selectRows.length < 1) {
+                msgShow('提示', '至少选择一条信息进行删除操作', 'warning');
+                return;
+            }
+            for (var i = 0; i < selectRows.length; i++) {
+                if (selectRows[i].iUserType == 1) {
+                    msgShow('提示', '无法对后台管理员进行删除操作！', 'warning');
+                    return;
+                }
+            }
+            $.messager.confirm('确认', "你确定删除所有选中的信息共" + selectIds.length + "条数目？", function (ok) {
+                if (ok) {
+                    $.post(config.url.optionDelete, { ids: selectIds.join() }, function (res) {
+                        if (res && res.success) {
+                            datagridReload();
+                            msgShow('提示', res.message, 'info');
+                        } else {
+                            res && (msgShow('提示', res.message, 'warning'));
+                        }
+                    }, 'json');
+                }
+            });
+        };
+
+        var editWindow = undefined;
+        //打开编辑页面
+        function showEditDialog(title, id) {
+            editWindow = $('#edit_window_user').dialog({
+                title: title,
+                iconCls: 'icon-save',
+                width: 500,
+                height: 300,
+                closed: false,
+                cache: false,
+                href: config.url.optionEidtWindow + id,
+                modal: true,
+                buttons: [{
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'edit_window_okbtn_user',
+                    handler: function (e) {
+                        if (ehecd.user.saveModel) {
+                            ehecd.user.saveModel();
+                        } else {
+                            ehecd.user.closeEditWindow();
+                        }
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    id: 'edit_window_nobtn_user',
+                    handler: function (e) {
+                        ehecd.user.closeEditWindow();
+                    }
+                }]
+            });
+        }
+        //关闭编辑窗口
+        ehecd.user.closeEditWindow = function () {
+            editWindow && editWindow.dialog('close');
+        };
+        var selectRows = [];
+        var selectIds = [];
+        //获取grid控件中选中行
+        function getSelectRows() {
+            selectRows.length = 0;
+            selectIds.length = 0;
+            var rows = datagrid.datagrid("getSelections");
+            if (rows.length > 0) {
+                for (var i = 0; i < rows.length; i++) {
+                    selectIds.push(rows[i].ID);
+                    selectRows.push(rows[i]);
+                }
+            }
+        }
+        //清空选择行
+        ehecd.user.clearSelect = function() {
+            datagrid.datagrid('clearSelections');
+        };
+    })();
+</script>
+
+
+
+
+
+
+
+
+

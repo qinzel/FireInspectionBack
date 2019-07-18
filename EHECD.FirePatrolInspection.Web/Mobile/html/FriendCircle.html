@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+	<style>
+		.mod {
+			border-left: .1rem solid #e62129;
+		}
+		footer button{
+			width: 50%;
+		}
+		.no_data{
+            display: block;
+		}
+	</style>
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<i id="backBtn" class="flex_1"></i>
+			<h1 class="flex_1 text-center">朋友圈</h1>
+			<p class="flex_1 color-fff font24r text-right"></p>
+		</header>
+
+		<div id="scrollWrap" class="main-fix p_both20r p-b-20r" v-cloak>
+            <div id="dragWrap">
+                <!-- 模板 -->
+                <div @click="toCircle(item.ID)" v-for="(item,idx) in list" style="justify-content: center;" class="mod flex_column bg-fa radius10r m-t-15r font24r p_both20r hgt12rem">
+                    <div class="between-center">
+                        <div class="flex_dom flex_item_mid">
+                            <img style="width: .37rem;height: .38rem;border-radius: 50%;" :src="item.sClientImageSrc ? item.sClientImageSrc : '../img/slice/touxiang1.png' " alt="">
+                            <p class="color-333 m-l-10r flex_dom">
+                                <span style="max-width:50%" class="block only_line">{{ item.sClientName }}</span>
+                                <span>&nbsp;&bull;&nbsp;</span>
+                                <span style="max-width:50%" class="block only_line">{{ item.sOrganName }}</span>
+                            </p>
+                        </div>
+                        <div class="color-999 font22r">
+                            <p >{{item.dCreateTime | format}}</p>
+                        </div>
+                    </div>
+                    <div class="between-center m-t-10r">
+                        <p style="max-width: 70%;" class="fw-b color-333 only_line">{{ item.sTitle }}</p>
+                        <div class="flex_dom flex_item_mid">
+                            <img style="width: .24rem;height: .24rem;" src="../img/slice/icon-msg.png" alt="">
+                            <p class="font22r color-333">{{ item.iReplyCount }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<div v-if="list.length <= 0" class="no_data">
+				<p>暂无帖子</p>
+			</div>
+
+		</div>
+
+		<!-- 底部按钮 -->
+		<footer v-if="iType == 0" class="btn-wrap hgt08rem bg-red center-center">
+			<button @click="toMyPost" class="color-fff font24r block bg-FDC92B">我的帖子</button>
+			<button @click="toSubmitPost" class="color-fff font24r block">发帖</button>
+		</footer>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script type="text/javascript" src="../lib/dragFenye.js"></script>
+<script>
+    getUserInfo();
+    vue_init({
+        data: {
+            iType: JSON.parse(localStorage.iClient).iType,
+            list: [],
+            headpic: JSON.parse(localStorage.iClient).sImageSrc,
+        },
+        mounted: function(){
+
+        },
+        methods: {
+            toMyPost() {
+                location.href = "MyPost.html"
+            },
+            toSubmitPost() {
+                //if (JSON.parse(localStorage.iClient).iType == 0) {
+                //    go_alert2("点检员没有发帖权限！")
+                //} else
+                location.href = "Post.html"
+            },
+            toCircle(idx) {
+                location.href = `PostDetail.html?${idx}`
+            },
+            timeDo: function (time) {
+                time = time.replace(/T/g, " ").split(".")
+                if (time.length >= 2) {
+                    time = time.slice(0, 1)
+                }
+                time = time[0]
+                return time.replace(/-/g,".")
+            }
+        },
+        filters: {
+            format: function (value) {
+                return value.replace(/T/g, " ").split('.')[0].replace(/-/g, '.').slice(0,16);
+            }
+        },
+    })
+
+    $("#dragWrap").dragFenye({
+        url: host + "/router?method=tl.getlist",
+        data: { page: 1, rows: 15, iClientID: JSON.parse(localStorage.iClient).ID},//这里的属性名和要传给后台的页数和每页数的属性名不需要一致，固定名字；data可以附加其他参数，这两个为必须参数
+        rows_string: ".data",//拼接ajax回调获取列表的字符串
+        updateVue: "app.list",//拼接VUE变量赋值的字符串
+        page_txt: "page",//表示当前页数的属性字符串，可不传，默认"page"
+        rows_txt: "rows",//表示当前页请求数据条数的属性字符串，可不传，默认"rows"
+        dragBlock: true,//是否为整体模式
+        scrollDom: "#scrollWrap"//滚动区域，可不传，默认body
+    })
+
+    goBack()
+
+</script>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+
+</html>

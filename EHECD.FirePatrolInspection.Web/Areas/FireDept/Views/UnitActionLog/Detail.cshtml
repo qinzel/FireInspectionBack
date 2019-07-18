@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "查看日志详情";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model EHECD.EntityFramework.EFWork.EHECD_UnitActionLog
+<table  class="gridtable">
+    <tr>
+        <td>操作人</td>
+        <td>@ViewBag.sName</td>
+    </tr>
+     <tr>
+        <td>操作时间</td>
+        <td>@Model.dInsertTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+    </tr>
+      <tr>
+        <td>操作类型</td>
+        <td>@Model.sType</td>
+    </tr>
+      <tr>
+        <td>IP</td>
+        <td>@Model.sIpAddress</td>
+    </tr>
+      <tr>
+        <td>内容</td>
+        <td>@Model.sContent</td>
+    </tr>
+</table>

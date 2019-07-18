@@ -1,0 +1,166 @@
+﻿				
+@{
+    ViewBag.Title = "设置站内信";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_SiteMsg
+<style>
+    input[type=radio] {
+        vertical-align: bottom;
+    }
+</style>
+<form id="form_sitemsg">
+    <input type="hidden" name="ID" value="@Model.ID"/>
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 80px">发送方式：</td>
+                <td>
+                    <select id="iType" name="iType" class="query-sel">
+                        <option value="0">对单位</option>
+                        <option value="1">对个人（仅针对前端账号）</option>
+                    </select>
+                </td>
+            </tr>
+			<tr id="trDept">
+                <td style="width: 80px">收信人身份：</td>
+                <td>
+                    <input type="checkbox" id="receiveDept0" name="ReceiveDept" value="0" /><label for="receiveDept0">点检员</label>
+                    <input type="checkbox" id="receiveDept1" name="ReceiveDept" value="1" /><label for="receiveDept1">使用单位</label>
+                    <input type="checkbox" id="receiveDept2" name="ReceiveDept" value="2" /><label for="receiveDept2">消防部门</label>
+                    <input type="checkbox" id="receiveDept3" name="ReceiveDept" value="3" /><label for="receiveDept3">维护公司</label>
+                    <input type="checkbox" id="receiveDept4" name="ReceiveDept" value="4" /><label for="receiveDept4">值班人员</label>
+                </td>
+            </tr>
+			<tr id="trClient" style="display: none">
+                <td style="width: 80px" rowspan="2">收信人账号：</td>
+                <td>
+					<input type="text" id="sReceiveClient" name="sReceiveClient" value="@Model.sReceiveClient" style ="width:632px;height:60px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml','maxLength[500]'],multiline:true" missingmessage="请输入站内信收信人账号."/>
+                </td>
+            </tr>
+            <tr id="trTip" style="display: none"><td style="color: red; text-align: left !important">多个账号之间用英文逗号（“,”）分隔</td></tr>
+            <tr>
+                <td style="width: 80px">标题：</td>
+                <td>
+                    <input type="text" name="sTitle" value="@Model.sTitle" style="width: 632px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml','maxLength[30]'],required:true" missingmessage="请输入标题." />
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">内容：</td>
+                <td>
+                    <textarea id="sContent" style="width: 630px; height: 350px"></textarea>
+                    <input type="hidden" name="sContent" value="@Model.sContent" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+@Html.Action("Init", "Uediter", new { area = "", module = "Article", field = "SiteMsg" })
+<script>
+    $(function () {
+        UE.ehecd_editer_init('sContent', '@Html.Raw(Model.sContent)');
+
+        $(".panel.window #iType").on("change", function () {
+            var $self = $(this);
+            if ($self.val() === "0") {
+                $("#trDept").show();
+                $("#trClient").hide();
+                $("#trTip").hide();
+            }
+            else {
+                $("#trClient").show();
+                $("#trTip").show();
+                $("#trDept").hide();
+            }
+        });
+
+        window.saveModel = function() {
+            if (!$("#form_sitemsg").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+
+            var content = UE.getEditor('sContent').getContent().replace(/[']/g, "").replace(/[\x00-\x1f\x7f]/i, "").replace("\n", "<br/>");
+            if ($.trim(content) == '') {
+                msgShow('提示', '请输入内容!', 'warning');
+                return;
+            }
+
+            $("input[name=sContent]").val(content);
+
+            var clients = $.trim($("#sReceiveClient").val());
+            clients = clients.replace(/，/g, ',');
+            $("#sReceiveClient").textbox("setValue", clients);
+
+            var recDepts = $("input[name=ReceiveDept]:checked");
+            var recDeptAry = [];
+            for (var i = 0; i < recDepts.length; i++) {
+                var $obj = $(recDepts[i]);
+                recDeptAry.push($obj.val());
+            }
+
+            var $selVal = $(".panel.window #iType").val();
+
+            if ($selVal == "0" && !recDeptAry.length) {
+                msgShow('提示', '请选择收信人身份!', 'warning');
+                return;
+            }
+
+            var $phone = $(".panel.window input[name='sReceiveClient']").val();
+            if ($selVal == "1" && !$.trim($phone).length) {
+                msgShow('提示', '请输入收信人账号!', 'warning');
+                return;
+            }
+            if ($selVal == "1") {
+                if ($phone.indexOf(',') > -1) {
+                    for (var i = 0 ; i < $phone.split(',').length; i++) {
+                        var phone = $phone.split(',')[i];
+                        if (!/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/.test(phone)) {
+                            msgShow('提示', '请输入正确的手机号!', 'warning');
+                            return;
+                        }
+                    }
+                }
+                else {
+                    if (!/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/.test($phone)) {
+                        msgShow('提示', '请输入正确的手机号!', 'warning');
+                        return;
+                    }
+                }
+            }
+
+            var data = $("#form_sitemsg").serialize();
+            data += "&sReceiveDept=" + recDeptAry.join(',');
+
+            $("#save_window_okbtn_sitemsg").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/SiteMsg/Set", //用与处理ajax的地址及函数
+                data: data,
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_sitemsg').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.setWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_sitemsg').linkbutton('enable');
+                }
+            });
+        }
+    });
+</script>

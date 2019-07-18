@@ -1,0 +1,212 @@
+﻿			
+@{
+    ViewBag.Title = "部门管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="datagrid_list_toolbar_dept">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="showSetDialog(0,'添加部门')">添加</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="Edit()">编辑</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="Delete()">删除</a>&nbsp;&nbsp;
+    <form id="search_form_dept">
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sName" type="text" data-options="prompt:'请输入部门名称'" class="easyui-textbox"/>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_dept"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_dept').datagrid({
+            checkbox: true,
+            // singleSelect: true, //是否单选
+            title: '部门管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_dept",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_dept").serializeObject(),
+            url: '/UseDept/Dept/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'ID', checkbox: true 
+                    },
+                    {
+                        field: 'sName', title: '部门名称', width: 150
+                    },
+                    {
+                        field: 'sUnitName', title: '所属使用单位', width: 200
+                    },
+                    {
+                        field: 'dCreateTime', title: '操作', width: 100, align: 'center', formatter: function (value, row, index) {
+                            var btn = "<a class=\"easyui-linkbutton l-btn l-btn-small l-btn-plain\" data-options=\"iconCls:'icon-detail',plain:true\" onclick=\"showClientList(" + row.ID + ")\">" +
+	                                      "<span class=\"l-btn-left l-btn-icon-left\">" +
+		                                      "<span class=\"l-btn-text\">查看人员</span>" +
+		                                      "<span class=\"l-btn-icon icon-detail\">&nbsp;</span>" +
+	                                      "</span>" +
+                                      "</a>";
+                            return btn;
+                        }, styler: function (value, row, index) {
+                            return 'cursor: pointer;';
+                        }
+                    }
+                ]
+			],
+            onDblClickRow: function (rowIndex, rowData) {
+                showClientList(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('hideColumn', 'ID');
+                    $(this).datagrid('appendRow', { sName: '<div style="text-align:center;color:#7f99be">暂无部门信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sName', colspan: 3 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).datagrid('showColumn', 'ID');
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+
+        $("#search_form_dept").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_dept').datagrid('load', $("#search_form_dept").serializeObject());
+        $('#datagrid_dept').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_dept').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+    //编辑功能
+    function Edit() {
+        var rows = $('#datagrid_dept').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个部门!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个部门!', 'warning');
+            return;
+        }
+        showSetDialog(rows[0].ID, '编辑部门');
+    }
+    //打开编辑页面
+    function showSetDialog(id, title) {
+        window.setWindow = $('<div />').dialog({
+            title: title,
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/UseDept/Dept/Set/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_dept',
+                    handler: function(e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function(e) {
+                        setWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function() {
+                setWindow.dialog('destroy');
+            }
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_dept').datagrid('clearSelections');
+    }
+	
+	 //删除部门
+    function Delete() {
+        var selectIds = [];
+        var rows = $('#datagrid_dept').datagrid("getSelections");
+        if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                selectIds.push(rows[i].ID);
+            }
+        }
+
+        //判断是否选择数据
+        if (selectIds.length < 1) {
+            msgShow('提示', '至少选择一条信息进行删除操作', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定删除所有选中的信息共" + selectIds.length + "条数目？", function(ok) {
+            if (ok) {
+                $.post('/UseDept/Dept/Delete', { sIds: selectIds.join() }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+						clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+
+    //该使用单位下辖所有点检员
+    function showClientList(id) {
+        window.insListWindow = $('<div />').dialog({
+            title: '点检员列表',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/UseDept/Dept/InspectorList/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        insListWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                insListWindow.dialog('destroy');
+            }
+        });
+    }
+</script>

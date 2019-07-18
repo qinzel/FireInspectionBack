@@ -1,0 +1,249 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header> 
+			<i style="background-image: none;" class="flex_1"></i>
+			<h1 class="flex_1 text-center">个人中心</h1>
+			<p class="flex_1 color-fff font24r text-right"></p>
+		</header>
+
+		<div class="main-fix pad20r">
+            <!-- 个人信息wrap -->
+            <div onclick="location.href = 'information.html'" class="personal-wrap flex_column relative text-center">
+                <img src="../img/slice/banner3.png" class="block wid100" />
+                <div class="absolute_mid wid100">
+                    <!-- 头像 -->
+                    <div class="headpic-wrap inline_div">
+                        <img :src="person.sImageSrc?person.sImageSrc:'../img/slice/touxiang1.png'" alt="">
+                    </div>
+                    <!-- 电话 -->
+                    <p class="font32r color-fff" v-cloak>{{ person.sPhone }}</p>
+                    <!-- 姓名 -->
+                    <div v-if="iType == 0">
+                        <p style="justify-content:center" class="font24r color-fff wid100 flex_dom text-center" v-cloak><span class="block only_line" style="max-width: 50%">{{ sName }}</span>·<span class="only_line block" style="max-width: 50%">{{ unit }}</span></p>
+                        <p class="font24r color-fff" v-cloak>{{ dept }}</p>
+                    </div>
+                    <p v-else style="justify-content:center" class="font24r color-fff wid100 flex_dom text-center" v-cloak><span class="block only_line" style="max-width: 50%">{{ sName }}</span>·<span class="only_line block" style="max-width: 50%">{{ unit }}</span></p>
+                </div>
+            </div>
+
+			<!-- 功能栏 -->
+			<div class="p-t-30r p-b-30r">
+                <!-- 值班记录 -->
+				<div @click="redirectionToDuty" v-if="person.iType == 4" class="border-b-eee flex_dom p-v-25r flex_item_mid">
+					<p class="flex_1 flex_dom flex_item_mid">
+						<img style="width: .24rem" src="../img/slice/icon-yijian.png" alt="">
+						<span style="line-height: .24rem" class="font24r fw-b m-l-20r">值班记录</span>
+					</p>
+					<img style="width: .12rem;height: .24rem;" src="../img/slice/icon-angle-r.png" alt="">
+				</div>
+                <!-- 朋友圈 -->
+                <a href="FriendCircle.html" v-if="person.iType == 0" class="border-b-eee flex_dom p-v-25r flex_item_mid">
+                    <p class="flex_1 flex_dom flex_item_mid">
+                        <img style="width: .24rem" src="../img/slice/icon-friend.png" alt="">
+                        <span style="line-height: .24rem" class="font24r fw-b m-l-20r">朋友圈</span>
+                    </p>
+                    <img style="width: .12rem;height: .24rem;" src="../img/slice/icon-angle-r.png" alt="">
+                </a>
+				<!-- 意见反馈 -->
+				<div @click="redirectionToFb" class="border-b-eee flex_dom p-v-25r flex_item_mid">
+					<p class="flex_1 flex_dom flex_item_mid">
+						<img style="width: .24rem" src="../img/slice/icon-msg-b.png" alt="">
+						<span style="line-height: .24rem" class="font24r fw-b m-l-20r">意见反馈</span>
+					</p>
+					<img style="width: .12rem;height: .24rem;" src="../img/slice/icon-angle-r.png" alt="">
+				</div>
+				<!-- 帮助中心 -->
+				<div @click="redirection(3)" class="border-b-eee flex_dom p-v-25r flex_item_mid">
+					<p class="flex_1 flex_dom flex_item_mid">
+						<img style="width: .24rem" src="../img/slice/icon-book.png" alt="">
+						<span style="line-height: .24rem" class="font24r fw-b m-l-20r">帮助中心</span>
+					</p>
+					<img style="width: .12rem;height: .24rem;" src="../img/slice/icon-angle-r.png" alt="">
+				</div>
+				<!-- 关于我们 -->
+				<div @click="redirection(4)" class="border-b-eee flex_dom p-v-25r flex_item_mid">
+					<p class="flex_1 flex_dom flex_item_mid">
+						<img style="width: .24rem;" src="../img/slice/icon-surprise.png" alt="">
+						<span style="line-height: .24rem" class="font24r fw-b m-l-20r">关于我们</span>
+					</p>
+					<img style="width: .12rem;height: .24rem;" src="../img/slice/icon-angle-r.png" alt="">
+				</div>
+				<!-- 联系客服 -->
+				<a :href="'tel:'+phone" class="border-b-eee flex_dom p-v-25r flex_item_mid">
+					<p class="flex_1 flex_dom flex_item_mid">
+						<img style="width: .24rem;" src="../img/slice/icon-service.png" alt="">
+						<span style="line-height: .24rem" class="font24r fw-b m-l-20r">联系客服</span>
+					</p>
+					<img style="width: .12rem;height: .24rem;" src="../img/slice/icon-angle-r.png" alt="">
+				</a>
+			</div>
+
+			<!-- 退出登录 -->
+			<div>
+				<button class="btn1" @click="goOut">退出登录</button>
+			</div>
+
+		</div>
+
+		<!-- 底部导航栏 -->
+		<footer style="height:.9rem;" class="footer-nav">
+			<!-- 首页 -->
+			<a class="flex_column center-center flex_1" href="Index.html">
+				<img style="width: .41rem;height: .44rem;" src="../img/slice/home.png" alt="">
+				<p class="color-999 font20r" style="margin-right:.05rem;">首页</p>
+			</a>
+			<!-- 扫一扫 -->
+			<div class="flex_column center-center relative flex_1" style="top: -.2rem; z-index: 2;">
+				<img onclick="location.href='scan.html'" style="width: .7rem;height: .7rem;top:0;" src="../img/slice/scan.png" alt="">
+				<p onclick="location.href = 'scan.html'" class="color-999 font20r">扫一扫</p>
+			</div>
+			<!-- 个人中心 -->
+			<div class="flex_column center-center flex_1">
+				<img style="width: .41rem;height: .44rem;z-index: 2" src="../img/slice/personal-active.png" alt="">
+				<p class="color-999 font20r color-red">个人中心</p>
+			</div>
+			<!-- 弧线 -->
+			<!-- <div class="semi-circle">
+				
+			</div> -->
+		</footer>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script>
+    getUserInfo();
+  
+
+    vue_init({
+        data: {
+            person: JSON.parse(localStorage.iClient),
+            phone: '',
+            unit: "",
+            dept: "",
+            iType: JSON.parse(localStorage.iClient).iType,
+            sName: JSON.parse(localStorage.iClient).sName
+        },
+        mounted: function () {
+            go_ajax({
+                url: '/router?method=article.get',
+                data: {
+                    iArticleID: 1,
+                },
+                success: function (res) {
+                    console.log(res);
+                }
+            })
+            go_ajax({
+                url: '/router?method=settings.get',
+                data: {
+                },
+                success: function (res) {
+                    if (res.success) {
+                        app.phone = res.data.sPhone;
+                    }
+                }
+            });
+            if (localStorage.iClient) {
+                var iClient = JSON.parse(localStorage.iClient);
+                if (iClient.iType != 0) {
+                    go_ajax({
+                        url: '/router?method=client.get',
+                        data: { iClientID: JSON.parse(localStorage.iClient).ID },
+                        success: function (res) {
+                            if (res.success) {
+                                app.unit = res.data.sUnitName;
+                            }
+                        }
+                    })
+                } else {
+                    go_ajax({
+                        url: "/router?method=duty.getlist",
+                        data: { iClientID: JSON.parse(localStorage.iClient).ID },
+                        success: function (res) {
+                            if (res.data.length != 0) {
+                                app.unit = res.data[0].sName;
+                            }
+                        }
+                    });
+                }
+            }
+            
+            go_ajax({
+                url: "/router?method=client.self",
+                data: { iClientID: JSON.parse(localStorage.iClient).ID },
+                success: function (res) {
+                    if (res.success) {
+                        if (res.data && res.data.DeptList) {
+                            app.dept = res.data.DeptList[0].sName;
+                        }
+                    }
+                }
+            });
+        },
+        methods: {
+            redirection(iType) {
+                switch (iType) {
+                    // 跳转到关于我们
+                    case 4:
+                        location.href = `AboutUs.html`
+                        return
+                    // 帮助中心
+                    case 3:
+                        location.href = "HelpCenter.html"
+                }
+            },
+            // 跳转到意见反馈
+            redirectionToFb() {
+                location.href = "Feedback.html"
+            },
+            redirectionToDuty(){
+                location.href = "DutyRecord.html"
+            },
+            goOut() {
+                localStorage.removeItem('iClient');
+                location.href = "Index.html";
+                exitApp();
+            }
+        }
+    })
+
+    // 后退
+    goBack()
+
+</script>
+
+</html>

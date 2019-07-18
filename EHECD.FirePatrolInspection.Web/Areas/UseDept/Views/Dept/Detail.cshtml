@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "查看部门详情";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Dept
+<table class="gridtable">
+	<tr>
+        <td style="width: 90px">所属使用单位：</td>
+        <td>
+			@Model.sUnitName
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 90px">部门名称：</td>
+        <td>
+			@Model.sName
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 90px">创建时间：</td>
+        <td>
+			@Model.dCreateTime.ToString("yyyy-MM-dd HH:mm:ss")
+		</td>
+    </tr>
+</table>

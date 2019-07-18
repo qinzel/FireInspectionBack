@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "编辑模块";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+}
+@model EHECD.EntityFramework.EFWork.EHECD_UnitModule
+<form id="editForm">
+    <div>
+        <table class="gridtable">
+            <tr>
+                <td style="width: 30%">模块类别：</td>
+                <td>
+                    <input type="hidden" name="ID" value="@Model.ID" />
+                    <select id="iPID" name="iPID" class="easyui-combotree" style="width: 200px;" data-options="url:'/RepairDept/UnitModule/GetNoLink',editable:false,required:true,panelHeight:'auto'">
+                        <option value="@Model.iPID"></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>是否有链接：</td>
+                <td>
+                    <input type="checkbox" name="bIsLink" value="true" @(Model.bIsLink ? "checked=\"checked\"" : "") />
+                </td>
+            </tr>
+            <tr>
+                <td>模块名称：</td>
+                <td>
+                    <input type="text" value="@Model.sModuleName" name="sModuleName" class="easyui-textbox easyui-validatebox" data-options="required:true" missingmessage="请输入模块名称." />
+                </td>
+            </tr>
+            <tr>
+                <td>模块地址：</td>
+                <td>
+                    <input type="text" value="@Model.sModuleUrl" name="sModuleUrl" class="easyui-textbox" />
+                </td>
+            </tr>
+            <tr>
+                <td>排序编号：</td>
+                <td>
+                    <input type="text" value="@Model.iOrderID" name="iOrderID" class="easyui-textbox easyui-validatebox" data-options="required:true" missingmessage="请输入排序编号." />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" valign="top" align="left">
+                    <label style="float: left">功能列表</label>
+                    <input value="添加功能" name="addButton" style="float:right;" class="button-65" type="button" onclick="addRows()">&nbsp;&nbsp;<br />
+                    <table class="table_son" border="0" style="width: 100%; border: 1px solid #e2e2e2;text-align: left;" cellspacing="1">
+                        <colgroup>
+                            <col style="width: 25%" />
+                            <col style="width: 40%" />
+                            <col style="width: 27px" />
+                            <col style="width: 8%" />
+                        </colgroup>
+                        <tr>
+                            <td style="font-weight: bold; background-color: #dddddd !important;text-align: left;">功能名称</td>
+                            <td style="font-weight: bold; background-color: #dddddd !important">功能地址</td>
+                            <td style="font-weight: bold; background-color: #dddddd !important">排序编号</td>
+                            <td style="font-weight: bold; background-color: #dddddd !important">删除</td>
+                        </tr>
+
+
+
+
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+
+<script type="text/javascript">
+
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: "/RepairDept/UnitModule/GetModuleAction?id=" + @Model.ID +"", //用与处理ajax的地址及函数
+        data: "", //传递所需要的参数，若无可传空
+        dataType: "json",
+        success: function (data) {
+            var itemlist = data;
+            $(itemlist).each(function () {
+                var htmlArry = []
+                htmlArry.push("<tr><td style='text-align: left;'><input name='sActionName' value='" + this.sActionName + "'  type='text'  style='width:230px;'></td> ");
+                htmlArry.push("<td><input name='sActionUrl'  value='" + this.sActionUrl + "'    type='text'  style='width:350px;'></td> ");
+                htmlArry.push("<td><input name='iOrder'  value='" + this.iOrder + "'    type='text' style='width:98%;text-align:center;'></td> ");
+                htmlArry.push("<td style='color:#ff0000;font-size:14px;cursor:pointer' class='deltr seltr'  onclick='delRow(this)' >×</td></tr>");
+                var htmlArryHtml = htmlArry.join('');
+                $(".table_son").append(htmlArryHtml);
+            });
+        }
+    });
+
+    function addRows() {
+        var htmlArry = [];
+        htmlArry.push("<tr><td style='text-align: left;'><input name='sActionName'  type='text' style='width:230px;' ></td> ");
+        htmlArry.push("<td><input name='sActionUrl'  type='text' style='width:350px;'  ></td> ");
+        htmlArry.push("<td><input name='iOrder'  type='text' style='width:98%;text-align:center;'  ></td> ");
+        htmlArry.push("<td style='color:#ff0000;font-size:14px;cursor:pointer;' class='deltr seltr'  onclick='delRow(this)' >×</td></tr>");
+        var htmlArryHtml = htmlArry.join('');
+        $(".table_son").append(htmlArryHtml);
+    }
+    function delRow(obj) {
+
+        $(obj).parent().remove();
+
+    }
+
+    function editGoods() {
+        if (!$("#editForm").form('validate')) {
+            return;
+        }
+        $('#editBtn').linkbutton('disable');
+
+        var values = $("#editForm").formSerialize();
+        $.ajax({
+            type: "POST",
+            url: "/RepairDept/UnitModule/Edit", //用与处理ajax的地址及函数
+            data: values, //传递所需要的参数，若无可传空
+            dataType: "json",
+            success: function (result) {
+                $('#editBtn').linkbutton('enable');
+                if (result.success) {
+                    msgShow('系统提示', result.message, 'info');
+                    $("#editGoods").dialog("close");//关闭新建窗口
+                    Search();//列表重新加载数据
+                }
+                else {
+                    msgShow('系统提示', result.message, 'warning');
+                }
+            },
+            error: function () {
+                msgShow('系统提示', '编辑出错', 'warning');
+                $('#editBtn').linkbutton('enable');
+            }
+        });
+    }
+</script>

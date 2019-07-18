@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "查看帖子详情";
+}
+
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Tiezi
+<script src="~/Content/lib/swiper3.4.2/swiper-3.4.2.min.js"></script>
+<link rel="stylesheet" href="~/Content/lib/swiper3.4.2/swiper-3.4.2.min.css" />
+@*
+    <script src="~/Content/lib/vue.min.js"></script>
+    MD 再次打开窗口VUE出错
+*@
+
+<table class="gridtable">
+	<tr>
+        <td style="width: 80px">文章标题：</td>
+        <td>
+			@Model.sTitle
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 80px">文章详情：</td>
+        <td>
+			@Model.sContent
+		</td>
+    </tr>
+    <tr>
+        <td style="width: 80px">图片：</td>
+        <td>
+            @if (Model.sImageSrc.Length > 0)
+            {
+                var imagesSrc = Model.sImageSrc.Split(',');
+                for (var i = 0; i < imagesSrc.Length; i++)
+                {
+                    <img src="@imagesSrc[i]" onclick="test();" style="width: 300px" />
+                }
+            }
+            else
+            {
+                <span>-</span>
+            }
+        </td>
+    </tr>
+	<tr>
+        <td style="text-align: left !important" colspan="2">评论内容</td>
+    </tr>
+	@if (Model.CommentList != null && Model.CommentList.Count > 0)
+    {
+        foreach (var comment in Model.CommentList)
+        {
+            <tr id="tr@(comment.ID)">
+                <td colspan="2">
+                    <table class="gridtable">
+                        <tr>
+                            <td style="text-align: left !important">@comment.sName @(comment.sTarName.Length > 0 ? "回复" + comment.sTarName : "评论")：@comment.sContent</td>
+                            <td style="width: 55px !important" rowspan="2">
+                                <a class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="DeleteComment(@comment.ID)">删除</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right !important">@comment.dCreateTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        }
+    }
+</table>
+<script>
+    function DeleteComment(id) {
+        $.messager.confirm('确认', "你确定删除该评论？", function(ok) {
+            if (ok) {
+                $.post('/Admin/Comment/Delete', { iCommentID: id }, function (res) {
+                    if (res && res.success) {
+                        $(".panel.window #tr" + id).remove();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+</script>
+
+<div id="win" class="easyui-window" title="查看大图" closed="true" style="width: 100%; height: 100%"
+     data-options="iconCls:'icon-save',modal:true,collapsible:false,minimizable:false,maximizable:false,maximized:true">
+    <div class="swiper-container">
+        <div class="swiper-wrapper" style="width: 100% !important">>
+            @if (Model.sImageSrc.Length > 0)
+            {
+                var imagesSrc = Model.sImageSrc.Split(',');
+                for (var i = 0; i < imagesSrc.Length; i++)
+                {
+                    <div class="swiper-slide" style="width: 100% !important">
+                        <img src="@imagesSrc[i]" style="width: 100% !important; height: 100%; display: block" />
+                    </div>
+                }
+            }
+        </div>
+        <!-- Add Pagination -->
+        <div class="swiper-pagination"></div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        setTimeout(function () {
+            var swiper = new Swiper('.swiper-container', {
+                pagination: '.swiper-pagination',
+                paginationClickable: true,
+                loop: false,
+                autoplayDisableOnInteraction: false
+            });
+        }, 0);
+    });
+
+    function test() {
+        $("#win").window('open');
+    }
+</script>

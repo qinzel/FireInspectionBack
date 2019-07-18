@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<i id="backBtn" class="flex_1"></i>
+			<h1 class="flex_1 text-center">更换设备</h1>
+			<p class="flex_1 color-fff font24r text-right"></p>
+		</header>
+
+		<div class="main-fix p-b-15r">
+
+			<div style="margin: .2rem;" class="bg-fa font24r p-v-20r p_both10r radius10r">
+				<p class="color-000 l-h-04rem fw-b">设备类型：
+					<span>{{Info.sDeviceTypeName}}</span>
+				</p>
+				<p class="color-666 l-h-04rem">设备编号：
+					<span>{{Info.sNumber}}</span>
+				</p>
+				<p class="color-666 l-h-04rem">设备名称：
+					<span>{{Info.sName}} </span>
+				</p>
+				<p class="color-666 l-h-04rem">设备位置：
+					<span>{{Info.sLocation}}</span>
+				</p>
+			</div>
+			<p style="height: .2rem;" class="bg-fa"></p>
+
+			<div class="p_both20r">
+				<!-- 设备型号 -->
+				<div class="font24r l-h-09rem border-b-eee between-center">
+					<p class="color-333">设备型号</p>
+					<input v-model="sModel" class="text-right placeholderccc font24r" type="text" placeholder="请输入设备型号">
+				</div>
+				<!-- 设备规格 -->
+				<div class="font24r l-h-09rem border-b-eee between-center">
+					<p class="color-333">设备规格</p>
+					<input v-model="sSpec" class="text-right placeholderccc font24r" type="text" placeholder="请输入设备规格">
+				</div>
+				<!-- 设备数量 -->
+				<div class="font24r l-h-09rem border-b-eee between-center">
+					<p class="color-333">设备数量</p>
+					<input v-model="iNumber" class="text-right placeholderccc font24r" type="number" placeholder="请输入设备数量">
+				</div>
+				<!-- 安装日期 -->
+				<div class="date font24r l-h-09rem border-b-eee between-center">
+					<p class="color-333">安装日期</p>
+					<div class="hgt09rem text-right choice flex_item_mid flex_dom flex_1">
+						<input v-model="sInstallDate" type="text" class="installDate l-h-09rem flex_1 m-r-10r text-right placeholderccc font24r" readonly="readonly" placeholder="请选择安装日期"
+						 date-choice />
+						<img style="width: .12rem;" src="../img/slice/icon-angle-r.png" alt="">
+					</div>
+				</div>
+				<!-- 生产厂家 -->
+				<div class="font24r l-h-09rem border-b-eee between-center">
+					<p class="color-333">生产厂家</p>
+					<input v-model="sManufacturer" class="text-right placeholderccc font24r" type="text" placeholder="请输入生产厂家">
+				</div>
+				<!-- 生产日期 -->
+				<div v-show="Info.sProductionDate" class="date font24r l-h-09rem border-b-eee between-center">
+					<p class="color-333">生产日期</p>
+					<div class="hgt09rem text-right choice flex_item_mid flex_dom flex_1">
+						<input v-model="sProductionDate" type="text" class="manufactureDate l-h-09rem flex_1 m-r-10r text-right placeholderccc font24r" readonly="readonly"
+						 placeholder="请选择生产日期" date-choice />
+						<img style="width: .12rem;" src="../img/slice/icon-angle-r.png" alt="">
+					</div>
+				</div>
+
+				<p class="l-h-08rem font24r fw-b">更换说明</p>
+
+				<textarea v-model="sDesc" style="min-height: 1.8rem;" name="" id="" class="bg-fa l-h-03rem placeholderccc font24r" placeholder="请输入更换说明"></textarea>
+
+			</div>
+
+		</div>
+
+		<!-- 底部按钮 -->
+		<footer onclick="submit()" class="btn-wrap hgt08rem bg-red center-center">
+			<button class="color-fff font24r block">提交</button>
+		</footer>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script type="text/javascript" src="../lib/touchSelect.js"></script>
+<script>
+
+    vue_init({
+        data: {
+            Info: {},
+            iClientID: JSON.parse(localStorage.iClient).ID,
+            iDeviceID: getUrlParam('id'),
+            sModel: '',
+            sSpec: '',
+            iNumber: '',
+            sInstallDate: '',
+            sManufacturer: '',
+            sProductionDate: '',
+            sDesc: ''
+        },
+        mounted: function () {
+            go_ajax({
+                url: "/router?method=device.get",
+                data: {
+                    iDeviceID: getUrlParam('id'),
+                },
+                success: function (res) {
+                    if (res.success) {
+                        app.Info = res.data;
+                    } else {
+                        go_alert2(res.message);
+                    }
+                }
+            });
+        }
+    });
+
+    //keyword转化
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+            return unescape(r[2]);
+        } else {
+            return null;
+        }
+    }
+
+    getUserInfo();
+	console.log($('.installDate'))
+
+	// 安装时间
+	$(".installDate").touchSelect({
+		"type": "date",//可以设置二种选择类型：date,datetime
+		"limited_minutes": 200 * 365 * 24 * 60,//init_date.startDate要设置为true 或者init_date设置为“today”，则设置某个日期起限选多少分钟以内日期，否则限选分钟的起始日期为100年前的今天
+		"date_format": "yy-mm-dd",//设置显示时间格式，可以设置为"yy年mm月dd日","yy-mm-dd","yy/mm/dd"
+		"callback": function (date_val) {//设置回调，默认传参为所选日期时间值
+			console.log(date_val);
+		},
+		"hour_unit": 1,//计算小时选择最小时数，默认1
+		"minute_unit": 10,//计算分钟选择最小分钟数，默认60，计算出为60/x一分钟,
+		"init_date": {
+			"defaultDate": "",
+			"startDate": false
+		}//初始化时间设置，可以设置为对象{"defaultDate":"2017-12-1","startDate":true;}，或者"today"字符串,或者fasle不限制模式(默认值为今天)
+	});
+
+	// 生产日期
+	$(".manufactureDate").touchSelect({
+		"type": "date",//可以设置二种选择类型：date,datetime
+		"limited_minutes": 200 * 365 * 24 * 60,//init_date.startDate要设置为true 或者init_date设置为“today”，则设置某个日期起限选多少分钟以内日期，否则限选分钟的起始日期为100年前的今天
+		"date_format": "yy-mm-dd",//设置显示时间格式，可以设置为"yy年mm月dd日","yy-mm-dd","yy/mm/dd"
+		"callback": function (date_val) {//设置回调，默认传参为所选日期时间值
+			console.log(date_val);
+		},
+		"hour_unit": 1,//计算小时选择最小时数，默认1
+		"minute_unit": 10,//计算分钟选择最小分钟数，默认60，计算出为60/x一分钟,
+		"init_date": {
+			"defaultDate": "",
+			"startDate": false
+		}//初始化时间设置，可以设置为对象{"defaultDate":"2017-12-1","startDate":true;}，或者"today"字符串,或者fasle不限制模式(默认值为今天)
+	});
+
+	function ajax() {
+	    go_confirm({
+	        msg: ["确认更换后将消除设备异常状态，是否继续？", "#000"],
+	        agree_text: ["是", "#000"],
+	        cancel_text: ["否", "red"],
+	        tag_set: {
+	            title_tag: "",
+	            agree_tag: "",
+	            cancel_tag: ""
+	        },
+	        yesFunc: function () {
+	            go_ajax({
+	                url: "/router?method=change.add",
+	                data: {
+	                    iClientID: app.iClientID,
+	                    iDeviceID: getUrlParam('id'),
+	                    sModel: app.sModel,
+	                    sSpec: app.sSpec,
+	                    iNumber: parseInt(app.iNumber),
+	                    sInstallDate: app.sInstallDate,
+	                    sManufacturer: app.sManufacturer,
+	                    sProductionDate: app.sProductionDate,
+	                    sDesc: app.sDesc
+	                },
+	                success: function (res) {
+	                    if (res.success) {
+	                        go_alert2(res.message)
+	                        setTimeout(function () {
+                                back()
+	                        },2000)
+	                    } else {
+	                        go_alert2(res.message)
+	                    }
+	                }
+	            })
+	        },//回调函数,可以不设置，或者false
+	        noFunc: function () {
+
+	        }//回调函数,可以不设置，或者false
+	    })
+	}
+
+	function submit() {
+	    if (app.Info.sProductionDate) {
+	        if (app.sModel == '' || app.sSpec == '' || app.iNumber == '' || app.sInstallDate == '' || app.sManufacturer == '' || app.sProductionDate == '' || app.sDesc == '') {
+	            go_alert2("请完善更换信息")
+	        }
+	        else {
+	            ajax()
+	        }
+	    } else {
+	        if (app.sModel == '' || app.sSpec == '' || app.iNumber == '' || app.sInstallDate == '' || app.sManufacturer == '' || app.sDesc == '') {
+	            go_alert2("请完善更换信息")
+	        }
+	        else {
+	            ajax()
+	        }
+	    }
+	    
+	}
+
+    goBack()
+
+</script>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+
+</html>

@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "维修设备";
+}
+<script src="~/Content/backstage/js/My97DatePicker/WdatePicker.js"></script>
+
+<form id="form_device_repair">
+    <input type="hidden" name="iDeviceID" value="@ViewBag.id"/>
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 15%">维修说明：</td>
+                <td>
+					<input type="text" name="sDesc" style="width: 300px; height: 100px" class="easyui-textbox easyui-validatebox" data-options="multiline:true,validType:['checkHtml', 'maxLength[200]'],required:true" missingmessage="请输入维修说明."/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script>
+    $(function () {
+        window.saveModel = function () {
+            if (!$("#form_device_repair").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+
+            $.messager.confirm('确认', "确认维修后将消除设备异常状态，是否继续？", function (ok) {
+                if (ok) {
+                    $("#save_window_okbtn_device_repair").linkbutton('disable');
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/RepairDept/Device/Repair", //用与处理ajax的地址及函数
+                        data: $("#form_device_repair").serialize(),
+                        dataType: "json",
+                        success: function (res) {
+                            $('#save_window_okbtn_device_repair').linkbutton('enable');
+                            if (res.success) {
+                                msgShow('提示', res.message, 'info');
+                                window.repairDeviceParamWindow.dialog('close');//关闭新建窗口
+                                if (res.code == 0) {
+                                    reload(1);
+                                }
+                                else {
+                                    clearSelections();
+                                    reload();
+                                }
+                            }
+                            else {
+                                msgShow('提示', res.message, 'warning');
+                            }
+                        },
+                        error: function (xhr, msg, e) {
+                            msgShow('提示', '操作出错了!', 'warning');
+                            $('#save_window_okbtn_device_repair').linkbutton('enable');
+                        }
+                    });
+                }
+            });
+
+            
+        }
+    });
+</script>

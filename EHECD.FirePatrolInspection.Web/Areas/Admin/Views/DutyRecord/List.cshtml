@@ -1,0 +1,207 @@
+﻿@{
+    ViewBag.Title = "值班记录管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/backstage/js/My97DatePicker/WdatePicker.js"></script>
+
+<div id="datagrid_list_toolbar_dutyrecord">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Detail()">查看详情</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-excel',plain:true" onclick="Export()">导出</a>
+    <form id="search_form_dutyrecord">
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入账号/姓名'" class="easyui-textbox"/>
+        <span style="margin-left: 5px">所属使用单位：</span>
+        @Html.DropDownList("condition.iUseDeptID", ViewBag.unitList as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iUseDeptID" })
+        <span style="margin-left: 5px">签到时间：</span>
+        <input type="text" name="condition.dSStartTime" readonly="readonly" placeholder="开始时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd HH' })" class="Wdate query-datepicker" />&nbsp;~
+        <input type="text" name="condition.dSEndTime" readonly="readonly" placeholder="结束时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd HH' })" class="Wdate query-datepicker" />&nbsp;&nbsp;
+        <span style="margin-left: 5px">签退时间：</span>
+        <input type="text" name="condition.dEStartTime" readonly="readonly" placeholder="开始时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd HH' })" class="Wdate query-datepicker" />&nbsp;~
+        <input type="text" name="condition.dEEndTime" readonly="readonly" placeholder="结束时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd HH' })" class="Wdate query-datepicker" />&nbsp;&nbsp;
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_dutyrecord"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_dutyrecord').datagrid({
+            singleSelect: true, //是否单选
+            title: '值班记录',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_dutyrecord",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_dutyrecord").serializeObject(),
+            url: '/Admin/DutyRecord/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+                        field: 'sPhone', title: '账号/电话', width: 100
+                    },
+                    {
+                        field: 'sClientName', title: '姓名', width: 100
+                    },
+                    {
+                        field: 'sUnitName', title: '所属使用单位', width: 100, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (value == null) {
+                                return "总平台";
+                            }
+                            return value;
+                        }
+                    },
+                    {
+                        field: 'sDutyRoomName', title: '值班室', width: 100
+                    },
+                    {
+						field: 'sStartTime', title: '值班开始时间', width: 150
+                    },
+                    {
+                        field: 'sEndTime', title: '值班结束时间', width: 150
+                    },
+                    {
+                        field: 'iTimeLength', title: '值班时长', width: 150, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (row["sStartTime"].length && row["sEndTime"].length) {
+                                // 抄的代码
+                                var dtStart = new Date(row["sStartTime"]);  //开始时间
+                                var dtEnd = new Date(row["sEndTime"]);    //结束时间
+                                var dtSub = dtEnd.getTime() - new Date(dtStart).getTime();//时间差的毫秒数      
+                                //------------------------------
+                                //计算出相差天数
+                                var days = Math.floor(dtSub / (24 * 3600 * 1000))
+                                //计算出小时数
+                                var leave1 = dtSub % (24 * 3600 * 1000)    //计算天数后剩余的毫秒数
+                                var hours = Math.floor(leave1 / (3600 * 1000))
+                                //计算相差分钟数
+                                var leave2 = leave1 % (3600 * 1000)        //计算小时数后剩余的毫秒数
+                                var minutes = Math.floor(leave2 / (60 * 1000))
+                                //计算相差秒数
+                                var leave3 = leave2 % (60 * 1000)      //计算分钟数后剩余的毫秒数
+                                var seconds = Math.round(leave3 / 1000)
+
+                                return (days > 0 ? days + "天 " : "") + (hours > 0 ? hours + "小时 " : "") + minutes + "分钟";
+                            }
+                            else {
+                                return "-";
+                            }
+                        }
+                    },
+                    {
+						field: 'sDesc', title: '值班情况', width: 200
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDialog(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('appendRow', { sPhone: '<div style="text-align:center;color:#7f99be">暂无值班记录信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sPhone', colspan: 8 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_dutyrecord").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+    	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_dutyrecord').datagrid('load', $("#search_form_dutyrecord").serializeObject());
+        $('#datagrid_dutyrecord').datagrid('clearSelections');
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_dutyrecord').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_dutyrecord').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个值班记录!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个值班记录!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无值班记录!', 'warning');
+            return;
+        }
+        showDialog(rows[0].ID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无值班记录!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看值班记录详情',
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/Admin/DutyRecord/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_dutyrecord').datagrid('clearSelections');
+    }
+
+    // 导出Excel
+    function Export() {
+        var param = "sKeyword=" + $("input[name='condition.sKeyword']").val();
+        param += "&iUseDeptID=" + $("select[name='condition.iUseDeptID']").val();
+        param += "&dSStartTime=" + $("input[name='condition.dSStartTime']").val();
+        param += "&dSEndTime=" + $("input[name='condition.dSEndTime']").val();
+        param += "&dEStartTime=" + $("input[name='condition.dEStartTime']").val();
+        param += "&dEEndTime=" + $("input[name='condition.dEEndTime']").val();
+
+        window.open("/Admin/DutyRecord/GetExportData?" + param);
+    }
+</script>

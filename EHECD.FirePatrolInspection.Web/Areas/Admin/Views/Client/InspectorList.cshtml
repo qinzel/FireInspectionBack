@@ -1,0 +1,457 @@
+﻿@{
+    ViewBag.Title = "点检员管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/ueditor/ueditor.config.js"></script>
+<script src="~/Content/ueditor/ueditor.all.min.js"></script>
+<div id="datagrid_list_toolbar_client">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-lock',plain:true" onclick="Frozen()">冻结</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-unlock',plain:true" onclick="UnFrozen()">解冻</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-table',plain:true" onclick="DeviceList()">负责设备</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-pm',plain:true" onclick="Send()">发送站内信</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-appedit',plain:true" onclick="Change()">修改所属使用单位/部门</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="Edit()">编辑</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Detail()">查看详情</a>
+    <form id="search_form_client">
+        <input type="hidden" name="condition.iType" value="0" />
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入账号/姓名'" class="easyui-textbox"/>
+        <span style="margin-left: 5px">所属使用单位：</span>
+        @Html.DropDownList("condition.iUseDeptID", ViewBag.unitList as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iUseDeptID" })
+        <span style="margin-left: 5px">状态：</span>
+        <select name="condition.iStatus" class="query-sel">
+            <option value="">全部</option>
+            <option value="0">正常</option>
+            <option value="1">冻结</option>
+        </select>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true">查询</a>
+    </form>
+    <div>
+        <span style="margin-left:5px; line-height:normal;vertical-align:middle;">
+            已选择:<span style="color: red; display: inline-block" id="selectedRowNumber">0</span>条
+        </span>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" id="btn_clearSelected">清空选择项</a>
+    </div>
+</div>
+<table id="datagrid_client"></table>
+<script type="text/javascript">
+    $(function () {
+        var refreshSelectedRowNumber = function () {
+            var rows = $('#datagrid_client').datagrid("getSelections");
+            $("#selectedRowNumber").html(rows.length);
+        }
+
+        $("#btn_clearSelected").on('click', function () {
+            $('#datagrid_client').datagrid("clearSelections");
+        })
+
+        window.datagrid = $('#datagrid_client').datagrid({
+            checkbox: true,
+            // singleSelect: true, //是否单选
+            title: '点检员管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_client",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_client").serializeObject(),
+            url: '/Admin/Client/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'ID', checkbox: true 
+                    },
+                    {
+						field: 'sPhone', title: '账号', width: 100
+                    },
+                    {
+						field: 'sName', title: '姓名', width: 100
+                    },
+                    {
+                        field: 'sUnitName', title: '所属使用单位', width: 300, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            return value.length > 20 ? value.substr(0, 20) + '...' : value;
+                        }
+                    },
+                    {
+                        field: 'iDeviceCount', title: '负责设备总数', width: 100
+                    },
+                    {
+                        field: 'iStatus', title: '状态', width: 100, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (value) {
+                                return "冻结";
+                            }
+                            return "正常";
+                        }
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDialog(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('hideColumn', 'ID');
+                    $(this).datagrid('appendRow', { sPhone: '<div style="text-align:center;color:#7f99be">暂无点检员信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sPhone', colspan: 5 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).datagrid('showColumn', 'ID');
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            },
+            onSelect: function (index, row) {
+                refreshSelectedRowNumber();
+            },
+            onUnselect: function (index, row) {
+                refreshSelectedRowNumber();
+            },
+            onSelectAll: function () {
+                refreshSelectedRowNumber();
+            },
+            onUnselectAll: function () {
+                refreshSelectedRowNumber();
+            }
+        });
+
+        $("#search_form_client").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+
+        //查询
+        $("#datagrid_list_toolbar_client .easyui-linkbutton[id != 'btn_clearSelected']").on('click', function () {
+            $('#datagrid_client').datagrid('load', $("#search_form_client").serializeObject());
+            $('#datagrid_client').datagrid('clearSelections');
+        })
+    });
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_client').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无点检员!', 'warning');
+            return;
+        }
+        showDialog(rows[0].ID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无点检员!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看点检员详情',
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/Admin/Client/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //编辑功能
+    function Edit() {
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个点检员!', 'warning');
+            return;
+        }
+        showSetDialog(rows[0].ID, '编辑点检员');
+    }
+    //打开编辑页面
+    function showSetDialog(id, title) {
+        window.setWindow = $('<div />').dialog({
+            title: title,
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/Admin/Client/Set/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_client',
+                    handler: function(e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function(e) {
+                        setWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function() {
+                setWindow.dialog('destroy');
+            }
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_client').datagrid('clearSelections');
+    }
+
+    //用户冻结
+    function Frozen() {
+        let rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个用户冻结!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个用户冻结!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无用户!', 'warning');
+            return;
+        }
+        var clientID = rows[0].ID;
+        $.messager.confirm('确认', "你确定冻结该用户？", function (ok) {
+            if (ok) {
+                $.post('/Admin/Client/Frozen', { iClientID: clientID }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+                        clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+
+    //单位解冻
+    function UnFrozen() {
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个用户解冻!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个用户解冻!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无用户!', 'warning');
+            return;
+        }
+        var clientID = rows[0].ID;
+        $.messager.confirm('确认', "你确定解冻该用户？", function (ok) {
+            if (ok) {
+                $.post('/Admin/Client/UnFrozen', { iClientID: clientID }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+                        clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+
+    // 点检员所辖设备列表
+    function DeviceList() {
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无点检员!', 'warning');
+            return;
+        }
+        showDeviceListDialog(rows[0].ID);
+    }
+
+    //打开设备列表页面
+    function showDeviceListDialog(id) {
+        if (id == undefined) {
+            msgShow('提示', '暂无点检员!', 'warning');
+            return;
+        }
+        window.deviceListWindow = $('<div />').dialog({
+            title: '设备列表',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/Admin/Device/DeviceList/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        deviceListWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                deviceListWindow.dialog('destroy');
+            }
+        });
+    }
+
+    // 发送站内信
+    function Send() {
+        var selectIds = [];
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                selectIds.push(rows[i].ID);
+            }
+        }
+
+        //判断是否选择数据
+        if (selectIds.length < 1) {
+            msgShow('提示', '至少选择一个点检员发送站内信', 'warning');
+            return;
+        }
+
+        window.sendWindow = $('<div />').dialog({
+            title: '设备列表',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/Admin/SiteMsg/Send/' + selectIds.join(),
+            modal: true,
+            buttons: [
+                {
+                    text: '发送',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_client_msg',
+                    handler: function (e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        sendWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                UE.getEditor("sContent").destroy(); //关闭后摧毁编辑器
+                sendWindow.dialog('destroy');
+            }
+        });
+    }
+
+    // 修改所属使用单位/部门
+    function Change() {
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个用户!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个用户!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无用户!', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定修改该点检员所属使用单位/部门？", function (ok) {
+            if (ok) {
+                window.modifyWindow = $('<div />').dialog({
+                    title: '所属使用单位/部门详情',
+                    iconCls: 'icon-save',
+                    width: 600,
+                    height: 500,
+                    closed: false,
+                    cache: false,
+                    href: '/Admin/Client/DeptDetail/' + rows[0].ID,
+                    modal: true,
+                    buttons: [
+                        {
+                            text: '保存',
+                            iconCls: 'icon-ok',
+                            id: 'save_window_okbtn_client_change',
+                            handler: function (e) {
+                                window.saveModel();
+                            }
+                        }, {
+                            text: '关闭',
+                            iconCls: 'icon-no',
+                            handler: function (e) {
+                                modifyWindow.dialog('close');
+                            }
+                        }
+                    ],
+                    onClose: function () {
+                        modifyWindow.dialog('destroy');
+                    }
+                });
+            }
+        });
+    }
+</script>

@@ -1,0 +1,975 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+    <style>
+        .underline1{
+            text-decoration: underline;
+        }
+    </style>
+	<style>
+		input {
+			font-size: .24rem;
+		}
+        .checkbox-label input:checked+span {
+			background: url(../img/slice/icon-ok.png) no-repeat center;
+			background-size: .2rem .16rem;
+		}
+
+		.checkbox-label span {
+			width: .37rem;
+			height: .37rem;
+		}
+		.checkbox-label + .checkbox-label{
+			margin-top: .2rem;
+		}
+        .block{
+            display: block !important;
+        }
+        .none{
+            display: none !important;
+        }
+        header h1{
+            width: auto;
+        }
+	</style>
+</head>
+
+<body>
+    <div style="height: 100%;" id="app">
+        <section v-show="tabIdx" id="app" class="main hgt_all">
+            <!-- 公共header -->
+            <header>
+                <i id="backBtn" onclick="goBackFunc()" class="flex_1"></i>
+                <h1 class="flex_1 text-center">新增设备</h1>
+                <p @click="addLast" class="flex_1 underline1 color-fff font24r text-right">复制最近设备信息</p>
+            </header>
+            <!-- 主要内容 -->
+            <div style="height: calc(100% - 0.9rem - 0.8rem)" class="main1 p_both20r main-fix p-b-30r">
+                <!-- 设备编号 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        设备编号
+                        <span style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <input v-model="sNumber" required class="text-right placeholderccc" type="text" placeholder="请输入设备编号">
+                </div>
+                <!-- 设备数量 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        设备数量
+                        <span v-if="iType != 0" style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <input v-model="iNumber" :required = "iType != 0" class="text-right placeholderccc" type="number" placeholder="请输入设备数量">
+                </div>
+                <!-- 设备名称 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        设备名称
+                        <span style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <input v-model="sName" required class="text-right placeholderccc" type="text" placeholder="请输入设备名称">
+                </div>
+                <!-- 设备位置 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        设备位置
+                        <span style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <input v-model="sLocation" required class="text-right placeholderccc" type="text" placeholder="请输入设备位置">
+                </div>
+                <!-- 设备型号 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        设备型号
+                        <span v-if="iType != 0" style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <input v-model="sModel" :required = "iType != 0" class="text-right placeholderccc" type="text" placeholder="请输入设备型号">
+                </div>
+                <!-- 设备规格 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        设备规格
+                        <span v-if="iType != 0" style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <input v-model="sSpec" :required = "iType != 0" class="text-right placeholderccc" type="text" placeholder="请输入设备规格">
+                </div>
+                <!-- 安装日期 -->
+                <div class="date font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        安装日期
+                        <span v-if="iType != 0" style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <div class="hgt09rem text-right choice flex_item_mid flex_dom flex_1">
+                        <input :required = "iType != 0" v-model="sInstallDate"  type="text" class="installDate l-h-09rem flex_1 m-r-10r text-right placeholderccc" readonly="readonly" placeholder="请选择安装日期"
+                               date-choice />
+                        <img style="width: .12rem;" src="../img/slice/icon-angle-r.png" alt="">
+                    </div>
+                </div>
+                <!-- 生产厂家 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        生产厂家
+                        <span v-if="iType != 0" style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <input v-model="sManufacturer" :required = "iType != 0" class="text-right placeholderccc" type="text" placeholder="请输入生产厂家">
+                </div>
+                <!-- 使用单位 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        使用单位
+                        <span style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <div class="hgt09rem text-right choice flex_item_mid flex_dom flex_1">
+                        <input :required = "iType != 0" class="otherChoice3 l-h-09rem flex_1 m-r-10r text-right placeholderccc" type="text" placeholder="请选择使用单位" readonly
+                               :value="iUseDeptName=='' ? '' :  iUseDeptName" />
+                        <img style="width: .12rem;" src="../img/slice/icon-angle-r.png" alt="">
+                    </div>
+                </div>
+                <!-- 维护公司 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        维护公司
+                        <span style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <div v-if="iType != 2" class="hgt09rem text-right choice flex_item_mid flex_dom flex_1">
+                        <input :required = "iType != 0"  class="otherChoice2 l-h-09rem flex_1 m-r-10r text-right placeholderccc" type="text" placeholder="请选择维护公司" readonly
+                               :value="iRepairDeptName=='' ? '' :  iRepairDeptName" />
+                        <img style="width: .12rem;" src="../img/slice/icon-angle-r.png" alt="">
+                    </div>
+                    <input v-else class="text-right placeholderccc" type="text" readonly :value="iRepairDeptName"/>
+                </div>
+                <!-- 设备类型 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        设备类型
+                        <span style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <div class="hgt09rem text-right choice flex_item_mid flex_dom flex_1">
+                        <input :required = "iType != 0" class="otherChoice1 l-h-09rem flex_1 m-r-10r text-right placeholderccc" type="text" placeholder="请选择设备类型" readonly
+                               :value="iDeviceTypeName=='' ? '' :  iDeviceTypeName" />
+                        <img style="width: .12rem;" src="../img/slice/icon-angle-r.png" alt="">
+                    </div>
+                </div>
+                <!-- 责任人 -->
+                <div v-if="iType == 0" class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        责任人
+                        <span style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <input class="text-right placeholderccc" type="text" readonly :value="iClientName">
+                </div>
+
+                <div v-else class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        责任人
+                        <span style="top: -.05rem;left: .05rem;" class="color-red relative">*</span>
+                    </p>
+                    <div class="hgt09rem text-right choice flex_item_mid flex_dom flex_1">
+                        <input :required = "iType != 0" class="otherChoice4 l-h-09rem flex_1 m-r-10r text-right  placeholderccc" :value="iClientName ? iClientName: ''" type="text" placeholder="责任人" readonly
+                              />
+                        <img style="width: .12rem;" src="../img/slice/icon-angle-r.png" alt="">
+                </div>
+                </div>
+                <!-- 生产日期 -->
+                <div class="date font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">
+                        生产日期
+                    </p>
+                    <div class="hgt09rem text-right choice flex_item_mid flex_dom flex_1">
+                        <input v-model="sProductionDate" type="text" class="sProductionDate l-h-09rem flex_1 m-r-10r text-right placeholderccc" readonly="readonly" placeholder="请选择生产日期"
+                               date-choice />
+                        <img style="width: .12rem;" src="../img/slice/icon-angle-r.png" alt="">
+                    </div>
+                </div>
+                <!-- 过期年限 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">过期年限</p>
+                    <input match="zhengshu" alert="请输入正整数" v-model="iExpiredYears" class="text-right placeholderccc" type="text" placeholder="请输入过期年限">
+                </div>
+                <!-- 强制报废年限 -->
+                <div class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">强制报废年限</p>
+                    <input match="zhengshu" alert="请输入正整数" v-model="iForciblyScrappedYears" class="text-right placeholderccc" type="text" placeholder="请输入强制报废年限">
+                </div>
+                <!-- 关联设备 -->
+                <div @click="openTab2" class="font24r l-h-09rem border-b-eee between-center">
+                    <p class="color-333">关联设备</p>
+                    <input v-if="sRelDeviceIDs == ''" class="text-right placeholderccc" readonly type="text" placeholder="未关联设备">
+                    <input v-else class="text-right placeholderccc" type="text" readonly value="已关联设备">
+                </div>
+            </div>
+            <!-- 底部按钮 -->
+            <footer class="btn-wrap hgt08rem bg-red center-center">
+                <button type="submit" class="wid100 color-fff font24r block">确认新增</button>
+            </footer>
+        </section>
+        <section v-show="!tabIdx" class="main hgt_all">
+            <!-- 公共header -->
+            <header>
+                <i @click="forceCloseTab2" class="flex_1"></i>
+                <h1 class="flex_1 text-center">关联设备</h1>
+                <p class="flex_1 color-fff font24r text-right"></p>
+            </header>
+            <div id="scrollCtt" style="height: calc(100% - 0.9rem - 0.8rem)" class="p-v-20r p_both20r main-fix font24r">
+                <div class="related-equipment-wrap m-b-15r">
+                    <!-- 关联设备模板 -->
+                    <label v-for="item in list" v-if="item.sProductionDate != ''" class="checkbox-label wid100 hgt12rem radius10r bg-fa flex_dom flex_item_mid" :for="item.ID">
+                        <div>
+                            <input type="checkbox" hidden :id="item.ID">
+                            <span class="block radius_half m_both15r" style="background-color: #eee"></span>
+                        </div>
+                        <div class="flex_column between-center flex_1" v-cloak>
+                            <div class="between-center wid100 m-b-15r p-r-30r">
+                                <p style="max-width: 80%" class="fw-b only_line">{{ item.sDeviceTypeName }}</p>
+                                <p v-if="item.iAbnormalStatus == 0" class="color-blue">正常</p>
+                                <p v-else class="color-red">异常</p>
+                            </div>
+                            <div class="between-center wid100 p-r-20r">
+                                <p style="max-width: 50%;" class="only_line color-333">{{ item.sNumber }}</p>
+                                <p style="max-width: 50%;" class="only_line color-333">{{ item.sName }}</p>
+                            </div>
+                        </div>
+                    </label>
+                    <!-- 暂无数据 -->
+                    <div class="no_data">
+                        <p>暂无可关联设备</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 底部按钮 -->
+            <footer onclick="forceCloseTab2i()" class="btn-wrap hgt08rem bg-red center-center">
+                <button type="button" class="color-fff font24r block wid100 text-center">确认关联</button>
+            </footer>
+        </section>
+    </div>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/touchSelect.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script type="text/javascript" src="../lib/dragFenye.js"></script>
+<div>
+    <script>
+
+    var param = [];
+    getUserInfo();
+    var app = new Vue({
+        el: '#app',
+        data: {
+            iType: JSON.parse(localStorage.iClient).iType,
+            iClientID: JSON.parse(localStorage.iClient).ID,
+            iClientName: JSON.parse(localStorage.iClient).iType == 0 ? JSON.parse(localStorage.iClient).sName : "",
+            sNumber: "",
+            iDeviceTypeID: "",  // 后面转正了int
+            iDeviceTypeName: "",
+            iNumber: "",   // 后面转正了int
+            sName: "",
+            sLocation: "",
+            sModel: "",
+            sSpec: "",
+            sInstallDate: "",
+            sInstallDate2: "",
+            sManufacturer: "",
+            sManufacturer: "",
+            iRepairDeptID: "",
+            iRepairDeptName: JSON.parse(localStorage.iClient).iType == 2 ? JSON.parse(localStorage.iClient).sUnitName : "",
+            iUseDeptID: "",
+            iUseDeptName: "",
+            sProductionDate: "",
+            sProductionDate2: "",
+            iExpiredYears: "",
+            iForciblyScrappedYears: "",
+            sRelDeviceIDs: "",
+            huancunData: {},
+            tabIdx: true,
+            list: [],
+            iZerenList: [],
+            iZeren: "",
+            iZerenID: 0,
+            count: 0,
+            status: true,
+   
+            userCompany: [],
+            repairCompany: [],
+            settingType: [],
+            fuzeren:"",
+
+
+            iZerenData: [],
+            typeData: [],
+            weihuCompanyData: [],
+            statusChange: false,
+            initStatus: false,
+            active: false,
+            zerenActive: false,
+            idx: false,
+            page: 1,
+            isAjaxIng: false,
+            isLoad: true,
+
+        },
+        watch: {
+               
+        },
+        methods: {
+            // 打开关联设备
+            openTab2() {
+                if (app.iUseDeptID != "") {
+                    app.page = 1
+                    app.isLoad = true
+                    app.tabIdx = false
+                    app.isAjax = true
+                    go_ajax({
+                        url: '/router?method=device.getlistbyunit',
+                        data: {
+                            iUnitID: this.iUseDeptID,
+                            page: this.page,
+                            bHasProductDate: "1"
+                        },
+                        success: function (res) {
+                            app.list = res.data
+                            app.isAjaxIng = true
+                        }
+                    })
+                }
+                else {
+                    go_alert2("请先选择使用单位!")
+                }
+            },
+            
+            forceCloseTab2() {
+                app.tabIdx = true;
+            },
+            addLast() {
+                    if (app.iType == 0) {
+                        go_ajax({
+                            url: "/router?method=device.clately",
+                            data: {
+                                iClientID: JSON.parse(localStorage.iClient).ID
+                            },
+                            success: function (res) {
+                                var last = res.data
+                                app.sNumber = last.sNumber
+                                app.iNumber = last.iNumber
+                                app.sName = last.sName
+                                app.sLocation = last.sLocation
+                                app.sModel = last.sModel
+                                app.sSpec = last.sSpec
+                                app.sInstallDate = last.sInstallDate
+                                app.sManufacturer = last.sManufacturer
+                                app.iUseDeptID = last.iUseDeptID
+                                app.iRepairDeptName = last.sRepairDeptName
+                                app.iRepairDeptID = last.iRepairDeptID
+                                app.iDeviceTypeName = last.sDeviceTypeName
+                                app.iDeviceTypeID = last.iDeviceTypeID
+                                app.sProductionDate = last.sProductionDate
+                                app.iExpiredYears = last.iExpiredYears
+                                app.iForciblyScrappedYears = last.iForciblyScrappedYears
+                                for(item of param) {
+                                    if (item.ID == app.iUseDeptID) {
+                                        app.iUseDeptName = item.sName
+
+                                        // 联动查找设备分类
+                                        go_ajax({
+                                            url: "/router?method=devicetype.getlist",
+                                            data: {
+                                                iUnitID: app.iUseDeptID
+                                            },
+                                            success: function (res) {
+                                                console.log(1)
+                                                var typeData = []
+                                                var typeList = res.data
+                                                for(typeItem of typeList) {
+                                                    typeData.push({ id: typeItem.ID, name: typeItem.sName })
+                                                    if (typeItem.ID == app.iDeviceTypeID) {
+                                                        app.iDeviceTypeName = typeItem.sName
+                                                        $(".otherChoice1").touchSelect({
+                                                            type: "other",
+                                                            data: typeData,
+                                                            "callback": function (val, dom) {
+                                                                app.iDeviceTypeID = parseInt(val.id)
+                                                                app.iDeviceTypeName = val.name
+                                                            }
+                                                        })
+                                                        $(".otherChoice1").updatedParams({ data: typeData }, app.iDeviceTypeName)
+                                                        $(".main1").form_update()
+                                                    }
+                                                }
+                                            }
+                                        })
+
+                                        // 维护公司初始化
+                                        var RepairDeptList = []
+                                        go_ajax({
+                                            url: "/router?method=unit.getrprlist",
+                                            data: {
+                                                iUnitID: app.iUseDeptID
+                                            },
+                                            success: function (res) {
+                                                console.log(res)
+                                                if (app.iType != 2) {
+                                                    var weihuCompanyData = []
+
+                                                    RepairDeptList = res.data
+                                                    console.log(RepairDeptList)
+                                                    for(weihugongsiItem of RepairDeptList) {
+                                                        weihuCompanyData.push({ id: weihugongsiItem.ID, name: weihugongsiItem.sName })
+                                                        console.log(weihugongsiItem)
+                                                        if (weihugongsiItem.ID == last.iRepairDeptID) {
+                                                            app.iRepairDeptName = weihugongsiItem.sName
+                                                            app.iRepairDeptID = weihugongsiItem.ID
+                                                            console.log(app.iRepairDeptName)
+                                                            $(".otherChoice2").touchSelect({
+                                                                type: "other",
+                                                                data: weihuCompanyData,
+                                                                "callback": function (val) {
+                                                                    app.iRepairDeptID = val.id
+                                                                    app.iRepairDeptName = val.name
+                                                                }
+                                                            })
+                                                            $(".otherChoice2").updatedParams({ data: weihuCompanyData }, app.iRepairDeptName)
+                                                            $(".main1").form_update()
+                                                        }
+                                                    }
+
+                                                } else {
+                                                    app.iRepairDeptName = app.JSON.parse(localStorage.iClient).sUnitName
+                                                }
+
+                                            }
+                                        })
+
+                                    } else {
+
+                                    }
+                                }
+                            }
+                        })
+                    } else if (app.iType == 1 || app.iType == 2) {
+                        go_ajax({
+                            url: "/router?method=device.ulately",
+                            data: {
+                                iCreateUnitID: JSON.parse(localStorage.iClient).iUnitID,
+                                iUnitID: JSON.parse(localStorage.iClient).iUnitID
+                            },
+                            success: function (res) {
+                                var last = res.data
+                                console.log(last)
+                                app.sNumber = last.sNumber
+                                app.iNumber = last.iNumber
+                                app.sName = last.sName
+                                app.sLocation = last.sLocation
+                                app.sModel = last.sModel
+                                app.sSpec = last.sSpec
+                                app.sInstallDate = last.sInstallDate
+                                app.sManufacturer = last.sManufacturer
+                                app.iUseDeptID = last.iUseDeptID
+                                app.iRepairDeptName = last.sRepairDeptName
+                                app.iRepairDeptID = last.iRepairDeptID
+                                app.iDeviceTypeName = last.sDeviceTypeName
+                                app.iDeviceTypeID = last.iDeviceTypeID
+                                app.sProductionDate = last.sProductionDate
+                                app.iExpiredYears = last.iExpiredYears
+                                app.iForciblyScrappedYears = last.iForciblyScrappedYears
+                                app.iClientID = last.iClientID
+                                for(item of param) {
+                                    if (item.ID == app.iUseDeptID) {
+                                        app.iUseDeptName = item.sName
+
+
+
+                                        // 联动查找责任人
+                                        if (app.iType != 0) {
+                                            app.iZerenList = []
+                                            go_ajax({
+                                                url: "/router?method=client.getlist",
+                                                data: {
+                                                    iUnitID: app.iUseDeptID
+                                                },
+                                                success: function (res) {
+                                                    app.iZerenList = res.data
+                                                    iZerenData = []
+                                                    for(iZerenItem of app.iZerenList) {
+                                                        console.log(iZerenItem)
+                                                        iZerenData.push({ id: iZerenItem.ID, name: iZerenItem.sName })
+                                                        if (iZerenItem.ID == app.iClientID) {
+                                                            app.iClientName = iZerenItem.sName
+                                                            //$(".otherChoice4 ").val(app.iClientName)
+                                                            $(".otherChoice4").touchSelect({
+                                                                type: "other",
+                                                                data: iZerenData,
+                                                                "callback": function (val, dom) {
+                                                                    app.iZerenID = val.id
+                                                                    app.iZeren = val.name
+                                                                    app.iClientID = parseInt(val.id)
+                                                                    console.log(val)
+                                                                }
+                                                            })
+                                                            $(".otherChoice4").updatedParams({ data: iZerenData }, app.iClientName)
+                                                            $(".main1").form_update()
+                                                        }
+                                                    }
+                                                }
+                                            })
+
+                                        }
+
+                                        // 联动查找设备分类
+                                        go_ajax({
+                                            url: "/router?method=devicetype.getlist",
+                                            data: {
+                                                iUnitID: app.iUseDeptID
+                                            },
+                                            success: function (res) {
+                                                var typeData = []
+                                                var time = 0
+                                                console.log(res.data)
+                                                //设备类型初始化
+                                                if (time > 0) {
+                                                    return
+                                                } else {
+                                                    var typeList = res.data
+                                                    for(typeItem of typeList) {
+                                                        typeData.push({ id: typeItem.ID, name: typeItem.sName })
+                                                        console.log(typeItem.ID, app.iDeviceTypeID)
+                                                        if (typeItem.ID == app.iDeviceTypeID) {
+                                                            app.iDeviceTypeName = typeItem.sName
+                                                            $(".otherChoice1").touchSelect({
+                                                                type: "other",
+                                                                data: typeData,
+                                                                "callback": function (val, dom) {
+                                                                    app.iDeviceTypeID = parseInt(val.id)
+                                                                    app.iDeviceTypeName = val.name
+                                                                }
+                                                            })
+                                                            $(".otherChoice1").updatedParams({ data: typeData }, app.iDeviceTypeName)
+                                                            $(".main1").form_update()
+                                                        }
+                                                    }
+                                                    time++
+                                                }
+                                            }
+                                        })
+
+                                        // 维护公司初始化
+                                        var RepairDeptList = []
+                                        go_ajax({
+                                            url: "/router?method=unit.getrprlist",
+                                            data: {
+                                                iUnitID: app.iUseDeptID
+                                            },
+                                            success: function (res) {
+                                                console.log(res)
+                                                if (app.iType != 2) {
+                                                    var weihuCompanyData = []
+
+                                                    RepairDeptList = res.data
+                                                    console.log(RepairDeptList)
+                                                    for(weihugongsiItem of RepairDeptList) {
+                                                        weihuCompanyData.push({ id: weihugongsiItem.ID, name: weihugongsiItem.sName })
+                                                        console.log(weihugongsiItem)
+                                                        if (weihugongsiItem.ID == last.iRepairDeptID) {
+                                                            app.iRepairDeptName = weihugongsiItem.sName
+                                                            app.iRepairDeptID = weihugongsiItem.ID
+                                                            console.log(app.iRepairDeptName)
+                                                            $(".otherChoice2").touchSelect({
+                                                                type: "other",
+                                                                data: weihuCompanyData,
+                                                                "callback": function (val) {
+                                                                    app.iRepairDeptID = val.id
+                                                                    app.iRepairDeptName = val.name
+                                                                }
+                                                            })
+                                                            $(".otherChoice2").updatedParams({ data: weihuCompanyData }, app.iRepairDeptName)
+                                                            $(".main1").form_update()
+                                                        }
+                                                    }
+                                                } else {
+                                                    app.iRepairDeptName = JSON.parse(localStorage.iClient).sUnitName
+                                                }
+                                            }
+                                        })
+
+                                    }
+                                }
+                            }
+                        })
+                    }
+                    app.active = true
+                    
+            },
+            getList: function () {
+                app.isAjaxIng = false
+                go_ajax({
+                    url: '/router?method=device.getlistbyunit',
+                    data: {
+                        iUnitID: this.iUseDeptID,
+                        page: this.page,
+                        bHasProductDate: "1"
+                    },
+                    async: true,
+                    success: function (res) {
+                        app.list = app.list.concat(res.data)
+                        if (res.data.length < 15) {
+                            app.isLoad = false
+                        }
+                        app.isAjaxIng = true
+                    }
+                })
+            }
+        },
+        
+        
+    })
+
+
+
+    // 获取新增设备需要的参数 配置使用单位
+    go_ajax({
+        url: "/router?method=device.param",
+        data: {
+            iClientID: (JSON.parse(localStorage.iClient)).ID
+        },
+        success: function (res) {
+            if (app.iType == 2) {
+                app.iRepairDeptID = JSON.parse(localStorage.iClient).iUnitID
+            }
+            param = res.data.UseDeptList
+            var iZerenData = []
+            // 使用单位初始化
+            var useCompanyData = []
+            for(useCompanyItem of res.data.UseDeptList) {
+                useCompanyData.push({ id: useCompanyItem.ID, name: useCompanyItem.sName })
+            }
+            $(".otherChoice3").touchSelect({
+                type: "other",
+                data: useCompanyData,
+                "callback": function (val) {
+                    console.log(val)
+                        app.iUseDeptID = val.id
+                        app.iUseDeptName = val.name
+
+
+
+                    // 联动查找责任人
+                        if (app.iType != 0) {
+                            go_ajax({
+                                url: "/router?method=client.getlist",
+                                data: {
+                                    iUnitID: app.iUseDeptID
+                                },
+                                success: function (res) {
+                                    var iZerenList = res.data
+                                    var iZerenData = []
+                                   
+                                    for(iZerenItem of iZerenList) {
+                                        iZerenData.push({ id: iZerenItem.ID, name: iZerenItem.sName })
+                                    } 
+                                    $(".otherChoice4").touchSelect({
+                                        type: "other",
+                                        data: iZerenData,
+                                        "callback": function (val, dom) {
+                                            app.iZerenID = val.id
+                                            app.iZeren = val.name
+                                            app.iClientID = parseInt(val.id)
+                                            console.log(val)
+                                        }
+                                    })
+                                    app.zerenActive = true
+                                    $(".otherChoice4").updatedParams({ data: iZerenData })
+                                    $(".main1").form_update()
+                                }
+                            })
+
+                        }
+                    // 联动查找设备分类
+                        go_ajax({
+                            url: "/router?method=devicetype.getlist",
+                            data: {
+                                iUnitID: app.iUseDeptID
+                            },
+                            success: function (res) {
+                                var typeData = []
+                                //设备类型初始化
+                                var typeList = res.data
+                                for(typeItem of typeList) {
+                                    typeData.push({ id: typeItem.ID, name: typeItem.sName })
+                                }
+                                $(".otherChoice1").touchSelect({
+                                    type: "other",
+                                    data: typeData,
+                                    "callback": function (val, dom) {
+                                        app.iDeviceTypeID = parseInt(val.id)
+                                        app.iDeviceTypeName = val.name
+                                    }
+                                })
+                                $(".otherChoice1").updatedParams({ data: typeData })
+                                $(".main1").form_update()
+
+                            }
+                        })
+
+                    // 维护公司初始化
+                        go_ajax({
+                            url: "/router?method=unit.getrprlist",
+                            data: {
+                                iUnitID: app.iUseDeptID
+                            },
+                            success: function (res) {
+                                var RepairDeptList = []
+                                if (app.iType != 2) {
+                                    var weihuCompanyData = []
+                                    RepairDeptList = res.data
+                                    for(weihugongsiItem of RepairDeptList) {
+                                        weihuCompanyData.push({ id: weihugongsiItem.ID, name: weihugongsiItem.sName })
+                                    }
+                                    $(".otherChoice2").touchSelect({
+                                        type: "other",
+                                        data: weihuCompanyData,
+                                        "callback": function (val) {
+                                            app.iRepairDeptID = val.id
+                                            app.iRepairDeptName = val.name
+                                        }
+                                    })
+                                    $(".otherChoice2").updatedParams({ data: weihuCompanyData })
+                                    $(".main1").form_update()
+                                }
+
+                            }
+                        })
+                }
+            })
+        }
+    })
+
+
+    // 配置表单插件
+    $(".main").form_check({
+        /********自定义匹配规则*******/
+        check_rule: {
+            zhengshu: /^[0-9]+$/
+        },
+        /**********验证码回调，在验证码按钮上code_for="#tel"关联手机号输入框***********/
+        codeFunc: function (tel, codeBtn) {
+            codeDownTime(codeBtn)
+
+        }
+        	,
+        success: function () {
+            console.log(app.iClientID)
+            if (app.iDeviceTypeID == "" || app.iRepairDeptID == "" || app.iUseDeptID == "") {
+                go_alert2("请完善设备信息！")
+            } else if ((app.sProductionDate != "" && (app.iExpiredYears == "" || app.iForciblyScrappedYears == "")) || (app.iExpiredYears != "" && (app.sProductionDate == "" || app.iForciblyScrappedYears == "")) || (app.iForciblyScrappedYears != "" && (app.sProductionDate == "" || app.iExpiredYears == ""))) {
+                go_alert("如果生产日期、过期年限、强制报废年限其中一个填写，其他两项必填！")
+            }
+            else {
+                if (app.iType != 0) {
+                    if (app.sInstallDate == '') {
+                        go_alert2("请填写安装日期")
+                    }
+                    else {
+                        submitInfo()
+                    }
+                } else {
+                    submitInfo()
+                }
+                
+            }
+        },
+        error: function () {
+            go_alert2("请完善设备信息!")
+        }
+
+    })
+
+
+    // 安装时间
+    $(".installDate").touchSelect({
+        "type": "date",//可以设置二种选择类型：date,datetime
+        "limited_minutes": 200 * 365 * 24 * 60,//init_date.startDate要设置为true 或者init_date设置为“today”，则设置某个日期起限选多少分钟以内日期，否则限选分钟的起始日期为100年前的今天
+        "date_format": "yy-mm-dd",//设置显示时间格式，可以设置为"yy年mm月dd日","yy-mm-dd","yy/mm/dd"
+        "callback": function (date_val) {//设置回调，默认传参为所选日期时间值
+            // 没有0的加0
+            var newDateVal = date_val.split('-')
+            console.log(newDateVal)
+            for (idx in newDateVal) {
+                if (newDateVal[idx] < 10) {
+                    newDateVal[idx] = 0 + newDateVal[idx]
+                }
+            }
+            newDateVal = newDateVal.join('-')
+            app.sInstallDate2 = newDateVal
+            $(".main1").form_update()
+        },
+        "hour_unit": 1,//计算小时选择最小时数，默认1
+        "minute_unit": 10,//计算分钟选择最小分钟数，默认60，计算出为60/x一分钟,
+        "init_date": {
+            "defaultDate": "",
+            "startDate": false
+        }//初始化时间设置，可以设置为对象{"defaultDate":"2017-12-1","startDate":true;}，或者"today"字符串,或者fasle不限制模式(默认值为今天)
+    });
+
+
+
+
+
+    // 生产日期
+    $(".sProductionDate").touchSelect({
+        "type": "date",//可以设置二种选择类型：date,datetime
+        "limited_minutes": 200 * 365 * 24 * 60,//init_date.startDate要设置为true 或者init_date设置为“today”，则设置某个日期起限选多少分钟以内日期，否则限选分钟的起始日期为100年前的今天
+        "date_format": "yy-mm-dd",//设置显示时间格式，可以设置为"yy年mm月dd日","yy-mm-dd","yy/mm/dd"
+        "callback": function (date_val) {//设置回调，默认传参为所选日期时间值
+            console.log(date_val);
+            // 没有0的加0
+            var newDateVal = date_val.split('-')
+            for (idx in newDateVal) {
+                if (newDateVal[idx] < 10) {
+                    newDateVal[idx] = 0 + newDateVal[idx]
+                }
+            }
+            newDateVal = newDateVal.join('-')
+            app.sProductionDate2 = newDateVal
+            $(".main1").form_update()
+        },
+        "hour_unit": 1,//计算小时选择最小时数，默认1
+        "minute_unit": 10,//计算分钟选择最小分钟数，默认60，计算出为60/x一分钟,
+        "init_date": {
+            "defaultDate": "",
+            "startDate": false
+        }//初始化时间设置，可以设置为对象{"defaultDate":"2017-12-1","startDate":true;}，或者"today"字符串,或者fasle不限制模式(默认值为今天)
+    });
+
+    function submitInfo() {
+        go_ajax({
+            url: "/router?&method=device.add",
+            data: {
+                iCreateUnitID: JSON.parse(localStorage.iClient).iUnitID,
+                iClientID: app.iClientID,
+                sNumber: app.sNumber,
+                iDeviceTypeID: app.iDeviceTypeID,
+                iNumber: app.iNumber,
+                sName: app.sName,
+                sLocation: app.sLocation,
+                sModel: app.sModel,
+                sSpec: app.sSpec,
+                sInstallDate: app.sInstallDate2,
+                sManufacturer: app.sManufacturer,
+                iRepairDeptID: app.iRepairDeptID,
+                iUseDeptID: app.iUseDeptID,
+                sProductionDate: app.sProductionDate2,
+                iExpiredYears: app.iExpiredYears,
+                iForciblyScrappedYears: app.iForciblyScrappedYears,
+                sRelDeviceIDs: app.sRelDeviceIDs
+            },
+            success: function (res) {
+                if (res.success) {
+                    go_alert2(res.message)
+                    back()
+                } else {
+                    go_alert2(res.message)
+                }
+            }
+        })
+    }
+
+    // 后退按钮
+
+    function goBackFunc() {
+        var u = navigator.userAgent;
+        var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+        if (app.tabIdx) {
+            if (isAndroid) {
+                WebViewJavascriptBridge.pageback();
+            }
+        }
+        else {
+            closeTab2()
+        }
+        if (isiOS) {
+            //history.back();
+            webkit.messageHandlers.pageback.postMessage("");
+            //location.href="back.html"
+        }
+    }
+
+    function closeTab2() {
+        if (app.tabIdx) {
+            WebViewJavascriptBridge.pageback();
+        }
+        else {
+            var sRelDeviceIDs = []
+            $("input").each(function () {
+                if (this.checked) {
+                    sRelDeviceIDs.push(this.id)
+                }
+            })
+            app.sRelDeviceIDs = sRelDeviceIDs.join()
+            app.tabIdx = true;
+        }
+    }
+
+    function forceCloseTab2i(){
+        var sRelDeviceIDs = []
+        $("input").each(function () {
+            if (this.checked) {
+                sRelDeviceIDs.push(this.id)
+            }
+        })
+        app.sRelDeviceIDs = sRelDeviceIDs.join()
+        app.tabIdx = true;
+    }
+
+    goBack()
+
+    //滑动加载
+    $("#scrollCtt").scroll(function () {
+        var scrollTop = $(this).scrollTop()
+        var height = $(this).height()
+        var all_height = $(this)[0].scrollHeight;
+        var dom_height = $(this).height();
+        console.log(all_height - dom_height - scrollTop < 120)
+        //console.log(scrollTop, height)
+        if (all_height - dom_height - scrollTop < 120) {
+            if (app.isLoad) {
+                console.log(app.isAjaxIng)
+                if (app.isAjaxIng) {
+                    
+                    app.page = app.page + 1;
+                    app.getList();
+                }
+            } else {
+                
+            }
+        }
+    });
+
+
+    </script>
+</div>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+
+</html>

@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>演示 - Web Uploader</title>
+    <link href="webuploader.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="demo.css">
+</head>
+<body>
+
+   <p>您可以尝试文件拖拽，使用QQ截屏工具，然后激活窗口后粘贴，或者点击添加图片按钮，来体验此demo.</p>
+
+<div id="uploader" class="wu-example">
+    <div class="queueList">
+        <div id="dndArea" class="placeholder">
+            <div id="filePicker"></div>
+            <p>或将照片拖到这里，单次最多可选300张</p>
+        </div>
+    </div>
+    <div class="statusBar" style="display:none;">
+        <div class="progress">
+            <span class="text">0%</span>
+            <span class="percentage"></span>
+        </div><div class="info"></div>
+        <div class="btns">
+            <div id="filePicker2"></div><div class="uploadBtn">开始上传</div>
+        </div>
+    </div>
+</div>
+    <div style="color: red;" class="message"></div>
+    <script type="text/javascript">
+        // 添加全局站点信息
+        var BASE_URL = '~/third-party/webuploader';
+    </script>
+    <script src="../third-party/jquery-1.10.2.min.js"></script>
+    <script src="../third-party/webuploader/webuploader.min.js"></script>
+    <script type="text/javascript" src="demo.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var uploadImage = new UploadImage("uploader");
+        })
+    </script>
+        <div style="font-size:20px;color:red;text-align:center">
+            <a href="../index.html">UEditor示例</a>
+    </div>
+</body>
+</html>

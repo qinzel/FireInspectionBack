@@ -1,0 +1,74 @@
+﻿*{font-size:12px; font-family:Tahoma,Verdana,微软雅黑,新宋体}
+body{background:#D2E0F2; }
+a{ color:Black; text-decoration:none;}
+a:hover{ color:Red; text-decoration:underline;}
+.textbox03 {border: #878787 1px solid;padding: 4px 3px;font:Verdana, Geneva, sans-serif,宋体;line-height: 14px; background-color: #fff;  height: auto; font-size: 14px;  font-weight: bold; width: 190px; }
+
+.txt01{font:Verdana, Geneva, sans-serif,宋体;padding:3px 2px 2px 2px; border-width:1px; border-color:#ddd;  color:#000;}
+.txt {border: #878787 1px solid;padding: 4px 3px;font:Verdana, Geneva, sans-serif,宋体;line-height: 14px; background-color: #fff;  height: auto; font-size: 14px;}
+.footer{text-align:center;color:#15428B; margin:0px; padding:0px;line-height:23px; font-weight:bold;}
+
+.head a{color:White;text-decoration:underline;}
+
+/*.easyui-accordion ul{list-style-type:none;margin:0px; padding:10px;}
+.easyui-accordion ul li{ padding:0px;}
+.easyui-accordion ul li a{line-height:24px;}*/
+.zxhmenu{border:1px dashed white;margin:2px 0px;padding-left:10px;padding-top:2px;}
+.zxhmenu.hover{border:1px dashed #99BBE8; background:#E0ECFF;cursor:pointer;}
+/*.accordion-body div.hover{ background:#E0ECFF;cursor:pointer;}*/
+.zxhmenu.hover a{color:#416AA3;}
+.zxhmenu.selected{border:1px solid #99BBE8; background:#E0ECFF;cursor:default;}
+.zxhmenu.selected a{color:#416AA3; font-weight:bold;}
+.zxhtitle {border:1px dashed white;margin:2px 0px;margin-left:10px;margin-top:2px;}
+.zxhtitle .panel-header{padding: 0 5px;}
+.zxhtitle .panel-title{ font-weight: inherit;}
+.zxhtitle .panel-body{ border-width: 0 !important;}
+.zxhtitle .accordion-header{ background-color: #ffffff !important;}
+.zxhtitle .accordion-header-selected{ background-color: #ffe48d !important;}
+
+.icon{padding:2px 9px; background:url(../images/tabicons.png) no-repeat; }
+.icon-sys{ background:url(../images/directory.png) no-repeat;}
+.icon-add{background-position: -19px 0px;}
+.icon-nav{background-position: -100px -18px;}
+.icon-users{background-position: -100px -480px;}
+.icon-role{background-position: -360px -200px;}
+.icon-set{background-position: -380px -200px;}
+.icon-log{background-position: -380px -80px;}
+
+.btn-c {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    cursor: pointer;
+    color: #575757;
+}
+.href {
+    color: blue;
+}
+.href:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.href:visited {
+    color: blue;
+    text-decoration: none;
+}
+.query-datepicker {
+    width: 100px;
+    border: 1px solid #ccc !important;
+    border-radius: 5px;
+    padding: 0 3px;
+    vertical-align: middle;
+}
+.query-sel {
+    border: 1px solid #D4D4D4;
+    border-radius: 3px;
+    height: 22px;
+    min-width: 90px;
+    outline: 0;
+    vertical-align:middle;
+}
+.red {
+    color: red;
+    vertical-align: middle;
+}

@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/global.css">
+		<link rel="stylesheet" type="text/css" href="../css/zyl.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/myh.css"/>
+	</head>
+     <!--myh-->
+	<body>
+		<section class="main hgt_all flex_column">
+			<header>
+				<i id="backBtn" class="flex_1"></i>
+				<h1 class="flex_1 text-center">单位信息</h1>
+				<p class="flex_1 color-fff font24r text-right"></p>
+			</header>
+			<input type="checkbox" class="hide"  id="danwei_select" opener />
+			<label class="bg-mengban" for="danwei_select" style="top: .9rem" v-if="Info.length">
+				<div style="max-height:5rem;" class="block danwei_item text-center  child_borderLine_top overflow_auto borderColor-eee font24r  bg-fff l-h-08rem">
+					<label v-for="(item,index) in Info"><input type="radio" class="hide" @click="changeUnit(index)"><span class="block only_line" v-text="item.sName"></span></label>
+				</div>
+			</label>
+			<div class="danwei_page flex_1 overflow_auto" v-if="Info.length" @scroll="scorllLoad" v-cloak>
+				<label for="danwei_select" class="xiala_select l-h-08rem text-center block font26r color-333 hgt08rem"><span class="inline_div wid100"><b  class="vertical_mid inline_div only_line" style="max-width: calc(100% - 1rem)" v-cloak>{{Info[active].sName}}</b><i class="fa fa-angle-right m-l-20r font30  vertical_mid color-999"></i></span></label>
+				<div class="danwei_con pad20r border-t-eee">
+					<div class="detail bg-f8 pad20r">
+						<h4 class="color-333 font24r m-b-10r" v-text="Info[active].sAddress"></h4>
+						<p class="color-999">平台管理员：<span class="color-333" v-text="Info[active].sAdminName"></span></p>
+						<p class="color-999">联系电话：<a :href="'tel:'+Info[active].sContact" class="color-333 border-b-initial" v-text="Info[active].sContact"></a></p>
+					</div>
+				</div>
+				<div class="change_nav border-t-eee">
+					<div change_nav  class="bottom  danwei_nav flex_dom color-red text-center l-h-08rem font24r "  >
+						<div :class="['nav_item flex_1 ',tabActive == 0?'active':'']" @click="tabActive = 0"><span>部门及人员</span></div>
+						<div :class="['nav_item flex_1 ',tabActive == 1?'active':'']" @click="tabActive = 1"><span>设备列表</span></div>
+					</div>
+					<div class="item_box border-t-eee ">
+                        <div v-show="tabActive == 0" style="display: block">
+                            <div class="danwei_item child_borderLine_top borderColor-eee border-b-eee" v-if="Info[active].DeptList.length" v-cloak style="display: block">
+                                <div class="select_box" v-for="item in Info[active].DeptList">
+                                    <input type="checkbox" v-bind:id="item.ID" />
+                                    <label v-bind:for="item.ID" class="flex_dom p_both20r l-h-08rem flex_item_mid"><span class="flex_1 only_line">{{item.sName}}</span><em class="fa fa-angle-right m-l-20r font30  vertical_mid color-999"></em></label>
+                                    <div class="select_item" v-for="client in item.ClientList">
+                                        <a v-bind:href="'tel:'+client.sPhone" class="flex_dom flex_item_between"><span>{{client.sName}}</span><em>{{client.sPhone}}</em></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="no_data" style="margin-top: 1.5rem" v-if="Info[active].DeptList.length == 0" v-cloak>
+                                <p style="margin-bottom: 1rem">暂无数据</p>
+                            </div>
+                        </div>
+						<div class="danwei_item" v-show="tabActive == 1" style="display: block">
+							<form class="search p-v-20r flex_dom flex_item_mid p_both20r" @submit.prevent="searchWord">
+								<input type="text"  class="flex_1 bg-f8 l-h-04rem p-v-10r m-l-20r radius06r p_both20 placeholderccc" v-model="word" placeholder="请输入关键字设备搜索"/><button type="submit"  class="p_both20r  color-red">搜索</button>
+							</form>
+							<div class="setting_detail p_both20r p-b-20r">
+								<div class="setting_item bg-f8 radius10" v-for="item in devices" v-if="devices.length">
+									<div class="up p_both20r m-b-30r">
+										<div class="title flex_dom p-v-20r">
+										   <p class="flex_1 font-w6 color-000 m-r-20r" v-text="item.sDeviceTypeName"></p><span  :class="item.iAbnormalStatus?'color-red font24r':'color-blue font24r'" v-cloak>{{!item.iAbnormalStatus?'正常':'异常'}}</span>
+									    </div>
+									    <p class="flex_dom flex_item_between relative top_1 top-10px"><span v-text="item.sNumber"></span><span class="flex_1 m-l-20r text-right" v-text="item.sName"></span></p>
+									    <p class="flex_dom flex_item_between relative top_1 top-10px"><span class="" style="display:inline-block;width:70%;" v-cloak>{{item.sOrganName}}·{{item.sUnitName}}</span><span class="m-l-20r text-right">责任人 <i v-text="item.sClientName"></i></span></p>
+										<div class="data color-ccc ">
+											上次巡检时间: <span v-cloak>{{item.dCreateTime.substr(0,4)>1000?item.dCreateTime.substr(0,10):' '}}</span>
+										</div>
+									</div>
+									<div class="dothings p-v-25r p_both10r flex_dom flex_item_between border-t-eee">
+                                        <a :href="'EquipmentDetail.html?eId='+item.ID">设备详情</a>
+                                        <a :href="'ReplaceRecord.html?'+item.ID">更换记录</a>
+                                        <a :href="'MaintainRecord.html?'+item.ID">维修记录</a>
+                                        <a :href="'InspectionRecord.html?xId='+item.ID">巡检记录</a>
+									</div>
+								</div>
+                                <div class="no_data" style="margin-top: 1.5rem" v-if="devices.length == 0" v-cloak>
+                                    <p style="margin-bottom: 1rem">暂无数据</p>
+                                </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+	<script type="text/javascript" src="../lib/uploadPreview.js"></script> 
+	<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+	<script type="text/javascript" src="../lib/vue.js"></script>
+	<script type="text/javascript" src="../lib/swiper.min.js"></script>
+	<script type="text/javascript" src="../lib/date-choice.js"></script>
+	<script type="text/javascript" src="../lib/form-check.js"></script>
+	<script type="text/javascript" src="../lib/dragDown.js"></script>
+	<script type="text/javascript" src="../lib/wx_func.js"></script>
+	<script type="text/javascript" src="../lib/page.js"></script>
+	<script>
+        getUserInfo();
+       
+       // localStorage.iClient = JSON.stringify({ ID: 28 });
+        vue_init({
+            data: {
+                Info: [],
+                active: 0,
+                tabActive: 0,
+                devices: [],
+                word: '',
+                page: 1,
+                totalpage: 2,
+                flag: true
+            },
+            watch:{
+                'active': function () {
+                    this.p = 1;
+                    this.totalpage = 2;
+                    this.getDeviceList();
+                }
+            },
+            filters:{
+                format: function (value) {
+                    return value.replace(/T/g, " ").split(' ')[0].replace(/-/g, '.');
+                }
+            },
+            mounted: function () {
+                this.getDetail();
+            },
+            methods: {
+                searchWord() {
+                    if(app.word == ''){
+                        go_alert('搜索内容不能为空');
+                    } else {
+                        window.location = encodeURI(encodeURI("SearchWork.html?keyWords=" + app.word + "&unitId=" + app.Info[app.active].ID));
+                    }
+                },
+                changeUnit(index) {
+                    app.active = index;
+                    $('#danwei_select').prop('checked', false);
+                },
+                getDetail() {
+                    var iClient = JSON.parse(localStorage.iClient);
+                    go_ajax({
+                        url: "/router?method=duty.getlist",
+                        data: {
+                            iClientID: iClient.ID
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                app.Info = res.data;
+                                app.getDeviceList();
+                            } else {
+                                go_alert2(res.message);
+                            }
+                        }
+                    });
+                },
+                getDeviceList() {
+                    if (app.flag) {
+                        app.flag = false;
+                        go_ajax({
+                            url: "/router?method=device.getlistbyunit",
+                            data: {
+                                iUnitID: app.Info[app.active].ID,
+                                page: app.page
+                            },
+                            success: function (res) {
+                                app.flag = true;
+                                if (res.success) {
+                                    if (res.data.length == 0) {
+                                        app.totalpage = app.page;
+                                        app.flag = false;
+                                    } else {
+                                        app.totalpage = app.page + 1
+                                    }
+                                    if (app.page > 1) {
+                                        app.devices = app.devices.concat(res.data);
+                                    } else {
+                                        app.devices = res.data;
+                                    }
+                                } else {
+                                    go_alert2(res.message);
+                                }
+                            }
+                        })
+                    }
+                },
+                scorllLoad(event) {
+                    var all_height = $(event.target)[0].scrollHeight;
+                    //alert(all_height)
+                    var dom_height = $(event.target).height();
+                    if ($(event.target).scrollTop() >= all_height - dom_height - 12) {
+                        app.page = app.page + 1;
+                        if (app.page <= app.totalpage)
+                        { app.getDeviceList(); }
+                    }
+                }
+            }
+        })
+        // 后退按钮
+        goBack()
+	</script>
+
+</html>

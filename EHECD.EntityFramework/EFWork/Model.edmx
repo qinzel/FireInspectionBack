@@ -1,0 +1,547 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="EHECD.EntityFramework.EFWork.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="EHECD_ActionLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="iUserID" Type="bigint" Nullable="false" />
+          <Property Name="sType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="sIpAddress" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="sContent" Type="text" Nullable="false" />
+          <Property Name="dInsertTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_Module">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="iPID" Type="bigint" Nullable="false" />
+          <Property Name="sModuleName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="sModuleUrl" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="iOrderID" Type="int" Nullable="false" />
+          <Property Name="bIsDeleted" Type="bit" Nullable="false" />
+          <Property Name="dInsertTime" Type="datetime" Nullable="false" />
+          <Property Name="RoleType" Type="int" Nullable="false" />
+          <Property Name="bIsLink" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_ModuleAction">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="iModuleID" Type="bigint" Nullable="false" />
+          <Property Name="sActionName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="sActionUrl" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="iOrder" Type="int" Nullable="false" />
+          <Property Name="bIsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_PhoneMsg">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sPhone" Type="varchar" MaxLength="11" Nullable="false" />
+          <Property Name="sCode" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="dSendTime" Type="datetime" Nullable="false" />
+          <Property Name="dValidTime" Type="datetime" Nullable="false" />
+          <Property Name="iType" Type="int" Nullable="false" />
+          <Property Name="iState" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_Role">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sRoleName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="sDescription" Type="nvarchar" MaxLength="255" />
+          <Property Name="dCreateTime" Type="datetime" Nullable="false" />
+          <Property Name="bIsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_RoleAction">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="iRoleID" Type="bigint" Nullable="false" />
+          <Property Name="iModuleID" Type="bigint" Nullable="false" />
+          <Property Name="iActionID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitActionLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="iUnitUserID" Type="bigint" Nullable="false" />
+          <Property Name="sType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="sIpAddress" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="sContent" Type="text" Nullable="false" />
+          <Property Name="iUnitID" Type="int" Nullable="false" />
+          <Property Name="dInsertTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitModule">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="iPID" Type="bigint" Nullable="false" />
+          <Property Name="sModuleName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="sModuleUrl" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="iOrderID" Type="int" Nullable="false" />
+          <Property Name="bIsDeleted" Type="bit" Nullable="false" />
+          <Property Name="dInsertTime" Type="datetime" Nullable="false" />
+          <Property Name="RoleType" Type="int" Nullable="false" />
+          <Property Name="iUnitType" Type="int" Nullable="false" />
+          <Property Name="bIsLink" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitModuleAction">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="iModuleID" Type="bigint" Nullable="false" />
+          <Property Name="sActionName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="sActionUrl" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="iOrder" Type="int" Nullable="false" />
+          <Property Name="bIsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitRole">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sRoleName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="sDescription" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="iUnitID" Type="int" Nullable="false" />
+          <Property Name="dCreateTime" Type="datetime" Nullable="false" />
+          <Property Name="bIsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitRoleAction">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="iUnitRoleID" Type="bigint" Nullable="false" />
+          <Property Name="iModuleID" Type="bigint" Nullable="false" />
+          <Property Name="iActionID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitUser">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sLoginName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="sPassWord" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="sRealName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="iUnitRoleID" Type="bigint" Nullable="false" />
+          <Property Name="iUserType" Type="int" Nullable="false" />
+          <Property Name="iUserUnitType" Type="int" Nullable="false" />
+          <Property Name="iUnitID" Type="int" Nullable="false" />
+          <Property Name="iStatus" Type="bit" Nullable="false" />
+          <Property Name="dCreateTime" Type="datetime" Nullable="false" />
+          <Property Name="bIsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_User">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sLoginName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="sPassWord" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="sRealName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="bIsDeleted" Type="bit" Nullable="false" />
+          <Property Name="iRoleID" Type="bigint" Nullable="false" />
+          <Property Name="iUserType" Type="int" Nullable="false" />
+          <Property Name="dCreateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="EHECDEntityFrameworkEFWorkStoreContainer">
+          <EntitySet Name="EHECD_ActionLog" EntityType="Self.EHECD_ActionLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_Module" EntityType="Self.EHECD_Module" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_ModuleAction" EntityType="Self.EHECD_ModuleAction" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_PhoneMsg" EntityType="Self.EHECD_PhoneMsg" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_Role" EntityType="Self.EHECD_Role" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_RoleAction" EntityType="Self.EHECD_RoleAction" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_UnitActionLog" EntityType="Self.EHECD_UnitActionLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_UnitModule" EntityType="Self.EHECD_UnitModule" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_UnitModuleAction" EntityType="Self.EHECD_UnitModuleAction" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_UnitRole" EntityType="Self.EHECD_UnitRole" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_UnitRoleAction" EntityType="Self.EHECD_UnitRoleAction" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_UnitUser" EntityType="Self.EHECD_UnitUser" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EHECD_User" EntityType="Self.EHECD_User" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="EHECD.EntityFramework.EFWork" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="EHECD_ActionLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="iUserID" Type="Int64" Nullable="false" />
+          <Property Name="sType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sIpAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="sContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="dInsertTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="EHECD_Module">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="iPID" Type="Int64" Nullable="false" />
+          <Property Name="sModuleName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sModuleUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="iOrderID" Type="Int32" Nullable="false" />
+          <Property Name="bIsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="dInsertTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="RoleType" Type="Int32" Nullable="false" />
+          <Property Name="bIsLink" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_ModuleAction">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="iModuleID" Type="Int64" Nullable="false" />
+          <Property Name="sActionName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sActionUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="iOrder" Type="Int32" Nullable="false" />
+          <Property Name="bIsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_PhoneMsg">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sPhone" Type="String" MaxLength="11" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="sCode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="dSendTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="dValidTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="iType" Type="Int32" Nullable="false" />
+          <Property Name="iState" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_Role">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sRoleName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sDescription" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="dCreateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="bIsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_RoleAction">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="iRoleID" Type="Int64" Nullable="false" />
+          <Property Name="iModuleID" Type="Int64" Nullable="false" />
+          <Property Name="iActionID" Type="Int64" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitActionLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="iUnitUserID" Type="Int64" Nullable="false" />
+          <Property Name="sType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sIpAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="sContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="iUnitID" Type="Int32" Nullable="false" />
+          <Property Name="dInsertTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitModule">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="iPID" Type="Int64" Nullable="false" />
+          <Property Name="sModuleName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sModuleUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="iOrderID" Type="Int32" Nullable="false" />
+          <Property Name="bIsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="dInsertTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="RoleType" Type="Int32" Nullable="false" />
+          <Property Name="iUnitType" Type="Int32" Nullable="false" />
+          <Property Name="bIsLink" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitModuleAction">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="iModuleID" Type="Int64" Nullable="false" />
+          <Property Name="sActionName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sActionUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="iOrder" Type="Int32" Nullable="false" />
+          <Property Name="bIsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitRole">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sRoleName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sDescription" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="iUnitID" Type="Int32" Nullable="false" />
+          <Property Name="dCreateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="bIsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitRoleAction">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="iUnitRoleID" Type="Int64" Nullable="false" />
+          <Property Name="iModuleID" Type="Int64" Nullable="false" />
+          <Property Name="iActionID" Type="Int64" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_UnitUser">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sLoginName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sPassWord" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sRealName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="iUnitRoleID" Type="Int64" Nullable="false" />
+          <Property Name="iUserType" Type="Int32" Nullable="false" />
+          <Property Name="iUserUnitType" Type="Int32" Nullable="false" />
+          <Property Name="iUnitID" Type="Int32" Nullable="false" />
+          <Property Name="iStatus" Type="Boolean" Nullable="false" />
+          <Property Name="dCreateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="bIsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EHECD_User">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sLoginName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sPassWord" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sRealName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="bIsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="iRoleID" Type="Int64" Nullable="false" />
+          <Property Name="iUserType" Type="Int32" Nullable="false" />
+          <Property Name="dCreateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="EHECD_ActionLog" EntityType="Self.EHECD_ActionLog" />
+          <EntitySet Name="EHECD_Module" EntityType="Self.EHECD_Module" />
+          <EntitySet Name="EHECD_ModuleAction" EntityType="Self.EHECD_ModuleAction" />
+          <EntitySet Name="EHECD_PhoneMsg" EntityType="Self.EHECD_PhoneMsg" />
+          <EntitySet Name="EHECD_Role" EntityType="Self.EHECD_Role" />
+          <EntitySet Name="EHECD_RoleAction" EntityType="Self.EHECD_RoleAction" />
+          <EntitySet Name="EHECD_UnitActionLog" EntityType="Self.EHECD_UnitActionLog" />
+          <EntitySet Name="EHECD_UnitModule" EntityType="Self.EHECD_UnitModule" />
+          <EntitySet Name="EHECD_UnitModuleAction" EntityType="Self.EHECD_UnitModuleAction" />
+          <EntitySet Name="EHECD_UnitRole" EntityType="Self.EHECD_UnitRole" />
+          <EntitySet Name="EHECD_UnitRoleAction" EntityType="Self.EHECD_UnitRoleAction" />
+          <EntitySet Name="EHECD_UnitUser" EntityType="Self.EHECD_UnitUser" />
+          <EntitySet Name="EHECD_User" EntityType="Self.EHECD_User" />
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="EHECDEntityFrameworkEFWorkStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="EHECD_ActionLog">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_ActionLog">
+              <MappingFragment StoreEntitySet="EHECD_ActionLog">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="iUserID" ColumnName="iUserID" />
+                <ScalarProperty Name="sType" ColumnName="sType" />
+                <ScalarProperty Name="sIpAddress" ColumnName="sIpAddress" />
+                <ScalarProperty Name="sContent" ColumnName="sContent" />
+                <ScalarProperty Name="dInsertTime" ColumnName="dInsertTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_Module">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_Module">
+              <MappingFragment StoreEntitySet="EHECD_Module">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="iPID" ColumnName="iPID" />
+                <ScalarProperty Name="sModuleName" ColumnName="sModuleName" />
+                <ScalarProperty Name="sModuleUrl" ColumnName="sModuleUrl" />
+                <ScalarProperty Name="iOrderID" ColumnName="iOrderID" />
+                <ScalarProperty Name="bIsDeleted" ColumnName="bIsDeleted" />
+                <ScalarProperty Name="dInsertTime" ColumnName="dInsertTime" />
+                <ScalarProperty Name="RoleType" ColumnName="RoleType" />
+                <ScalarProperty Name="bIsLink" ColumnName="bIsLink" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_ModuleAction">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_ModuleAction">
+              <MappingFragment StoreEntitySet="EHECD_ModuleAction">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="iModuleID" ColumnName="iModuleID" />
+                <ScalarProperty Name="sActionName" ColumnName="sActionName" />
+                <ScalarProperty Name="sActionUrl" ColumnName="sActionUrl" />
+                <ScalarProperty Name="iOrder" ColumnName="iOrder" />
+                <ScalarProperty Name="bIsDeleted" ColumnName="bIsDeleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_PhoneMsg">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_PhoneMsg">
+              <MappingFragment StoreEntitySet="EHECD_PhoneMsg">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="sPhone" ColumnName="sPhone" />
+                <ScalarProperty Name="sCode" ColumnName="sCode" />
+                <ScalarProperty Name="dSendTime" ColumnName="dSendTime" />
+                <ScalarProperty Name="dValidTime" ColumnName="dValidTime" />
+                <ScalarProperty Name="iType" ColumnName="iType" />
+                <ScalarProperty Name="iState" ColumnName="iState" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_Role">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_Role">
+              <MappingFragment StoreEntitySet="EHECD_Role">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="sRoleName" ColumnName="sRoleName" />
+                <ScalarProperty Name="sDescription" ColumnName="sDescription" />
+                <ScalarProperty Name="dCreateTime" ColumnName="dCreateTime" />
+                <ScalarProperty Name="bIsDeleted" ColumnName="bIsDeleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_RoleAction">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_RoleAction">
+              <MappingFragment StoreEntitySet="EHECD_RoleAction">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="iRoleID" ColumnName="iRoleID" />
+                <ScalarProperty Name="iModuleID" ColumnName="iModuleID" />
+                <ScalarProperty Name="iActionID" ColumnName="iActionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_UnitActionLog">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_UnitActionLog">
+              <MappingFragment StoreEntitySet="EHECD_UnitActionLog">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="iUnitUserID" ColumnName="iUnitUserID" />
+                <ScalarProperty Name="sType" ColumnName="sType" />
+                <ScalarProperty Name="sIpAddress" ColumnName="sIpAddress" />
+                <ScalarProperty Name="sContent" ColumnName="sContent" />
+                <ScalarProperty Name="iUnitID" ColumnName="iUnitID" />
+                <ScalarProperty Name="dInsertTime" ColumnName="dInsertTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_UnitModule">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_UnitModule">
+              <MappingFragment StoreEntitySet="EHECD_UnitModule">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="iPID" ColumnName="iPID" />
+                <ScalarProperty Name="sModuleName" ColumnName="sModuleName" />
+                <ScalarProperty Name="sModuleUrl" ColumnName="sModuleUrl" />
+                <ScalarProperty Name="iOrderID" ColumnName="iOrderID" />
+                <ScalarProperty Name="bIsDeleted" ColumnName="bIsDeleted" />
+                <ScalarProperty Name="dInsertTime" ColumnName="dInsertTime" />
+                <ScalarProperty Name="RoleType" ColumnName="RoleType" />
+                <ScalarProperty Name="iUnitType" ColumnName="iUnitType" />
+                <ScalarProperty Name="bIsLink" ColumnName="bIsLink" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_UnitModuleAction">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_UnitModuleAction">
+              <MappingFragment StoreEntitySet="EHECD_UnitModuleAction">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="iModuleID" ColumnName="iModuleID" />
+                <ScalarProperty Name="sActionName" ColumnName="sActionName" />
+                <ScalarProperty Name="sActionUrl" ColumnName="sActionUrl" />
+                <ScalarProperty Name="iOrder" ColumnName="iOrder" />
+                <ScalarProperty Name="bIsDeleted" ColumnName="bIsDeleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_UnitRole">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_UnitRole">
+              <MappingFragment StoreEntitySet="EHECD_UnitRole">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="sRoleName" ColumnName="sRoleName" />
+                <ScalarProperty Name="sDescription" ColumnName="sDescription" />
+                <ScalarProperty Name="iUnitID" ColumnName="iUnitID" />
+                <ScalarProperty Name="dCreateTime" ColumnName="dCreateTime" />
+                <ScalarProperty Name="bIsDeleted" ColumnName="bIsDeleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_UnitRoleAction">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_UnitRoleAction">
+              <MappingFragment StoreEntitySet="EHECD_UnitRoleAction">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="iUnitRoleID" ColumnName="iUnitRoleID" />
+                <ScalarProperty Name="iModuleID" ColumnName="iModuleID" />
+                <ScalarProperty Name="iActionID" ColumnName="iActionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_UnitUser">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_UnitUser">
+              <MappingFragment StoreEntitySet="EHECD_UnitUser">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="sLoginName" ColumnName="sLoginName" />
+                <ScalarProperty Name="sPassWord" ColumnName="sPassWord" />
+                <ScalarProperty Name="sRealName" ColumnName="sRealName" />
+                <ScalarProperty Name="iUnitRoleID" ColumnName="iUnitRoleID" />
+                <ScalarProperty Name="iUserType" ColumnName="iUserType" />
+                <ScalarProperty Name="iUserUnitType" ColumnName="iUserUnitType" />
+                <ScalarProperty Name="iUnitID" ColumnName="iUnitID" />
+                <ScalarProperty Name="iStatus" ColumnName="iStatus" />
+                <ScalarProperty Name="dCreateTime" ColumnName="dCreateTime" />
+                <ScalarProperty Name="bIsDeleted" ColumnName="bIsDeleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EHECD_User">
+            <EntityTypeMapping TypeName="EHECD.EntityFramework.EFWork.EHECD_User">
+              <MappingFragment StoreEntitySet="EHECD_User">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="sLoginName" ColumnName="sLoginName" />
+                <ScalarProperty Name="sPassWord" ColumnName="sPassWord" />
+                <ScalarProperty Name="sRealName" ColumnName="sRealName" />
+                <ScalarProperty Name="bIsDeleted" ColumnName="bIsDeleted" />
+                <ScalarProperty Name="iRoleID" ColumnName="iRoleID" />
+                <ScalarProperty Name="iUserType" ColumnName="iUserType" />
+                <ScalarProperty Name="dCreateTime" ColumnName="dCreateTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="无" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

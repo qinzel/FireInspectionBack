@@ -1,0 +1,24 @@
+
+
+
+【09:59:18 789】
+System.Reflection.TargetInvocationException: 调用的目标发生了异常。 ---> System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 EHECD.FirePatrolInspection.Service.InspectionRecordService.CreateInspectionRecords(Int32 iClientID, List`1 sRecordList) 位置 D:\Work\消防巡检\EHECD.FirePatrolInspection.Service\InspectionRecordService.cs:行号 362
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+   在 System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+   在 System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   在 System.Reflection.MethodBase.Invoke(Object obj, Object[] parameters)
+   在 EHECD.WebApi.ApiService.Invoke(String name, String jsondata, Object& parameters)
+
+
+【10:12:14 942】
+System.Reflection.TargetInvocationException: 调用的目标发生了异常。 ---> System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 EHECD.FirePatrolInspection.DAL.InspectionRecordDao.InsertInsRecords(List`1 sDeviceList) 位置 D:\Work\消防巡检\EHECD.FirePatrolInspection.DAL\InspectionRecordDao.cs:行号 464
+   在 EHECD.FirePatrolInspection.Service.InspectionRecordService.CreateInspectionRecords(Int32 iClientID, List`1 sRecordList) 位置 D:\Work\消防巡检\EHECD.FirePatrolInspection.Service\InspectionRecordService.cs:行号 371
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+   在 System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+   在 System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   在 System.Reflection.MethodBase.Invoke(Object obj, Object[] parameters)
+   在 EHECD.WebApi.ApiService.Invoke(String name, String jsondata, Object& parameters)

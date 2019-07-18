@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html>
+<!-- zyl -->
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+	<style>
+		/*.swiper_clickLook + .swiper_clickLook{
+            margin-left: .2rem;
+		}*/
+        .uploadimg-wrap > div+div{
+			margin-left: .2rem;
+		}
+	</style>
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<i id="backBtn" class="flex_1"></i>
+			<h1 class="flex_2 text-center">使用单位注册</h1>
+			<a class="flex_1" href="javascript:void(0);"></a>
+		</header>
+
+		<!-- 主要内容 -->
+		<div class="p_both20r main-fix">
+			<!-- 申请账号 -->
+			<div class="hgt09rem between-center border-b-eee">
+				<p class="font24r color-333">申请账号</p>
+				<input v-model="sPhone" id="tel" required alert="请输入正确的手机号码"  maxlength="11" match="tel" type="number" placeholder="请输入真实手机号码" class="placeholderccc font24r text-right flex_1">
+			</div>
+			<!-- 验证码 -->
+			<div class="hgt09rem between-center border-b-eee">
+				<p class="font24r color-333">验证码</p>
+				<input v-model="sValidate" required maxlength="6" type="text" placeholder="请输入验证码" class="flex_1 placeholderccc font24r text-right p-r-20r">
+				<img style="width: 1px; height: .24rem;" src="../img/slice/line.png" alt="">
+				<button v-on:click="getCode" id="getCode" code_for="#tel" class="color-red p-l-20r l-h-09rem">获取验证码</button>
+			</div>
+			<!-- 密码 -->
+			<div class="hgt09rem between-center border-b-eee">
+				<p class="font24r color-333">密码</p>
+				<input v-model="sPwd" required maxlength="20" match="sPwd"  alert="密码长度必须在6-20位之间" type="password" placeholder="请输入密码" class="placeholderccc font24r text-right flex_1">
+			</div>
+			<!-- 确认密码 -->
+			<div class="hgt09rem between-center border-b-eee">
+				<p class="font24r color-333">确认密码</p>
+				<input required type="password"  maxlength="20" placeholder="请确认密码" class="placeholderccc font24r text-right flex_1">
+			</div>
+			<!-- 单位名称 -->
+			<div class="hgt09rem between-center border-b-eee">
+				<p class="font24r color-333">单位名称</p>
+				<input v-model="sName" required type="text" placeholder="请填写单位名称" class="placeholderccc font24r text-right flex_1">
+			</div>
+			<!-- 单位地址 -->
+			<div class="hgt09rem between-center border-b-eee">
+				<p class="font24r color-333">单位地址</p>
+				<input v-model="sAddress" required type="text" placeholder="请填写单位地址" class="placeholderccc font24r text-right flex_1">
+			</div>
+			<!-- 平台管理员 -->
+			<div class="hgt09rem between-center border-b-eee">
+				<p class="font24r color-333">平台管理员</p>
+				<input v-model="sAdminName" required type="text" placeholder="请填写平台管理员姓名" class="placeholderccc font24r text-right flex_1">
+			</div>
+			<!-- 联系电话 -->
+			<div class="hgt09rem between-center border-b-eee">
+				<p class="font24r color-333">联系电话</p>
+				<input v-model="sContact" required match="tel2" alert="请输入正确的平台管理员电话" type="text" placeholder="请填写平台管理员联系电话" class="placeholderccc font24r text-right flex_1">
+			</div>
+			<!-- 上传图片区域 -->
+			<div class="p-b-20r">
+				<h4 class="l-h-09rem fw-b font24r">证件照&nbsp;
+					<span class="fw-n color-999">(至少一张，最多三张)</span>
+				</h4>
+                <!--上传图片-->
+                <div class="flex_dom uploadimg-wrap">
+                    <div class="relative swiper_clickLook" v-for="sImg in sGoodsImg">
+                        <img style="width: 1.37rem; height: 1.41rem;" class="block" :src="sImg" alt="">
+                        <img onclick="deletegoodsimg(this)" style="width: .3rem;top: 0;right: 0;transform: translate(50%,-50%);padding: .1rem;box-sizing: content-box;" class="abolute" src="../img/slice/icon-del.png" alt="">
+                    </div>
+                    <div v-show="sGoodsImg.length<3">
+                        <img onclick="updategoodsimg()" style="width: 1.37rem; height: 1.41rem;" src="../img/slice/upload-img.png" alt="">
+                    </div>
+                </div>
+
+			</div>
+		</div>
+
+		<!-- 底部按钮 -->
+		<footer class="btn-wrap hgt08rem bg-red center-center">
+			<button type="submit" class="color-fff font24r block wid100">提交申请</button>
+		</footer>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script type="text/javascript" src="../lib/pinchzoom.min.js"></script>
+<script type="text/javascript" src="../lib/click_lookImg.js"></script>
+<script>
+
+    // vue实例初始化
+    vue_init({
+        data: {
+            sPhone: '',
+            sValidate: '',
+            sValidate1: '',
+            sPwd: '',
+            sName: '',
+            sAddress: '',
+            sAdminName: '',
+            sContact: '',
+            iType: 0,
+            sCredentials: '',
+            sLegalPerson: '',
+            sQualifications: '',
+            sGoodsImg: [],
+        },
+        methods: {
+            getCode: function () {
+                go_ajax({
+                    url: '/router?method=sms.regcode',
+                    type: 'post',
+                    data: { sPhone: app.sPhone },
+                    success: function (res) {
+                        console.log(res)
+                        app.sValidate1 = res.data
+                    }
+                })
+            }
+        }
+    })
+
+    //上传评价图片
+    function updategoodsimg() {
+        updateimg(3 - app.sGoodsImg.length);
+    }
+
+    //上传图片完成后回调
+    function updateimgsuccess(sImg) {
+        app.sGoodsImg = app.sGoodsImg.concat(sImg.split(','));
+    }
+
+    //删除图片
+    function deletegoodsimg(btn) {
+        var i = $(".swiper_clickLook").index($(btn).parent());
+        app.sGoodsImg.splice(i, 1);
+    }
+
+	// 获取验证码倒计时
+	//$("#getCode").click(function () {
+	//	codeDownTime($("#getCode"))
+	//})
+
+	// 后退按钮
+	goBack()
+
+    // 配置表单插件
+	$(".main").form_check({
+	    /********自定义匹配规则*******/
+	    check_rule: {
+	        "tel2": /(^400[0-9]{7}|^0[0-9]{2,3}-[0-9]{8}|^[0-9]{11})|(0\d{2,3}-\d{7,8})/,
+	        "sPwd": /(^[a-zA-Z0-9]{6,20})/
+	    },
+	    /**********验证码回调，在验证码按钮上code_for="#tel"关联手机号输入框***********/
+	    codeFunc: function (tel, codeBtn) {
+	        codeDownTime(codeBtn)
+
+	    },
+	    success: function () {
+	        if (app.sGoodsImg.length == 0) {
+	            go_alert2("必须上传图片！")
+	        }
+	        else {
+	            if (app.sValidate == app.sValidate1) {
+	                go_ajax({
+	                    url: '/router?method=unit.register',
+	                    data: {
+	                        sPhone: app.sPhone,
+	                        sValidate: app.sValidate,
+	                        sPwd: app.sPwd,
+	                        sName: app.sName,
+	                        sAddress: app.sAddress,
+	                        sAdminName: app.sAdminName,
+	                        sContact: app.sContact,
+	                        iType: app.iType,
+	                        sCredentials: app.sGoodsImg.join(","),
+	                        sLegalPerson: app.sLegalPerson,
+	                        sQualifications: app.sQualifications
+	                    },
+	                    success: function (res) {
+	                        if (res.success)
+	                            go_alert({
+	                                msg: ["申请已提交，请等待后台审核", "#333"],
+	                                agree_text: ["确定", "red"],
+	                                yesFunc: function () {
+	                                    location.href = "Login.html"
+	                                },//回调函数,可以不设置，或者false
+	                            })
+	                        else
+	                            go_alert2(res.message)
+	                    }
+	                })
+	            } else {
+	                go_alert("短信验证码错误")
+	            }
+	        }
+	    },
+	    error: function () {
+	        go_alert2("请完善注册信息!")
+	    }
+
+	})
+
+    
+
+</script>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+
+</html>

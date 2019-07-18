@@ -1,0 +1,234 @@
+﻿			
+@{
+    ViewBag.Title = "点检员审核管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/backstage/js/My97DatePicker/WdatePicker.js"></script>
+<div id="datagrid_list_toolbar_client">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-redo',plain:true" onclick="Adopt()">同意</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="Refused()">拒绝</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Detail()">查看详情</a>&nbsp;&nbsp;
+    <form id="search_form_client">
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入账号/姓名'" class="easyui-textbox"/>
+        <span style="margin-left: 5px">申请时间：</span>
+        <input type="text" name="condition.dStartTime" readonly="readonly" placeholder="开始时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd HH' })" class="Wdate query-datepicker" />&nbsp;~
+        <input type="text" name="condition.dEndTime" readonly="readonly" placeholder="结束时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd HH' })" class="Wdate query-datepicker" />
+        <span style="margin-left: 5px">状态：</span>
+        <select name="condition.iAuditState" class="query-sel">
+            <option value="">全部</option>
+            <option value="0" selected>待处理</option>
+            <option value="1">已处理</option>
+            <option value="2">已拒绝</option>
+        </select>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_client"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_client').datagrid({
+            singleSelect: true, //是否单选
+            title: '点检员管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_client",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_client").serializeObject(),
+            url: '/UseDept/Client/GetAdoptGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'sPhone', title: '申请账号', width: 100
+                    },
+                    {
+						field: 'sName', title: '姓名', width: 100
+                    },
+                    {
+                        field: 'dCreateTime', title: '申请时间', width: 150
+                    },
+                    {
+                        field: 'iAuditState', title: '状态', width: 100, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            switch (value) {
+                                case 0:
+                                    return "待处理";
+                                case 1:
+                                    return "已处理";
+                                case 2:
+                                    return "已拒绝";
+                            }
+                        }
+                    },
+                    {
+                        field: 'sOperator', title: '操作人', width: 100
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDialog(rowData.iClientID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('appendRow', { sPhone: '<div style="text-align:center;color:#7f99be">暂无点检员信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sPhone', colspan: 5 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_client").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_client').datagrid('load', $("#search_form_client").serializeObject());
+        $('#datagrid_client').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_client').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无点检员!', 'warning');
+            return;
+        }
+        showDialog(rows[0].iClientID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无点检员!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看点检员详情',
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/UseDept/Client/UnAdoptDetail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_client').datagrid('clearSelections');
+    }
+
+    // 通过
+    function Adopt() {
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无点检员!', 'warning');
+            return;
+        }
+        if (rows[0].iAuditState > 0) {
+            msgShow('提示', '已审数据无法再次审核!', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定通过该申请？", function (ok) {
+            if (ok) {
+                $.post('/UseDept/Client/Adopt', { iClientDeptRelID: rows[0].ID }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+                        clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+
+    // 拒绝
+    function Refused() {
+        var rows = $('#datagrid_client').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个点检员!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无点检员!', 'warning');
+            return;
+        }
+        if (rows[0].iAuditState > 0) {
+            msgShow('提示', '已审数据无法再次审核!', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定拒绝该申请？", function (ok) {
+            if (ok) {
+                $.post('/UseDept/Client/Refused', { iClientDeptRelID: rows[0].ID }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+                        clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+</script>

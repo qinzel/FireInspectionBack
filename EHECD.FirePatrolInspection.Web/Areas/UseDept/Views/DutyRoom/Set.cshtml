@@ -1,0 +1,61 @@
+﻿				
+@{
+    ViewBag.Title = "设置值班室";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_DutyRoom
+<form id="form_dutyroom">
+    <input type="hidden" name="ID" value="@Model.ID"/>
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 80px">值班室名称：</td>
+                <td>
+					<input type="text" name="sName" value="@Model.sName" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[20]'],required:true" missingmessage="请输入值班室名称."/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script>
+
+    $(function () {
+        window.saveModel = function() {
+            if (!$("#form_dutyroom").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+            $("#save_window_okbtn_dutyroom").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/UseDept/DutyRoom/Set", //用与处理ajax的地址及函数
+                data: $("#form_dutyroom").serialize(),
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_dutyroom').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.setWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_dutyroom').linkbutton('enable');
+                }
+            });
+        }
+    });
+
+
+</script>

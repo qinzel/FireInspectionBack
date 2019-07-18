@@ -1,0 +1,293 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+	<style>
+		.img-wrap img {
+			width: 1.9rem;
+			height: 1.9rem;
+			border-radius: .05rem;
+			margin-top: calc( (100% - 1.9rem*3) / 2);
+		}
+
+		.img-wrap img:not(:nth-child(3n + 1)) {
+			margin-left: calc( (100% - 1.9rem*3) / 2);
+		}
+
+		.mod-comment + .mod-comment {
+			border-top: 1px solid #eee;
+            padding-top: .3rem
+		}
+        .mod-comment{
+            padding-bottom: .3rem;
+        }
+        .swiper-slide{
+            display: flex;
+	        display: -webkit-flex;
+  	        flex-direction: column;
+  	        -webkit-flex-direction: column;
+  	        justify-content: space-around;
+  	        -webkit-justify-content: space-around;
+        }
+	</style>
+</head>
+
+<body>
+    <div id="app" style="height:100%;">
+        <section class="main hgt_all flex_column">
+            <!-- 公共header -->
+            <header>
+                <i id="backBtn" class="flex_1"></i>
+                <h1 class="flex_1 text-center">详情</h1>
+                <p class="flex_1 color-fff font24r text-right"></p>
+            </header>
+
+            <div class="main-fix" v-cloak>
+                <!-- 帖子正文 -->
+                <div class="ctn-wrap p_both20r p-b-30r">
+                    <!-- 标题栏 -->
+                    <div class="flex_dom p-t-30r p-b-20r">
+                        <img class="m-r-10r radius_half" style="width: .71rem;height: .71rem;border-radius: 50%" :src="postDetail.sClientImageSrc ? postDetail.sClientImageSrc : '../img/slice/touxiang1.png'" alt="">
+                        <div>
+                            <p class="font24r color-333">{{ postDetail.sTitle }}</p>
+                            <p class="font22r color-999">{{ postDetail.dCreateTime }}</p>
+                        </div>
+                    </div>
+                    <!-- 姓名、评论标签 -->
+                    <div class="between-center">
+                        <span class="tag">{{ postDetail.sClientName }}</span>
+                        <div class="flex_dom flex_item_mid">
+                            <img style="width:.32rem;height: .32rem;" src="../img/slice/icon-msg.png" alt="">
+                            <span class="font22r">{{ postDetail.iReplyCount }}</span>
+                        </div>
+                    </div>
+                    <!-- 内容 -->
+                    <div>
+                        <p class="l-h-04rem m-t-15r font24r color-333">{{ postDetail.sContent }}</p>
+                    </div>
+                    <!-- 照片展示 -->
+                    <div style="flex-wrap: wrap" class="img-wrap flex_dom flex_item_mid swiper_clickLook">
+                        <img v-for="item in imgArr"  v-if="item != ''" :src="item" alt="">
+                    </div>
+                </div>
+                <!-- 精彩评论 -->
+                <p class="l-h-065rem bg-fa font24r color-000 fw-b p_both20r">精彩评论</p>
+                <!-- 评论区 -->
+                <div class="p_both20r p-v-30r">
+                        <div v-for="item in postDetail.CommentList" @click="openTab2(item.iTarClientID, item.sName)" class="mod-comment">
+                            <!-- 头像昵称时间 -->
+                            <div class="flex_dom flex_item_mid m-b-20r">
+                                <img class="radius_half m-r-10r" style="width:.71rem;height: .71rem;" :src="item.sImageSrc ? item.sImageSrc : '../img/slice/touxiang1.png'" alt="">
+                                <div class="flex_column">
+                                    <p class="font24r color-000">
+                                        <span>{{ item.sName }}</span>
+                                        <span v-if="item.sTarName" class="color-blue">回复&nbsp;</span>
+                                        <span v-if="item.sTarName">{{ item.sTarName }}</span>
+                                    </p>
+                                    <p class="font22r color-999">{{ item.dCreateTime.replace(/T/g, ' ').replace(/-/g, ".").split(" ").join(" ").split(":").slice(0,2).join(":") }}</p>
+                                </div>
+                            </div>
+                            <!-- 评论内容 -->
+                            <p class="font24r color-333 pad10r">{{ item.sContent }}</p>
+                        </div>
+                    <div style="margin-top: 20%;" class="no_data">
+                        <p>暂无评论</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 底部按钮 -->
+            <footer class="btn-wrap hgt08rem bg-red center-center">
+                <button @click="submitComment1" class="color-fff font24r block wid100">评论</button>
+            </footer>
+        </section>
+
+        
+        <!--回复弹出框-->
+        <div id="commentDiv" style="height: 100%;background-color: rgba(0,0,0,.3);height:100%;width: 100%;display:none;position: absolute; top: 0; left: 0; z-index: 9;">
+            <div onclick="closeTab()" style="height: calc(100% - 3.8rem);width: 100%;"></div>
+            <div class="pad20r font22r" style="position: absolute; bottom: .8rem; width: 100%; height: 3rem; background-color:#FFF;">
+                <textarea v-model="sContent" class="font22r l-h-04rem" style="width: 100%;min-height: 2.5rem;" placeholder="请输入评论内容"></textarea>
+            </div>
+            <footer onclick="submit()" style="position:absolute;bottom:0;" class="btn-wrap hgt08rem bg-red center-center wid100">
+                <button id="confirmSubmit" class="color-fff font24r block wid100">确认发布</button>
+            </footer>
+        </div>
+        <!--回复弹出框-->
+        <div id="commentDiv2" style="height: 100%;background-color: rgba(0,0,0,.3);height:100%;width: 100%;display:none;position: absolute; top: 0; left: 0; z-index: 9;">
+            <div onclick="closeTab2()" style="height: calc(100% - 3.8rem);width: 100%;"></div>
+            <div class="pad20r font22r" style="position: absolute; bottom: .8rem; width: 100%; height: 3rem; background-color:#FFF;">
+                <textarea v-model="sContent2" class="font22r l-h-04rem" style="width: 100%;min-height: 2.5rem;" placeholder="请输入评论内容"></textarea>
+            </div>
+            <footer @click="submit2()" style="position:absolute;bottom:0;" class="btn-wrap hgt08rem bg-red center-center wid100">
+                <button id="confirmSubmit" class="color-fff font24r block wid100">确认发布</button>
+            </footer>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script type="text/javascript" src="../lib/pinchzoom.min.js"></script>
+<script type="text/javascript" src="../lib/click_lookImg.js"></script>
+<script>
+    getUserInfo();
+    var iTieziID = location.search.substring(1)
+    var iClientID = JSON.parse(localStorage.iClient).ID
+    var sName = JSON.parse(localStorage.iClient).sName
+    var sImageSrc = JSON.parse(localStorage.iClient).sImageSrc
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            iType: JSON.parse(localStorage.iClient).iType,
+            postDetail: {},
+            sContent: "",
+            sContent2: "",
+            sTarName: "",
+            imgArr: []
+        },
+        mounted: function () {
+            
+            go_ajax({
+                url: '/router?method=tl.get',
+                data: {
+                    iTieziID
+                },
+                success: function (res) {
+                    tTime(res)
+                    // 把图片转为数组
+                    app.postDetail = res.data
+                    app.sContent = ""
+                    app.imgArr = app.postDetail.sImageSrc.split(",")
+                }
+            })
+        },
+        methods: {
+            // 发表评论（对发帖人）
+            submitComment1() {
+                $("#commentDiv").show()
+                $("#commentDiv").val("")
+                app.sTarName = ""
+            },
+            openTab2(iTarClientID, sTarName) {
+                $("#commentDiv2").show()
+                $("#commentDiv2").val("")
+                app.iTarClientID = iTarClientID
+                app.sTarName = sTarName
+            },
+            submit2() {
+                $("#commentDiv2").hide()
+                go_ajax({
+                    url: "/router?method=cmt.add",
+                    data: {
+                        iTieziID,
+                        iClientID,
+                        sName,
+                        sImageSrc,
+                        sContent: app.sContent2,
+                        iTarClientID: app.iTarClientID,
+                        sTarName: app.sTarName
+                    }
+                    ,
+                        success: function (res) {
+                            if (res.message == "评论成功") {
+                                go_alert2("评论成功")
+                                app.sContent2 = ""
+                                go_ajax({
+                                    url: "/router?method=tl.get",
+                                    data: {
+                                        iTieziID,
+                                        },
+                                    success: function (res) {
+                                        tTime(res)
+                                                app.postDetail = res.data
+                                            }
+                                })
+                            } else {
+                                go_alert2(res.message)
+                            }
+                        }
+                })
+            }
+        },
+        
+    })
+    
+    function tTime(res) {
+        // 把时间的T去掉
+        res.data.dCreateTime = res.data.dCreateTime.replace(/T/g, ' ').replace(/-/g, ".").split(" ")
+        res.data.dCreateTime[1] = res.data.dCreateTime[1].split(":").slice(0, 2).join(":")
+        res.data.dCreateTime = res.data.dCreateTime.join(" ")
+    }
+
+    // 后退按钮
+    goBack()
+
+    // 关闭评论弹出框
+    function closeTab(){
+        $("#commentDiv").hide()
+    }
+    function closeTab2() {
+        $("#commentDiv2").hide()
+    }
+
+    // 提交评论
+    function submit() {
+        $("#commentDiv").hide()
+        go_ajax({
+            url: "/router?method=cmt.add",
+            data: {
+                iTieziID,
+                iClientID,
+                sName,
+                sImageSrc,
+                sContent: app.sContent
+            },
+            success: function (res) {
+                if (res.message == "评论成功") {
+                    app.sContent = ""
+                    go_alert2("评论成功")
+                    go_ajax({
+                        url: "/router?method=tl.get",
+                        data: {
+                            iTieziID,
+                            },
+                        success: function (res) {
+                            tTime(res)
+                            app.postDetail = res.data
+                        }
+                    })
+                } else {
+                    go_alert2(res.message)
+                }
+            }
+        })
+    }
+
+</script>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+
+</html>

@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string sDisplay = "display:none;";
+    if (Model.iUserType == 0 || Model.iUserType == TConvert.toInt(UserType.Admin))
+    {
+        sDisplay = "";
+    }
+}
+@using EHECD.Common
+@using EHECD.EntityFramework.EFWork;
+@model EHECD_UnitUser
+
+<form id="edit_window_form_user">
+    <div>
+        <input name="ID" type="hidden" value="@Model.ID"/>
+        <table class="gridtable">
+            <tr>
+                <td>用户名：
+                </td>
+                <td>
+                    <input type="text" value="@Model.sLoginName" name="sLoginName" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:['checkHtml','maxLength[20]']" missingmessage="请输入用户名." />
+                </td>
+            </tr>
+            <tr>
+                <td>真实姓名：</td>
+                <td>
+                    <input type="text" value="@Model.sRealName" name="sRealName" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:['checkHtml','maxLength[20]']" missingmessage="请输入真实姓名." /></td>
+            </tr>
+            <tr id="roletr" style="@sDisplay">
+                <td>角色：</td>
+                <td>@Html.DropDownList("iUnitRoleID", ViewBag.rolelist as IEnumerable<SelectListItem>, new { @class = "easyui-combobox", editable = "false", panelHeight = "auto", style="width: 100px;" })</td>
+            </tr>
+          
+            <tr id="user_edit_last_tr" style="display:none;">
+                <td colspan="2" style="color:red;text-align:center;">新增操作员默认密码123456</td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script type="text/javascript">
+    $("#iUserType").combobox({
+        onChange: function (newValue, oldValue) {
+            usertypechange(newValue, oldValue);
+        }
+    });
+
+    function usertypechange(newValue, oldValue) {
+        if (newValue == 2) {
+            $("#roletr").hide();
+        } else { $("#roletr").show(); }
+    }
+
+    var id = $("input[name=ID]").val();
+    var posturl = "/RepairDept/UnitUser/InsertModel";
+    if (id && id != "0") { //编辑
+        posturl = "/RepairDept/UnitUser/UpdateModel";
+    } else {
+        $("#user_edit_last_tr").show();
+    }
+
+
+    ehecd.user.saveModel = function () {
+        if (!$("#edit_window_form_user").form('validate')) {
+            return;
+        }
+        $('#edit_window_okbtn_user').linkbutton('disable');
+        $.ajax({
+            type: "POST",
+            url: posturl, //用与处理ajax的地址及函数
+            data: $("#edit_window_form_user").serialize(),
+            dataType: "json",
+            success: function (res) {
+                $('#edit_window_okbtn_user').linkbutton('enable');
+                if (res.success) {
+                    msgShow('提示', res.message, 'info');
+                    ehecd.user.closeEditWindow();//关闭新建窗口
+                    ehecd.user.datagridReload();//列表重新加载数据
+                }
+                else {
+                    msgShow('提示', res.message, 'warning');
+                }
+            },
+            error: function (xhr, msg, e) {
+                msgShow('提示', '操作出错了!', 'warning');
+                $('#edit_window_okbtn_user').linkbutton('enable');
+            }
+        });
+    }
+
+</script>

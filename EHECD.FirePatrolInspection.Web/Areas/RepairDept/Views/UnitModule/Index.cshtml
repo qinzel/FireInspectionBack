@@ -1,0 +1,174 @@
+﻿@{
+    ViewBag.Title = "模块管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $('#List').datagrid({
+            url: '/RepairDept/UnitModule/List',
+            idField: "ID",
+            striped: true,
+            pagination: true,
+            fit: true, //自动大小 
+            pageList: [20, 40, 50],
+            pageSize: 20,
+            toolbar: "#Toolbar",
+            loadMsg: "正在加载...",
+            columns: [
+                [
+                    { field: '', checkbox: true, },
+                    { field: 'ID', title: '模块名', align: 'center', width: 100 },
+                    { field: 'sModuleName', title: '模块地址', align: 'center', width: 200 },
+                    { field: 'iOrderID', title: '排序编号', align: 'center', width: 200 },
+                    { field: 'dInsertTime', title: '添加时间', align: 'center', width: 200 }
+                ]
+            ],
+            onDblClickRow: onRowDbClick
+        });
+
+        $("#searchForm input").keydown(function (e) { //回车搜索
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                Search();
+                return;
+            }
+        });
+    });
+
+
+    function Search() {
+        //var search = $("#searchForm").serializeArray();
+        var param = $("#searchForm").serializeObject();
+        $('#List').datagrid('load', param);
+        $('#List').datagrid('clearSelections');
+    }
+
+    //打开新增窗口
+    function openAdd() {
+        $('#addGoods').dialog({
+            title: '新增模块',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 550,
+            closed: false,
+            cache: false,
+            href: '/RepairDept/UnitModule/Create',
+            modal: true,
+            buttons: [{
+                text: '确定',
+                iconCls: 'icon-ok',
+                id: 'addBtn',
+                handler: function (e) { if (typeof (eval(addGoods)) == "function") { addGoods(); } else { $('#addGoods').dialog('close'); } }
+            }]
+        });
+    }
+
+    //打开编辑窗口
+    function openEdit() {
+        var selected = $("#List").datagrid('getSelections');
+        if (selected.length != 1) {
+            msgShow('系统提示', '请选择一条数据', 'warning');
+            return;
+        }
+        var id = selected[0].ID;
+        showEditDialog(id);
+    }
+
+    //双击行事件
+    function onRowDbClick(index, row) {
+        var id = row.ID;
+        showEditDialog(id);
+    }
+
+    //打开编辑页面
+    function showEditDialog(id) {
+        $('#editGoods').dialog({
+            title: '编辑模块',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 550,
+            closed: false,
+            cache: false,
+            href: '/RepairDept/UnitModule/Edit?id=' + id,
+            modal: true,
+            buttons: [{
+                text: '确定',
+                iconCls: 'icon-ok',
+                id: 'editBtn',
+                handler: function (e) {
+                    if (typeof (eval(editGoods)) == "function") {
+                        editGoods();
+                    } else {
+                         $('#editGoods').dialog('close');
+                    }
+                }
+            }]
+        });
+    }
+
+    //删除
+    function del() {
+        var selected = $("#List").datagrid('getSelections');
+        if (selected.length < 1) {
+            msgShow('系统提示', '请至少选择一条数据', 'warning');
+            return;
+        }
+        var ids = '';
+        $(selected).each(function () {
+            ids += this.ID + ",";
+        });
+        $.messager.confirm('系统提示', '确定删除?', function (r) {
+            if (r) {
+                $('#delBtn').linkbutton('enable');
+                $.ajax({
+                    type: "POST",
+                    url: "/RepairDept/UnitModule/Delete?ids=" + ids, //用与处理ajax的地址及函数
+                    data: '',
+                    dataType: "json",
+                    success: function (result) {
+                        $('#delBtn').linkbutton('enable');
+                        if (result.success) {
+                            msgShow('系统提示', result.message, 'info');
+                            Search();
+                        }
+                        else {
+                            msgShow('系统提示', result.message, 'warning');
+                        }
+                    },
+                    error: function (xhr, msg, e) {
+                        msgShow('系统提示', '删除出错', 'warning');
+                        $('#delBtn').linkbutton('enable');
+                    }
+                });
+            }
+        });
+    }
+
+
+
+</script>
+
+<div id="Toolbar">
+    <form id="searchForm">
+        <table style="margin: 0px; padding: 0px; border-collapse: collapse; border: 0px solid #ccc;">
+            <tr>
+                <td>
+                    <span>模块类别:</span>
+                    @Html.DropDownList("sPID", ViewBag.rolelist as IEnumerable<SelectListItem>, new { @class = "easyui-combobox", @style= "width: 100px", editable = "false" })
+                    <span style="margin-left: 5px">模块名称:</span>
+                    <input name="sModuleName" type="text" class="easyui-textbox"/>
+                    <a href="#" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-search',plain:true" onclick="Search();">查询</a>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <a href="#" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-add',plain:true" onclick="openAdd()">新增</a>
+    <a href="#" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-edit',plain:true" onclick="openEdit()">编辑</a>
+    <a href="#" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-remove',plain:true" id="delBtn" onclick="del()">删除</a>
+    <div id="addGoods"></div>
+    <div id="editGoods"></div>
+</div>
+<table id="List"></table>
+
+

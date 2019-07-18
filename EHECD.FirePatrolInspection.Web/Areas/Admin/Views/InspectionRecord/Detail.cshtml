@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "查看巡检记录详情";
+}
+
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_InspectionRecord
+
+<table class="gridtable">
+	@if (Model.DetailList != null && Model.DetailList.Count > 0)
+    {
+        foreach (var detail in Model.DetailList)
+        {
+            <tr>
+                <td style="min-width: 90px; max-width: 260px">@detail.sName：</td>
+                <td>
+                    @if (detail.iStatus)
+                    {
+                        <span style="color: red">异常</span>
+                    }
+                    else
+                    {
+                        <span style="color: cornflowerblue">正常</span>
+                    }
+                </td>
+            </tr>
+        }
+    }
+	<tr>
+        <td style="width: 90px">异常情况描述：</td>
+        <td>
+			@Model.sDesc
+		</td>
+    </tr>
+</table>

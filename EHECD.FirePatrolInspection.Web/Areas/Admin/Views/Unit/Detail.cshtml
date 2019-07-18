@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "查看包含消防部门、使用单位和维护公司超管账号注册详情";
+}
+
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Unit
+
+<table class="gridtable">
+	<tr>
+        <td style="width: 90px">账号：</td>
+        <td>
+			@Model.sPhone
+		</td>
+        <td style="width: 90px">单位名称：</td>
+        <td>
+			@Model.sName
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 90px">单位地址：</td>
+        <td colspan="3">
+			@Model.sAddress
+		</td>
+    </tr>
+    <tr>
+        <td style="width: 90px">平台管理员：</td>
+        <td>
+            @Model.sAdminName
+        </td>
+        <td style="width: 90px">联系电话：</td>
+        <td>
+            @Model.sContact
+        </td>
+    </tr>
+	@if (Model.iType == 2)
+    {
+        <tr>
+            <td style="width: 90px">法人：</td>
+            <td>
+                @Model.sLegalPerson
+            </td>
+            <td style="width: 90px">资质：</td>
+            <td>
+                @Model.sQualifications
+            </td>
+        </tr>
+    }
+    @if (Model.iType == 0)
+    {
+        <tr>
+            <td style="width: 90px">所属消防部门：</td>
+            <td colspan="3">
+                @(Model.sParentName.Length > 0 ? Model.sParentName : "-")
+            </td>
+        </tr>
+    }
+    <tr>
+        <td style="width: 90px">@(Model.iType == 0 ? "关联维护公司" : "关联使用单位")：</td>
+        <td colspan="3">
+            @if (Model.UnitList != null && Model.UnitList.Count > 0)
+            {
+                foreach (EHECD_Unit u in Model.UnitList)
+                {
+                    if (u.iType == 2)
+                    {
+                        <p>@(u.sName)</p>
+                    }
+                    else
+                    {
+                        <p>@(u.sName)（@(u.iDeviceCount)台设备）</p>
+                    }
+                }
+            }
+            else
+            {
+                <span>-</span>
+            }
+        </td>
+    </tr>
+	<tr>
+        <td style="width: 90px">@(Model.iType == 2 ? "营业执照" : "证件照")：</td>
+        <td colspan="3">
+            @if (Model.sCredentials.Length > 0)
+            {
+                var imagesSrc = Model.sCredentials.Split(',');
+                for (var i = 0; i < imagesSrc.Length; i++)
+                {
+                    <img src="@imagesSrc[i]" onclick="test('@imagesSrc[i]');" style="width: 300px" />
+                }
+            }
+            else
+            {
+                <span>-</span>
+            }
+		</td>
+    </tr>
+</table>
+<div id="win" class="easyui-window" title="查看大图" closed="true" style="width: 100%; height: 100%"
+     data-options="iconCls:'icon-save',modal:true,collapsible:false,minimizable:false,maximizable:false,maximized:true">
+    <div style="display: block; width: 100%; height: 100%; text-align: center">
+        <img src="" style="height: 100%; display: block" />
+    </div>
+</div>
+
+<script>
+    function test(src) {
+        $("#win img").attr("src", src);
+        $("#win").window('open');
+    }
+</script>

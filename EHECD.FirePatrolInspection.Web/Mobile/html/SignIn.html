@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<i class="flex_1"></i>
+			<h1 class="flex_1 text-center">签到</h1>
+			<p class="flex_1 color-fff font24r text-right"></p>
+		</header>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script>
+    getUserInfo();
+        go_confirm({
+            msg: ["是否确认签到？", "#000"],
+            agree_text: ["是", "#000"],
+            cancel_text: ["否", "red"],
+            tag_set: {
+                title_tag: "",
+                agree_tag: "",
+                cancel_tag: ""
+            },
+            yesFunc: function () {
+                go_ajax({
+                    url: "/router?method=dutyrec.add",
+                    data: {
+                        iClientID: JSON.parse(localStorage.iClient).ID,
+                        iDutyRoomID: parseInt(location.search.substring(1))
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            go_alert2("已签到")
+                            setTimeout(function () {
+                                back() // 跳转到扫一扫
+                            }, 2000)
+                        } else {
+                            go_alert2(res.message)
+                            setTimeout(function () {
+                                back() // 跳转到扫一扫
+                            }, 2000)
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        go_alert2(res + "," + status + "," + error)
+                    }
+                })
+            },//回调函数,可以不设置，或者false
+            noFunc: function () {
+                back() // 跳转到扫一扫
+            }//回调函数,可以不设置，或者false
+        })
+    
+
+	    goBack()
+
+</script>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+
+</html>

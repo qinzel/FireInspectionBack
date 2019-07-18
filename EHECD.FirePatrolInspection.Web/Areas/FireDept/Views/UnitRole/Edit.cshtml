@@ -1,0 +1,163 @@
+﻿@{
+    ViewBag.Title = "编辑角色";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using EHECD.EntityFramework.EFWork;
+@model EHECD_UnitRole
+<style>
+    .gridtable2 tr td {
+        border-width: 1px;
+        padding: 5px;
+        background-color: #FBFBFB;
+    }
+</style>
+<form id="editForm">
+    <div class="gridtable2">
+        <table class="gridtable">
+            <tr>
+                <td style="width:15%">角色名：</td>
+                <td>
+                    <input type="text" name="sRoleName" value="@Model.sRoleName" class="easyui-textbox easyui-validatebox" data-options="required:true" missingmessage="请输入角色名." />
+                </td>
+            </tr>
+            <tr>
+                <td style="width:15%">备注：</td>
+                <td>
+                    <input type="text" name="sDescription" value="@Model.sDescription" style="height: 80px; width: 350px" class="easyui-textbox" data-options="multiline:true,validType:['checkHtml', 'maxLength[100]']" />
+                </td>
+            </tr>
+        </table>
+
+        <div class="easyui-tabs">
+            @{
+                List<EHECD_UnitModule> ModuleList = ViewBag.ModuleList;//所有模块
+                List<EHECD_UnitModuleAction> ModuleActionList = ViewBag.ModuleActionList;//所有模块权限
+                List<EHECD_UnitModule> ParentModuleList = ModuleList.Where(m => m.iPID == 0).ToList();//大模块
+                List<EHECD_UnitRoleAction> RoleActionList = ViewBag.RoleActionList;//角色权限
+                foreach (var ParentModule in ParentModuleList)
+                {
+                    List<EHECD_UnitModule> ChildModuleList = ModuleList.Where(m => m.iPID == ParentModule.ID).ToList();//当前大模块的子模块
+                    <div title="@ParentModule.sModuleName">
+                        <table class="gridtable">
+                            @foreach (var ChildModule in ChildModuleList)
+                            {
+                                <tr>
+                                    <td style="width: 130px;">
+                                        <label>
+                                            <input type="checkbox" name="parentModule" />@ChildModule.sModuleName
+                                        </label>
+                                    </td>
+                                    @if (ChildModule.bIsLink)
+                                    {
+                                        List<EHECD_UnitModuleAction> ChildModuleActionList = ModuleActionList.Where(m => m.iModuleID == ChildModule.ID).ToList(); //当前子模块的模块权限
+                                        <td>
+                                            @foreach (var ChildModuleAction in ChildModuleActionList)
+                                            {
+                                                if (RoleActionList.Count(m => m.iActionID == ChildModuleAction.ID) > 0)
+                                                {<label style="margin-right: 10px">
+                                    <input type="checkbox" name="Action" checked="checked" value="@(ChildModule.ID)_@(ChildModuleAction.ID)" />@ChildModuleAction.sActionName
+                                </label>
+                                                }
+                                                else
+                                                {<label style="margin-right: 10px">
+                                    <input type="checkbox" name="Action" value="@(ChildModule.ID)_@(ChildModuleAction.ID)" />@ChildModuleAction.sActionName
+                                </label>
+                                                }
+                                            }
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        List<EHECD_UnitModule> ThirdModuleList = ModuleList.Where(m => m.iPID == ChildModule.ID).ToList();//三级子模块
+                                        <td>
+                                            <table class="gridtable">
+                                                @foreach (EHECD_UnitModule ThirdModule in ThirdModuleList)
+                                                {
+                                                    List<EHECD_UnitModuleAction> ThirdModuleActionList = ModuleActionList.Where(m => m.iModuleID == ThirdModule.ID).ToList(); //当前子模块的模块权限
+                                                    <tr>
+                                                        <td style="width: 130px;">
+                                                            <label>
+                                                                <input type="checkbox" name="parentModule" />@ThirdModule.sModuleName
+                                                            </label>
+                                                        </td>
+                                                        <td>
+                                                            @foreach (var ThirdModuleAction in ThirdModuleActionList)
+                                                            {
+                                                                if (RoleActionList.Count(m => m.iActionID == ThirdModuleAction.ID) > 0)
+                                                                {<label style="margin-right: 10px">
+                                                            <input type="checkbox" name="Action" checked="checked" value="@(ThirdModule.ID)_@(ThirdModuleAction.ID)" />@ThirdModuleAction.sActionName
+                                                        </label>
+                                                                }
+                                                                else
+                                                                {<label style="margin-right: 10px">
+                                                            <input type="checkbox" name="Action" value="@(ThirdModule.ID)_@(ThirdModuleAction.ID)" />@ThirdModuleAction.sActionName
+                                                        </label>
+                                                                }
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                }
+            }
+        </div>
+
+    </div>
+</form>
+
+<script type="text/javascript">
+    function editRole() {
+        if (!$("#editForm").form('validate')) {
+            return;
+        }
+        $('#editBtn').linkbutton('disable');
+        $.ajax({
+            type: "POST",
+            url: "/FireDept/UnitRole/Edit?id=@Model.ID", //用与处理ajax的地址及函数
+            data: $("#editForm").formSerialize(),
+            dataType: "json",
+            success: function (result) {
+                $('#editBtn').linkbutton('enable');
+                if (result.success) {
+                    msgShow('系统提示', result.message, 'info');
+                    $("#editRole").dialog("close");
+                    Search();
+                }
+                else {
+                    msgShow('系统提示', result.message, 'warning');
+                }
+            },
+            error: function (xhr, msg, e) {
+                msgShow('系统提示', '编辑角色出错', 'warning');
+                $('#editBtn').linkbutton('enable');
+            }
+        });
+    }
+
+    //全选、反选
+    $("input[name=parentModule]").change(function (e) {
+        if ($(e.target).is(":checked")) {
+            $(e.target).parents("td").next().find("input").prop("checked", true);
+        }
+        else {
+            $(e.target).parents("td").next().find("input").prop("checked", false);
+        }
+    });
+
+    $("input[name=Action]").change(function (e) {//当点击除了浏览选项外选项就默认选中浏览
+        if ($(e.target).parents("td").find("input:checked").length > 0) {
+            $(e.target).parents("td").find("label").each(function () {
+                if ($(this).text().trim() == "浏览") {
+                    $(this).find("input").prop("checked", true);
+                    return false;
+                }
+            });
+        }
+    });
+</script>

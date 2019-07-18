@@ -1,0 +1,205 @@
+﻿@{
+    ViewBag.Title = "设备管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="datagrid_list_toolbar_client_device">
+    <form id="search_form_client_device">
+        <input type="hidden" name="condition.iClientID" value="@ViewBag.iClientID" />
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入设备编号/名称'" class="easyui-textbox" />
+        <span style="margin-left: 5px">设备类型：</span>
+        @Html.DropDownList("condition.iDeviceTypeID", ViewBag.typelist as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iDeviceTypeID" })
+        <span style="margin-left: 5px">设备状态：</span>
+        <select name="condition.iAbnormalStatus" class="query-sel">
+            <option value="">全部</option>
+            <option value="0">正常</option>
+            <option value="1">异常</option>
+        </select>
+        <span style="margin-left: 5px">所属使用单位：</span>
+        @Html.DropDownList("condition.iUseDeptID", ViewBag.unitList as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iUseDeptID" })
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_client_device"></table>
+<script type="text/javascript">
+    $(function () {
+        $('#tt').tree({
+            url: '/RepairDept/Device/GetUseDeptListString',
+            onClick: function (node) {
+                $("#useDeptID").val(node.id == 0 ? "" : node.id);
+                datagridReload();
+            },
+            onLoadSuccess: function (node, data) {
+                if (data.length > 0) {
+                    //找到第一个元素
+                    var n = $('#tt').tree('find', data[0].children[0].id);
+                    //调用选中事件
+                    $('#tt').tree('select', n.target);
+                }
+            }
+        });
+
+        window.datagrid = $('#datagrid_client_device').datagrid({
+            singleSelect: true, //是否单选
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_client_device",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_client_device").serializeObject(),
+            url: '/RepairDept/Device/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'sNumber', title: '设备编号', width: 100
+                    },
+                    {
+                        field: 'sName', title: '设备名称', width: 100
+                    },
+                    {
+                        field: 'sDeviceTypeName', title: '设备类型', width: 90
+                    },
+                    {
+                        field: 'iAbnormalStatus', title: '设备状态', width: 60, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (value) {
+                                return "<span style=\"color: red\">异常</span>";
+                            }
+                            return "<span style=\"color: cornflowerblue\">正常</span>";
+                        }
+                    },
+                    {
+                        field: 'sLocation', title: '设备位置', width: 100
+                    },
+                    {
+                        field: 'sInstallDate', title: '安装日期', width: 90
+                    },
+                    {
+                        field: 'sProductionDate', title: '生产日期', width: 90
+                    },
+                    {
+                        field: 'iExpiredYears', title: '过期日期', width: 90, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            var prcDate = row["sProductionDate"];
+                            if (prcDate.length) {
+                                var date = new Date(prcDate);
+                                date.setFullYear(date.getFullYear() + value);
+                                var year = date.getFullYear();
+                                var month = date.getMonth() + 1;
+                                var day = date.getDate();
+                                return year + "-" + (month > 9 ? month : "0" + month) + "-" + (day > 9 ? day : "0" + day);
+                            }
+                        }
+                    },
+                    {
+                        field: 'iForciblyScrappedYears', title: '强制报废日期', width: 90, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            var prcDate = row["sProductionDate"];
+                            if (prcDate.length) {
+                                var date = new Date(prcDate);
+                                date.setFullYear(date.getFullYear() + value);
+                                var year = date.getFullYear();
+                                var month = date.getMonth() + 1;
+                                var day = date.getDate();
+                                return year + "-" + (month > 9 ? month : "0" + month) + "-" + (day > 9 ? day : "0" + day);
+                            }
+                        }
+                    },
+                    {
+                        field: 'sUnitName', title: '所属使用单位', width: 100
+                    },
+                    {
+                        field: 'sClientName', title: '责任人', width: 80
+                    },
+                    {
+                        field: 'sOrganName', title: '所属部门', width: 100
+                    },
+                    {
+                        field: 'dCreateTime', title: '操作', width: 100, align: 'center', formatter: function (value, row, index) {
+                            var btn = "<a class=\"easyui-linkbutton l-btn l-btn-small l-btn-plain\" data-options=\"iconCls:'icon-detail',plain:true\" onclick=\"showDeviceDetailDialog(" + row.ID + ")\">" +
+	                                      "<span class=\"l-btn-left l-btn-icon-left\">" +
+		                                      "<span class=\"l-btn-text\">查看详情</span>" +
+		                                      "<span class=\"l-btn-icon icon-detail\">&nbsp;</span>" +
+	                                      "</span>" +
+                                      "</a>";
+                            return btn;
+                        }, styler: function (value, row, index) {
+                            return 'cursor: pointer;';
+                        }
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDeviceDetailDialog(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('appendRow', { sNumber: '<div style="text-align:center;color:#7f99be">暂无设备信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sNumber', colspan: 13 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_client_device").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_client_device').datagrid('load', $("#search_form_client_device").serializeObject());
+        $('#datagrid_client_device').datagrid('clearSelections');
+    };
+
+    //打开详情页面
+    function showDeviceDetailDialog(id) {
+        if (id == undefined) {
+            msgShow('提示', '暂无设备!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看设备详情',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/RepairDept/Device/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_client_device').datagrid('clearSelections');
+    }
+</script>

@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "文章管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="datagrid_list_toolbar_article">
+    <form id="search_form_article">
+        <input type="hidden" name="condition.iType" value="@ViewBag.iType" />
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sName" type="text" data-options="prompt:'请输入标题关键字'" class="easyui-textbox"/>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_article"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_article').datagrid({
+            //checkbox: true,
+            singleSelect: true, //是否单选
+            title: '文章管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_article",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_article").serializeObject(),
+            url: '/Admin/Article/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+                        field: 'sTitle', title: '标题', width: 300, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            return value.length > 20 ? value.substr(0, 20) + '...' : value;
+                        }
+                    },
+                    {
+                        field: 'sSortNumber', title: '排序序号', width: 100
+                    },
+                    {
+                        field: 'iType', title: '文章类别', width: 100, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            switch (value) {
+                                case 0:
+                                    return "法律知识";
+                                case 1:
+                                    return "消防知识";
+                                case 2:
+                                    return "资讯";
+                                case 3:
+                                    return "帮助";
+                                case 4:
+                                    return "关于我们";
+                            }
+                        }
+                    },
+                    {
+						field: 'dCreateTime', title: '创建时间', width: 150
+                    }
+                ]
+			],
+            onClickRow:function(index, row){
+                articleID = row.ID;
+                window.articleListWindow.dialog('close');
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('appendRow', { sTitle: '<div style="text-align:center;color:#7f99be">暂无文章信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sTitle', colspan: 4 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_article").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_article').datagrid('load', $("#search_form_article").serializeObject());
+        $('#datagrid_article').datagrid('clearSelections');
+
+    };
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_article').datagrid('clearSelections');
+    }
+</script>

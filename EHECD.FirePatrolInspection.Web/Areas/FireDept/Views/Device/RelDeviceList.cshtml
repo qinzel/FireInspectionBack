@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "设备管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<input type="hidden" id="sDeviceIDs" value="@ViewBag.sDeviceIDs" />
+<div id="datagrid_list_toolbar_device_rel_list">
+    <form id="search_form_device_rel_list">
+        <input type="hidden" name="condition.iCurrentDeviceID" value="@ViewBag.currentID" />
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sSubKeyword" type="text" data-options="prompt:'请输入设备编号/名称'" class="easyui-textbox" />
+        <span style="margin-left: 5px">设备类型：</span>
+        @Html.DropDownList("condition.iSubDeviceTypeID", ViewBag.typelist as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iSubDeviceTypeID" })
+        <span style="margin-left: 5px">所属使用单位：</span>
+        @Html.DropDownList("condition.iSubUseDeptID", ViewBag.unitlist as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iSubUseDeptID" })
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="relDatagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_device_rel_list"></table>
+<script type="text/javascript">
+    $(function () {
+        window.datagrid = $('#datagrid_device_rel_list').datagrid({
+            checkbox: true,
+            // singleSelect: true, //是否单选
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_device_rel_list",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_device_rel_list").serializeObject(),
+            url: '/FireDept/Device/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'ID', checkbox: true 
+                    },
+                    {
+						field: 'sNumber', title: '设备编号', width: 150
+                    },
+                    {
+                        field: 'sName', title: '设备名称', width: 150
+                    },
+                    {
+                        field: 'sDeviceTypeName', title: '设备类型', width: 100
+                    },
+                    
+                    {
+                        field: 'sUnitName', title: '所属使用单位', width: 200
+                    }
+                ]
+			],
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('hideColumn', 'ID');
+                    $(this).datagrid('appendRow', { sNumber: '<div style="text-align:center;color:#7f99be">暂无设备信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sNumber', colspan: 4 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).datagrid('showColumn', 'ID');
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+                //获取需要选中的记录ID
+                var ids = $("#sDeviceIDs").val().split(',');
+                //获取数据列表中的所有数据
+                var rows = $(this).datagrid("getRows");
+                //循环数据找出列表中ID和需要选中数据的ID相等的数据并选中
+                for (var i = 0; i < rows.length; i++) {
+                    var rowId = rows[i].ID;
+                    for (var j = 0; j < ids.length; j++) {
+                        if (rowId == parseInt(ids[j])) {
+                            var index = $(this).datagrid("getRowIndex", rows[i])
+                            $(this).datagrid("checkRow", index);
+                        }
+                    }
+                }
+            }
+        });
+
+        $("#search_form_device_rel_list").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                relDatagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function relDatagridReload() {
+        $('#datagrid_device_rel_list').datagrid('load', $("#search_form_device_rel_list").serializeObject());
+        $('#datagrid_device_rel_list').datagrid('clearSelections');
+
+    };
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_device_rel_list').datagrid('clearSelections');
+    }
+</script>

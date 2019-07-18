@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Title = "设置维护公司";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Device
+<form id="form_device_rapair_change">
+    <input type="hidden" id="sIds" value="@ViewBag.sIds" />
+    <div>
+        <table class="gridtable">
+            <tr>
+                <td style="width: 80px">维护公司：</td>
+                <td>
+                    @Html.DropDownList("iRepairDeptID", ViewBag.repairlist as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "iRepairDeptID" })
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script>
+    $(function () {
+        window.saveModel = function () {
+            if (!$("select[name=iRepairDeptID]").val().length) {
+                msgShow('提示', '请选择维护公司!', 'warning');
+                return;
+            }
+
+            $("#save_window_okbtn_device_rapair_change").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/UseDept/Device/ChangeRepair", //用与处理ajax的地址及函数
+                data: {
+                    sIds: $(".panel.window #sIds").val(),
+                    iRepairDeptID: parseInt($(".panel.window #iRepairDeptID").val())
+                },
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_device_rapair_change').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.changeRepairWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_device_rapair_change').linkbutton('enable');
+                }
+            });
+        }
+    });
+</script>

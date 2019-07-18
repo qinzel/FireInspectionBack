@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>设备详情</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/global.css">
+		<link rel="stylesheet" type="text/css" href="../css/zyl.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/myh.css"/>
+	</head>
+
+	<body>
+		<section class="main hgt_all flex_column">
+			<header>
+				<i id="backBtn" class="flex_1"></i>
+				<h1 class="flex_1 text-center">设备详情</h1>
+				<p class="flex_1 color-fff  font24r text-right"></p>
+			</header>
+			<div class="routing_inspection flex_1 bg-fa overflow_auto" v-cloak>
+				<!--<p class="alert_text text-center l-h-06rem color-999">请登陆后开始点检</p>-->
+				<div class="inspection_item bg-fff child_borderLine_top border-t-eee borderColor-eee">
+					<div class="setting pad20r">
+						<div class="relative_con bg-fa pad20r font24r">
+							<p class="flex_dom font-w6"><b>设备类型:</b><span class="flex_1 m-l-10r" v-cloak>{{Info.sDeviceTypeName}}</span></p>
+							<p class="flex_dom m-t-10r color-333"><b>设备编号:</b><span class="flex_1 m-l-10r" v-cloak>{{Info.sNumber}}</span></p>
+                            <p class="flex_dom m-t-10r color-333"><b>设备型号:</b><span class="flex_1 m-l-10r" v-cloak>{{Info.sModel}}</span></p>
+							<p class="flex_dom m-t-10r color-333"><b>设备名称:</b><span class="flex_1 m-l-10r" v-cloak>{{Info.sName}}</span></p>
+							<p class="flex_dom m-t-10r color-333"><b>设备数量:</b><span class="flex_1 m-l-10r" v-cloak>{{Info.iNumber}}</span></p>
+							<p class="flex_dom m-t-10r color-333"><b>设备位置:</b><span class="flex_1 m-l-10r"><a href="javascript:;" class="inline_div" v-cloak>{{Info.sLocation}}</a></span></p>
+							<p class="flex_dom m-t-10r color-333"><b>生产日期:</b><span class="flex_1 m-l-10r" v-cloak>{{Info.sProductionDate}}</span></p>
+							<p class="flex_dom m-t-10r color-333"><b>安装日期:</b><span class="flex_1 m-l-10r" v-cloak>{{Info.sInstallDate}}</span></p>
+							<p class="flex_dom m-t-10r color-333"><b>过期日期:</b><span class="flex_1 m-l-10r" v-cloak>{{guoqi}}</span></p>
+							<p class="flex_dom m-t-10r color-333"><b>强制报废日期:</b><span class="flex_1 m-l-10r" v-cloak>{{baofei}}</span></p>
+							<p class="flex_dom m-t-10r color-333"><b>生产厂家:</b><span class="flex_1 m-l-10r" v-cloak>{{Info.sManufacturer}}</span></p>
+							<p class="flex_dom m-t-10r color-333"><b>维护厂家:</b><span class="flex_1 m-l-10r" v-cloak>{{Info.sRepairDeptName}}</span></p>
+						    <p class="m-t-20r" v-cloak>{{Info.sUnitName}} {{Info.sClientName}}</p>
+						</div>
+					</div>
+
+				</div>
+				<div class="setting_checkDatail p_both20r bg-fff m-t-20r">
+					<div class="check_history m-t-20r text-right p-t-20r font0">
+						<a style="font-size: .24rem; border-radius: .2rem; border: 1px solid #E62129; line-height: .4rem!important;" href="javascript:;" class="hgt04rem p_both30r color-red">巡检记录</a>
+					</div>
+					<div v-if="Info.DetailList" class="child_borderLine_top borderColor-eee">
+						<div v-for="item in Info.DetailList" class="check_item l-h-09rem flex_dom flex_item_between ">
+							指标名称<span class="color-red">异常</span>
+						</div>
+						<!--<div class="check_item l-h-09rem flex_dom flex_item_between ">
+							指标名称<span class="color-red">异常</span>
+						</div>
+						<div class="check_item l-h-09rem flex_dom flex_item_between ">
+							指标名称<span class="color-blue">正常</span>
+						</div>-->
+					</div>
+
+				</div>
+				<div class="setting_checkDatail p_both20r bg-fff m-t-20r">
+					<div class="child_borderLine_top borderColor-eee">
+						<div class="check_item l-h-09rem flex_dom flex_item_between ">
+							上次巡检时间<span  v-cloak>{{Info.sLastInspectionDate}}</span>
+						</div>
+						<div class="check_item l-h-09rem flex_dom flex_item_between ">
+							上次维修时间<span  v-cloak>{{Info.sLastRepairDate}}</span>
+						</div>
+						<div class="check_item l-h-09rem flex_dom flex_item_between ">
+							上次更换时间<span  v-cloak>{{Info.sLastChangeDate}}</span>
+						</div>
+					</div>
+
+				</div>
+				<div class="setting_erweima p_both20r p-b-50r p-t-20r text-center p-b-30r bg-fff m-t-20r">
+					<h4 class="text-left font-w6">设备二维码</h4>
+					 <div class="erweima_show inline_div">
+					 	<img :src="Info.sQRCode"/>
+					 </div>
+					
+					
+				</div>
+
+				
+		   </div>
+			
+		</section>
+	</body>
+	<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+	<script type="text/javascript" src="../lib/uploadPreview.js"></script> 
+	<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+	<script type="text/javascript" src="../lib/vue.js"></script>
+	<script type="text/javascript" src="../lib/swiper.min.js"></script>
+	<script type="text/javascript" src="../lib/date-choice.js"></script>
+	<script type="text/javascript" src="../lib/form-check.js"></script>
+	<script type="text/javascript" src="../lib/dragDown.js"></script>
+	<script type="text/javascript" src="../lib/wx_func.js"></script>
+	<script type="text/javascript" src="../lib/page.js"></script>
+	<script>
+        getUserInfo();
+        var eId = document.URL.split("=")[1].split('&')[0];
+        vue_init({
+            data: {
+                Info: {},
+                guoqi: '',
+                baofei: '',
+            },
+            mounted: function () {
+                go_ajax({
+                    url: "/router?method=device.get",
+                    data: {
+                        iDeviceID: eId,
+                    },
+                    success: function (res) {
+                        app.guoqi = +res.data.sProductionDate.substr(0, 4) + res.data.iExpiredYears + res.data.sProductionDate.substr(4, 10);
+                        app.baofei = +res.data.sProductionDate.substr(0, 4) + res.data.iForciblyScrappedYears + res.data.sProductionDate.substr(4, 10);
+                        console.log(app.baofei)
+                        app.Info = res.data;
+                        app.Info.sClientName = (!app.Info.sClientName || app.Info.sClientName == 'null') ? "" : app.Info.sClientName;
+                        app.Info.sQRCode = host + app.Info.sQRCode
+
+                    }
+                })
+            }
+        })
+
+        // 后退按钮
+        goBack()
+	  
+
+		
+		
+
+	</script>
+	
+
+</html>

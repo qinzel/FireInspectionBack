@@ -1,0 +1,112 @@
+﻿				
+@{
+    ViewBag.Title = "设置文章";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Article
+<form id="form_article">
+    <input type="hidden" name="ID" value="@Model.ID"/>
+    <input type="hidden" name="iType" value="@Model.iType" />
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 15%">排序序号：</td>
+                <td>
+					<input type="text" name="sSortNumber" value="@Model.sSortNumber" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['num', 'maxLength[3]'],required:true" missingmessage="请输入排序序号."/>
+                </td>
+            </tr>
+            @if (Model.iType != 3)
+            {
+                <tr>
+                    <td style="width: 15%" rowspan="2">列表图片：</td>
+                    <td>
+                        <div id="imgsrc" title="图片地址"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color: red; text-align: left !important">请上传jpg/png类型图片，建议图片尺寸220*140</td>
+                </tr>
+            }
+            <tr>
+                <td style="width: 15%">标题：</td>
+                <td>
+                    <input type="text" name="sTitle" value="@Model.sTitle" style="width: 632px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[30]'],required:true" missingmessage="请输入标题." />
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 15%">内容：</td>
+                <td>
+                    <textarea id="sContent" style="width: 630px; height: 350px"></textarea>
+                    <input type="hidden" name="sContent" value="@Model.sContent" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<input type="hidden" value="@Model.sImageSrc" id="v-imgsrc" />
+@Html.Action("Init", "Uediter", new { area = "", module = "Article", field = "Article" })
+@Html.Action("FilesInit", "Uediter", new { area = "", module = "Article", field = "Article" })
+<script>
+    $(function () {
+        var img = $('#v-imgsrc').val();
+        img = img ? img.split(',') : [];
+        UE.ehecd_upload_image_init('imgsrc', img, 1);
+        UE.ehecd_editer_init('sContent', '@Html.Raw(Model.sContent)');
+
+        window.saveModel = function() {
+            if (!$("#form_article").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+
+            var content = UE.getEditor('sContent').getContent().replace(/[']/g, "").replace(/[\x00-\x1f\x7f]/i, "").replace("\n", "<br/>");
+            if ($.trim(content) == '') {
+                msgShow('提示', '请输入内容!', 'warning');
+                return;
+            }
+
+            $("input[name=sContent]").val(content);
+
+            var imgList = $('#imgsrc ul li:gt(0)');
+            var imgStr = imgList.find('img').attr('src');
+            var type = $(".panel.window input[name='iType']").val();
+            if (parseInt(type) != 3 && !imgStr) {
+                msgShow('提示', '请选择列表图片!', 'warning');
+                return;
+            }
+
+            var data = $("#form_article").serialize();
+            data += "&sImageSrc=" + (imgStr == undefined ? "" : imgStr);
+
+            $("#save_window_okbtn_article").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Article/Set", //用与处理ajax的地址及函数
+                data: data,
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_article').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.setWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_article').linkbutton('enable');
+                }
+            });
+        }
+    });
+</script>

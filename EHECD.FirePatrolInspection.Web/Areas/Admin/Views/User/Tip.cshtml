@@ -1,0 +1,48 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Tip</title>
+    <script src="~/Content/lib/jquery.1.11.3.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var status=@ViewBag.state; 
+            if(status==0)
+            {
+                $("#loginTip").show();
+                setInterval("timeCount();",1000);
+                setTimeout("redirectLogin()",3000);
+            }
+        });
+
+        function redirectLogin()
+        {
+            top.location.href = '/Admin/User/Login';
+        }
+        function timeCount()
+        {
+            var sec = parseInt($("#timer").html()) - 1;
+            $("#timer").html(sec >=0 ? sec : 0);
+        }
+    </script>
+   @* <script type="text/javascript">
+        /**********   当页面无权限时，点击确定按钮关闭页面所需js代码  **********/
+        var api = frameElement.api, W = api.opener;
+        W.validate = { check: function () { return true; } }; 
+        function operat() { api.close(); }
+    </script>*@
+</head>
+<body>
+    <div>
+        <p id="tipContent">
+            @ViewBag.message<span id="loginTip" style="display: none;"><span id='timer'>3</span>秒后将自动跳转至<a
+                href="javascript:redirectLogin();">登录页面</a></span>
+        </p>
+    </div>
+</body>
+</html>

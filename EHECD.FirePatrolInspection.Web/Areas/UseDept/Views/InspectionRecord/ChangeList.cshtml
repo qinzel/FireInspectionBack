@@ -1,0 +1,192 @@
+﻿@{
+    ViewBag.Title = "更换记录";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/backstage/js/My97DatePicker/WdatePicker.js"></script>
+<style>
+    body {
+        margin: 0 !important;
+        height: 100%;
+    }
+    ul li {
+        padding: 3px 0;
+    }
+</style>
+<div id="datagrid_list_toolbar_change_record">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Detail()">查看详情</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-excel',plain:true" onclick="Export()">导出</a>
+    <form id="search_form_change_record">
+        <div>
+            <span style="margin-left: 5px">关键字：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入设备编号/名称'" class="easyui-textbox" />
+            <span style="margin-left: 5px">设备类型：</span>
+            @Html.DropDownList("condition.iDeviceTypeID", ViewBag.typelist as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iDeviceTypeID" })
+        </div>
+        <div style="margin: 2px 0 0 0">
+            <span style="margin-left: 5px">责任人：</span><input name="condition.sClientPersonName" type="text" data-options="prompt:'请输入责任人姓名'" class="easyui-textbox" />
+            <span style="margin-left: 5px">所属维护公司：</span>
+            @Html.DropDownList("condition.iRepairDeptID", ViewBag.repairList as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iRepairDeptID" })
+        </div>
+        <div>
+            <span style="margin-left: 5px">更换人：</span><input name="condition.sOperator" type="text" data-options="prompt:'请输入更换人姓名'" class="easyui-textbox" />
+            <span style="margin-left: 5px">更换时间：</span>
+            <input type="text" name="condition.dStartTime" readonly="readonly" placeholder="开始时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd HH' })" class="Wdate query-datepicker" />&nbsp;~
+            <input type="text" name="condition.dEndTime" readonly="readonly" placeholder="结束时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd HH' })" class="Wdate query-datepicker" />
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+        </div>
+    </form>
+</div>
+<table id="datagrid_change_record"></table>
+<script type="text/javascript">
+    $(function () {
+        window.datagrid = $('#datagrid_change_record').datagrid({
+            singleSelect: true, //是否单选
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_change_record",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_change_record").serializeObject(),
+            url: '/UseDept/InspectionRecord/GetChangeGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'sNumber', title: '设备编号', width: 100
+                    },
+                    {
+                        field: 'sName', title: '设备名称', width: 200
+                    },
+                    {
+                        field: 'sDeviceTypeName', title: '设备类型', width: 100
+                    },
+                    {
+                        field: 'sLocation', title: '设备位置', width: 200
+                    },
+                    {
+                        field: 'sUnitName', title: '所属使用单位', width: 150
+                    },
+                    {
+                        field: 'sClientPersonName', title: '责任人', width: 100
+                    },
+                    {
+                        field: 'sOrganName', title: '所属部门', width: 100
+                    },
+                    {
+                        field: 'sOperator', title: '更换人', width: 100
+                    },
+                    {
+                        field: 'dCreateTime', title: '更换时间', width: 150
+                    },
+                    {
+                        field: 'sDesc', title: '更换说明', width: 100
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDialog(rowData.iDeviceID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('appendRow', { sNumber: '<div style="text-align:center;color:#7f99be">暂无设备信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sNumber', colspan: 10 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_change_record").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_change_record').datagrid('load', $("#search_form_change_record").serializeObject());
+        $('#datagrid_change_record').datagrid('clearSelections');
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_change_record').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_change_record').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个设备!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个设备!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无设备!', 'warning');
+            return;
+        }
+        showDialog(rows[0].iDeviceID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无设备!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看设备详情',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/UseDept/Device/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_change_record').datagrid('clearSelections');
+    }
+
+    // 导出Excel
+    function Export() {
+        var param = "sKeyword=" + $("input[name='condition.sKeyword']").val();
+        param += "&iDeviceTypeID=" + $("select[name='condition.iDeviceTypeID']").val();
+        param += "&iRepairDeptID=" + $("select[name='condition.iRepairDeptID']").val();
+        param += "&sOperator=" + $("input[name='condition.sOperator']").val();
+        param += "&dStartTime=" + $("input[name='condition.dStartTime']").val();
+        param += "&dEndTime=" + $("input[name='condition.dEndTime']").val();
+        param += "&sClientPersonName=" + $("input[name='condition.sClientPersonName']").val();
+
+        window.open("/UseDept/InspectionRecord/GetChangeExportData?" + param);
+    }
+</script>

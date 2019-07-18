@@ -1,0 +1,63 @@
+﻿				
+@{
+    ViewBag.Title = "设置总后台基础设置";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Settings
+<form id="form_settings">
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 15%">客服电话：</td>
+                <td>
+					<input type="text" name="sPhone" value="@Model.sPhone" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml','maxLength[11]'],required:true" missingmessage="请输入总后台基础设置客服电话."/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: left">
+                    <a href="javascript:void(0)" class="l-btn l-btn-small" style="margin-left: 255px" group="" id="save_window_okbtn_settings">
+                        <span class="l-btn-left l-btn-icon-left">
+                            <span class="l-btn-text">保存</span>
+                            <span class="l-btn-icon icon-ok">&nbsp;</span>
+                        </span>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script>
+
+    $(function () {
+        $("#save_window_okbtn_settings").on("click", function () {
+            var $self = $(this);
+
+            if (!$("#form_settings").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+
+            $self.attr("diabled", "disabled");
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Settings/Set", //用与处理ajax的地址及函数
+                data: $("#form_settings").serialize(),
+                dataType: "json",
+                success: function (res) {
+                    $self.removeAttr("disabled");
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $self.removeAttr("disabled");
+                }
+            });
+        });
+    });
+</script>

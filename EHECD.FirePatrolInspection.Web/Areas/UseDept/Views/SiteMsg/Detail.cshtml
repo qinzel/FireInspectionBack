@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "查看站内信详情";
+}
+
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_SiteMsg
+<style>
+    .scontent img {
+        max-width: 100% !important;
+        display: block;
+    }
+</style>
+<table class="gridtable">
+	<tr>
+        <td style="width: 80px">标题：</td>
+        <td>
+			@Model.sTitle
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 80px">内容：</td>
+        <td class="scontent">
+			@Html.Raw(Model.sContent)
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 80px">收信人：</td>
+        <td>
+			@if (Model.iType == 0)
+            {
+                var dept = Model.sReceiveDept;
+                if (dept.Equals("0,1,2,3,4"))
+                {
+                    <span>所有人</span>
+                }
+                else
+                {
+                    var rel = new List<string>();
+                    if (dept.IndexOf("0") > -1)
+                    {
+                        rel.Add("点检员");
+                    }
+                    if (dept.IndexOf("1") > -1)
+                    {
+                        rel.Add("使用单位");
+                    }
+                    if (dept.IndexOf("2") > -1)
+                    {
+                        rel.Add("消防部门");
+                    }
+                    if (dept.IndexOf("3") > -1)
+                    {
+                        rel.Add("维护公司");
+                    }
+                    if (dept.IndexOf("4") > -1)
+                    {
+                        rel.Add("值班人员");
+                    }
+                    <span>@string.Join(",", rel)</span>
+                }
+            }
+            else
+            {
+                <span>@Model.sReceiveClient</span>
+            }
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 80px">发送人：</td>
+        <td>
+			@Model.sOperator
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 80px">发送时间：</td>
+        <td>
+			@Model.dCreateTime.ToString("yyyy-MM-dd HH:mm:ss")
+		</td>
+    </tr>
+</table>

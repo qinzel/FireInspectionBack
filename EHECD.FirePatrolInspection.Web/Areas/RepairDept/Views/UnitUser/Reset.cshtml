@@ -1,0 +1,51 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form id="reset_window_form_user">
+    <div>
+        <input name="ID" type="hidden" value="@ViewBag.ID"/>
+        <table class="gridtable">
+            <tr>
+                <td>新密码：</td>
+                <td>
+                    <input type="password" id="sPassWord" name="sPassWord" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:['checkHtml','maxLength[15]']" missingmessage="请输入密码." /></td>
+            </tr>
+            <tr>
+                <td>确认密码：</td>
+                <td>
+                    <input type="password" id="cksPassWord" class="easyui-textbox easyui-validatebox" data-options="required:true" validtype="equals['#sPassWord']" missingmessage="请输入确认密码." invalidmessage="两次输入的密码不一致" /></td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script type="text/javascript">
+    var resetposturl = "/RepairDept/UnitUser/ResetModel";
+    ehecd.user.resetModel = function() {
+        if (!$("#reset_window_form_user").form('validate')) {
+            return;
+        }
+        $('#reset_window_okbtn_user').linkbutton('disable');
+        $.ajax({
+            type: "POST",
+            url: resetposturl, //用与处理ajax的地址及函数
+            data: $("#reset_window_form_user").serialize(),
+            dataType: "json",
+            success: function(res) {
+                $('#reset_window_okbtn_user').linkbutton('enable');
+                if (res.success) {
+                    msgShow('提示', res.message, 'info');
+                    ehecd.user.closerestWindow(); //关闭新建窗口
+                    ehecd.user.datagridReload(); //列表重新加载数据
+                } else {
+                    msgShow('提示', res.message, 'warning');
+                }
+            },
+            error: function(xhr, msg, e) {
+                msgShow('提示', '操作出错了!', 'warning');
+                $('#edit_window_okbtn_user').linkbutton('enable');
+            }
+        });
+    };
+
+</script>

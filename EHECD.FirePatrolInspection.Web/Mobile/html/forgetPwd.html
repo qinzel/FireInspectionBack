@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>忘记密码</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/global.css">
+		<link rel="stylesheet" type="text/css" href="../css/zyl.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/myh.css"/>
+	</head>
+     <!--myh-->
+	<body>
+		<section class="main hgt_all flex_column">
+				
+			<header>
+				<i id="backBtn" class="flex_1"></i>
+				<h1 class="flex_1 text-center">忘记密码</h1>
+				<p class="flex_1 color-fff font24r text-right"></p>
+			</header>
+			<form class="login_page flex_1 relative" onsubmit="return false;">
+			         <div class="absolute_mid">
+			         	<img src="../img/slice/logo1.png"  class="logo"/>
+			         	<div class="login_item flex_dom flex_item_mid">
+			         		<img src="../img/slice/logo_tag1.png"/><p><input v-model="sPhone" type="text" id="tel" match="/^1\d{10}$/" placeholder="请输入手机号码" alert="请填写正确的手机号码" required class="placeholderccc font24r"/></p>
+			         	</div>
+			         	<div class="login_item  flex_dom flex_item_mid"> 
+			         		<img src="../img/slice/logo_tag3.png"/><p class="flex_dom "><input v-model="sValidate" type="text"  placeholder="请输入验证码" required class="placeholderccc font24r flex_1"/><button type="button" code_for="#tel" class="color-red p-l-20r border-l-eee">获取验证码</button></p>
+			         	</div>
+			         	<div class="login_item flex_dom flex_item_mid">
+			         		<img src="../img/slice/logo_tag2.png"/><p><input type="password" placeholder="请输入密码" required class="placeholderccc font24r"/></p>
+			         	</div>
+			         	<div class="login_item flex_dom flex_item_mid">
+			         		<img src="../img/slice/logo_tag2.png"/><p><input v-model="sPwd" type="password" placeholder="请再次输入新密码"  required class="placeholderccc font24r"/></p>
+			         	</div>
+			         	<div class="submit text-center m-t-50r" >
+			         		<button type="submit" class="font24r">确定</button>
+			         	</div>
+
+			         </div>
+
+			</form>
+			
+			
+		</section>
+	</body>
+	<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+	<script type="text/javascript" src="../lib/uploadPreview.js"></script> 
+	<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+	<script type="text/javascript" src="../lib/vue.js"></script>
+	<script type="text/javascript" src="../lib/swiper.min.js"></script>
+	<script type="text/javascript" src="../lib/date-choice.js"></script>
+	<script type="text/javascript" src="../lib/form-check.js"></script>
+	<script type="text/javascript" src="../lib/dragDown.js"></script>
+	<script type="text/javascript" src="../lib/wx_func.js"></script>
+	<script type="text/javascript" src="../lib/page.js"></script>
+	<script>
+        vue_init({
+            data: {
+                sPhone: "",
+                sPwd: "",
+                sValidate: ""
+            }
+        })
+		/*****表单验证初始化*******/
+		$("form").form_check({
+		    codeFunc: function (tel, btn) {
+		        //这里放验证码请求ajax,一般执行倒计时		
+		        go_ajax({
+		            url: "/router?method=sms.findcode",
+		            data: { sPhone: app.sPhone },
+		            success: function (res) {
+		                if (res.success) {
+		                    codeDownTime(btn);
+		                } else{
+		                    go_alert2(res.message);
+		                }
+		            }
+		        })
+                  
+			  	
+			  },
+			  success:function(){
+			      //验证通过后的回调   密码修改成功
+			      go_ajax({
+			          url: "/router?method=client.findpwd",
+			          data: {
+			              sPhone: app.sPhone,
+			              sPwd: app.sPwd,
+			              sValidate: app.sValidate
+			          },
+			          success: function (res) {
+			              if (res.success) {
+			                  go_alert2(res.message, function () {
+			                      location.href = "Login.html";
+			                  })
+			              } else {
+			                  go_alert2(res.message);
+			              }
+			          }
+			      });
+			  },
+			  error:function(){
+			      go_alert2("请完善账户信息！")
+			  }
+			
+			
+			
+		})
+		// 后退
+		goBack()
+
+
+	</script>
+
+</html>

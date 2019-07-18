@@ -1,0 +1,248 @@
+﻿@{
+    ViewBag.Title = "轮播管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Content/ueditor/ueditor.config.js"></script>
+<script src="~/Content/ueditor/ueditor.all.min.js"></script>
+<div id="datagrid_list_toolbar_banner">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="showSetDialog(0,'添加轮播')">添加</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="Edit()">编辑</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="Delete()">删除</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Detail()">查看详情</a>&nbsp;&nbsp;
+</div>
+<table id="datagrid_banner"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_banner').datagrid({
+            checkbox: true,
+            // singleSelect: true, //是否单选
+            title: '轮播管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_banner",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_banner").serializeObject(),
+            url: '/Admin/Banner/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'ID', checkbox: true 
+                    },
+                    {
+                        field: 'sImageSrc', title: '图片地址', width: 100, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            return "<img src=\"" + value + "\" style=\"width: 60px; height: 60px; margin: .3rem 0; display: block\" />";
+                        }
+                    },
+                    {
+                        field: 'sLink', title: '链接地址', width: 200
+                    },
+                    {
+                        field: 'iArticleType', title: '轮播文章类别', width: 100, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            switch (value) {
+                                case 0:
+                                    return "无";
+                                case 1:
+                                    return "法律知识文章";
+                                case 2:
+                                    return "消防知识文章";
+                                case 3:
+                                    return "资讯";
+                                case 4:
+                                    return "帮助中心文章";
+                                case 5:
+                                    return "关于我们";
+                            }
+                        }
+                    },
+                    {
+						field: 'dCreateTime', title: '创建时间', width: 150
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDialog(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('hideColumn', 'ID');
+                    $(this).datagrid('appendRow', { sImageSrc: '<div style="text-align:center;color:#7f99be">暂无轮播信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sImageSrc', colspan: 4 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).datagrid('showColumn', 'ID');
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+
+        $("#search_form_banner").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_banner').datagrid('load', $("#search_form_banner").serializeObject());
+        $('#datagrid_banner').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_banner').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_banner').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个轮播!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个轮播!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无轮播!', 'warning');
+            return;
+        }
+        showDialog(rows[0].ID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无轮播!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看轮播详情',
+            iconCls: 'icon-save',
+            width: 600,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/Admin/Banner/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //编辑功能
+    function Edit() {
+        var rows = $('#datagrid_banner').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个轮播!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个轮播!', 'warning');
+            return;
+        }
+        showSetDialog(rows[0].ID, '编辑轮播');
+    }
+    //打开编辑页面
+    function showSetDialog(id, title) {
+        window.setWindow = $('<div />').dialog({
+            title: title,
+            iconCls: 'icon-save',
+            width: 600,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/Admin/Banner/Set/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_banner',
+                    handler: function(e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function(e) {
+                        setWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function() {
+                setWindow.dialog('destroy');
+            }
+        });
+    }
+
+    
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_banner').datagrid('clearSelections');
+    }
+	
+	 //删除轮播
+    function Delete() {
+        var selectIds = [];
+        var rows = $('#datagrid_banner').datagrid("getSelections");
+        if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                selectIds.push(rows[i].ID);
+            }
+        }
+
+        //判断是否选择数据
+        if (selectIds.length < 1) {
+            msgShow('提示', '至少选择一条信息进行删除操作', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定删除所有选中的信息共" + selectIds.length + "条数目？", function(ok) {
+            if (ok) {
+                $.post('/Admin/Banner/Delete', { sIds: selectIds.join() }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+						clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+</script>

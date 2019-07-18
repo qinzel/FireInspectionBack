@@ -1,0 +1,166 @@
+﻿@{
+    ViewBag.Title = "设置后台基础设置";
+    EHECD_Unit unit = ViewBag.unit;
+    LoginUser user = ViewBag.logUser;
+    IEnumerable<EHECD_Unit> repairList = ViewBag.repairList;
+}
+@using EHECD.EntityFramework.Models;
+@using EHECD.FirePatrolInspection.Entity;
+@model EHECD_UseDeptSettings
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #FBFBFB;
+    }
+</style>
+<form id="form_settings">
+    <input type="hidden" name="ID" value="@Model.ID" />
+    <input type="hidden" name="iUseDeptID" value="@Model.iUseDeptID" />
+    <div class="easyui-layout" data-options="fit:true">
+        <table class="gridtable">
+            <tr>
+                <td style="text-align: left !important; padding: 10px 5px; font-size: 20px">@(unit.sPhone)，@(unit.sName)</td>
+            </tr>
+            <tr>
+                <td style="text-align: left !important; margin: 5px 0; font-size: 14px; font-weight: bold">所属消防部门：
+                    @Html.DropDownList("iFireDeptID", ViewBag.fireList as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "iFireDeptID" })
+                    <a id="aDetail" class="easyui-linkbutton" data-options="iconCls:'icon-table',plain:true">查看详情</a>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left !important; margin: 5px 0; font-size: 14px; font-weight: bold">关联维护公司：
+                    <a id="aRepair" class="easyui-linkbutton" data-options="iconCls:'icon-table',plain:true">查看详情</a>
+                </td>
+            </tr>
+            @if (repairList != null && repairList.Count() > 0)
+            {
+                foreach (EHECD_Unit u in repairList)
+                {
+                    <tr>
+                        <td>
+                            <table cellpadding="0" cellspacing="0" style="width: 100%;">
+                                <tr>
+                                    <td style="text-align: left !important;">
+                                        <input type="checkbox" id="ckb_@(u.ID)" @(u.iStatus ? "checked" : "") />
+                                        <label for="ckb_@(u.ID)">@u.sName</label>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                }
+            }
+            <tr>
+                <td style="text-align: left !important">
+                    <a id="aSubmit" class="easyui-linkbutton" data-options="iconCls:'icon-ok',plain:true">保存</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script>
+    $(function () {
+        $("#aDetail").on("click", function () {
+            if (!$("select[name=iFireDeptID]").val().length) {
+                msgShow('提示', '请选择所属消防部门!', 'warning');
+                return;
+            }
+
+            var id = $("select[name=iFireDeptID]").val();
+
+            if (!id) {
+                msgShow('提示', '请选择所属消防部门!', 'warning');
+                return;
+            }
+            window.unitDetailWindow = $('<div />').dialog({
+                title: '查看消防部门详情',
+                iconCls: 'icon-save',
+                width: 650,
+                height: 500,
+                closed: false,
+                cache: false,
+                href: '/UseDept/Unit/Detail/' + id,
+                modal: true,
+                buttons: [
+                    {
+                        text: '关闭',
+                        iconCls: 'icon-no',
+                        handler: function (e) {
+                            unitDetailWindow.dialog('close');
+                        }
+                    }
+                ],
+                onClose: function () {
+                    unitDetailWindow.dialog('destroy');
+                }
+            });
+        });
+
+        $("#aRepair").on("click", function () {
+            window.repairUnitWindow = $('<div />').dialog({
+                title: '查看关联维护公司列表',
+                iconCls: 'icon-save',
+                width: 800,
+                height: 500,
+                closed: false,
+                cache: false,
+                href: '/UseDept/Unit/RepairDeptList/' + @unit.ID,
+                modal: true,
+                buttons: [
+                    {
+                        text: '关闭',
+                        iconCls: 'icon-no',
+                        handler: function (e) {
+                            repairUnitWindow.dialog('close');
+                        }
+                    }
+                ],
+                onClose: function () {
+                    repairUnitWindow.dialog('destroy');
+                }
+            });
+        });
+
+        $("#aSubmit").on("click", function () {
+            if (!$("select[name=iFireDeptID]").val().length) {
+                msgShow('提示', '请选择所属消防部门!', 'warning');
+                return;
+            }
+            var list = $("input[type=checkbox][id^=ckb_]:checked");
+            if(!list.length) {
+                msgShow('提示', '请选择关联维护公司!', 'warning');
+                return;
+            }
+            var listAry = [];
+            for(var i = 0; i < list.length; i++) {
+                listAry.push($(list[i]).attr("id").replace("ckb_", ""));
+            }
+
+            var data = $("#form_settings").serialize();
+            data += "&sRepairDeptIDs=" + listAry.join();
+            $("#aSubmit").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/UseDept/UseDeptSettings/Set", //用与处理ajax的地址及函数
+                data: data,
+                dataType: "json",
+                success: function (res) {
+                    $('#aSubmit').linkbutton('enable');
+                    msgShow('提示', res.message, 'warning');
+                    if (res.success) {
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500);
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#aSubmit').linkbutton('enable');
+                }
+            });
+        });
+    });
+</script>

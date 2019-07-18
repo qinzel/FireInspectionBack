@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "设置用户信息";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Client
+<form id="form_client">
+    <input type="hidden" id="ID" name="ID" value="@Model.ID"/>
+    <div>
+        <table class="gridtable">
+            <tr>
+                <td style="width: 90px">账号/电话：</td>
+                <td>
+                    <input type="text" id="sPhone" name="sPhone" value="@Model.sPhone" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['phone', 'maxLength[11]'],required:true" missingmessage="请输入账号/电话." />
+                </td>
+                <td style="width: 90px">姓名：</td>
+                <td>
+					<input type="text" name="sName" value="@Model.sName" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[20]'],required:true" missingmessage="请输入姓名."/>
+                </td>
+            </tr>
+            @if (Model.ID == 0)
+            {
+                <tr>
+                    <td style="width: 90px">密码：</td>
+                    <td>
+                        <input type="password" id="spwd" name="sPwd" value="@Model.sPwd" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[20]'],required:true" missingmessage="请输入密码." />
+                    </td>
+                    <td style="width: 90px">确认密码：</td>
+                    <td>
+                        <input type="password" id="sconfim" value="@Model.sPwd" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[20]'],required:true" missingmessage="请再次输入密码." />
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</form>
+<script>
+    $(function () {
+        window.saveModel = function () {
+            if (!$("#form_client").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+            if (parseInt($(".panel.window #ID").val()) == 0) {
+                if ($("#spwd").val() != $("#sconfim").val()) {
+                    msgShow('提示', '两次输入的密码不一致!', 'warning');
+                    return;
+                }
+            }
+            var valid_rule = /^(13[0-9]|14[5-9]|15[012356789]|166|17[0-8]|18[0-9]|19[8-9])[0-9]{8}$/;// 手机号码校验规则
+            if (!valid_rule.test($.trim($(".panel.window #sPhone").val()))) {
+                msgShow('提示', '手机号码格式有误!', 'warning');
+                return;
+            }
+
+            $("#save_window_okbtn_client").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/FireDept/Client/Set", //用与处理ajax的地址及函数
+                data: $("#form_client").serialize(),
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_client').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.setWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_client').linkbutton('enable');
+                }
+            });
+        }
+    });
+</script>

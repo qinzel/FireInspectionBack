@@ -1,0 +1,345 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>首页</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/global.css">
+		<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+		<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+	</head>
+	<body>
+		<section class="main hgt_all flex_column">
+            <h4 class="l-h-08rem indexTop overflow_hide"><a :href="MemberInfo ? 'MyMsg.html' : 'Login.html'" :class="msgNum>0?'hasMsg fr text-right p-r-20r':'fr text-right p-r-20r' "><i><img src="../img/slice/msg1.png" /></i></a><p class="only_line color-fff font16" v-cloak>{{unit?unit:'首页'}}</p></h4>
+			<div class="home_page flex_1 overflow_auto">
+				<div class="index_heaer p-t-20r">
+					<div class="banner_div" style="min-height: 3.17rem">
+						<div class="swiper-container">
+							<div class="swiper-wrapper">
+								<a v-for="item in bannerList" :href="item.sLink.split('=')[1]?'ArticleDetail.html?'+item.sLink.split('=')[1]:'javascript:;'" class="swiper-slide">
+									<div class="banner_img bgimg_full" v-bind:style="{backgroundImage:'url('+item.sImageSrc+')'}">
+									</div>
+								</a>
+							</div>
+							<div class="fenye"></div>
+						</div>
+						<div class="fenye"></div>
+					</div>
+				</div>
+				<div class="other_block p_both20r">
+					<div class="other_links flex_dom flex_item_between">
+						<a :href="MemberInfo ? MemberInfo.iType == 0 ? 'UnitInfo.html':'Unit_info.html' : 'Login.html'"><img src="../img/slice/nav1.png" />
+							<p>单位信息</p>
+						</a>
+						<a onclick="toMyEqu()"><img src="../img/slice/nav2.png" />
+							<p>我的设备</p>
+						</a>
+						<a href="LegalKnowledge.html?kId=0"><img src="../img/slice/nav3.png" />
+							<p>法律知识</p>
+						</a>
+						<a href="LegalKnowledge.html?kId=1"><img src="../img/slice/nav4.png" />
+							<p>消防知识</p>
+						</a>
+					</div>
+					<div class="news_list m-t-20r bg-eee pad20r radius10">
+						<h4 class="flex_dom flex_item_between m-b-10r"><span class="font26r font-w6"><img src="../img/slice/icon-person.png"  class="vertical_mid inline_div m-r-10r" width="26px"/>今日值班</span><a :href="MemberInfo ? 'TodayDuty.html' : 'Login.html'">全部</a></h4>
+                        <div :style="{height:(ClientList.length ? '.4rem' : '.4rem')}" class="swiper-container2 overflow_hide relative">
+                            <div class="swiper-wrapper">
+                                <p v-for="item in ClientList" class="l-h-04rem line2 hgt04rem swiper-slide color-333" v-cloak>{{item.sName}}·{{item.sUnitName}} 电话 <a :href="'tel:'+item.sPhone"  v-cloak>{{item.sPhone}}</a> </p>
+                                <p class="font24r color-333" v-if="ClientList.length == 0">暂无数据</p>
+                            </div>
+                        </div>
+					</div>
+					<div class="news_list m-t-20r bg-eee pad20r radius10">
+						<h4 class="flex_dom flex_item_between m-b-10r"><span class="font26r font-w6"><img src="../img/slice/icon-msg2.png"  class="vertical_mid inline_div m-r-10r" width="26px"/>我的消息</span><a :href="MemberInfo ? 'MyMsg.html' : 'Login.html'">更多</a></h4>
+                        <div class="wid100 relative">
+                            <a v-for="item in msgList" v-bind:href="'Detail.html?'+item.ID" class="l-h-04rem color-333 flex_dom flex_item_between"><span class="flex_1 m-r-15r only_line" v-cloak>{{item.sTitle}}</span><b class="color-999" v-cloak v-text="timeDo(item.dCreateTime)"></b></a>
+                             <p class="font24r color-333" v-if="msgList.length == 0">暂无消息</p>
+                        </div>
+						
+					</div>
+					<div class="news_list m-t-20r  p-v-20r radius10">
+						<h4 class="flex_dom p-l-20r flex_item_between m-b-10r"><span class="font26r font-w6"><img src="../img/slice/icon-zixun.png"  class="vertical_mid inline_div m-r-10r " width="26px"/>资讯</span><a href="LegalKnowledge.html?kId=2" class="m-r-20r">更多</a></h4>
+						<div class="passage_box m-t-30r p-b-50r">
+							<a v-for="item in ConsultList" :href="'ArticleDetail.html?'+item.ID" class="passage_item font0">
+								<div class="img bgimg_full"  v-bind:style="{backgroundImage:'url('+item.sImageSrc+')'}"></div>
+								<div class="item_con relative">
+									<div class="inline_div absolute_leftMid wid100">
+										<h4 class="only_line font26r color-333" v-cloak>{{item.sTitle}}</h4>
+										<p class="font22r color-999"  v-cloak v-text="timeDo(item.dCreateTime)"></p>
+										<div class="text-right"><img src="../img/slice/icon-arrow-r.png" height="14px" /></div>
+									</div>
+								</div>
+							</a>
+                            <div style="top:0;position:relative;height: 2.5rem;" class="no_data">
+                                <p>暂无数据</p>
+                            </div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		<!-- 底部导航栏 -->
+		<footer style="height:.9rem;"  class="footer-nav text-center">
+			<!-- 首页 -->
+			<div onclick="location.reload();" class="flex_column flex_1">
+				<img style="width: .41rem;height: .44rem; margin: 0 auto" src="../img/slice/home-active.png" alt="">
+				<p class="color-999 font20r color-red" style="margin-right:.05rem;">首页</p>
+			</div>
+			<!-- 扫一扫 -->
+			<div class="flex_column relative flex_1" style="top: -.2rem; z-index: 2;">
+				<img onclick="location.href = 'scan.html'" style="width: .7rem;height: .7rem;margin: 0 auto" src="../img/slice/scan.png" alt="">
+				<p onclick="location.href = 'scan.html'" class="color-999 font20r">扫一扫</p>
+			</div>
+			<!-- 个人中心 -->
+			<a :href="MemberInfo ? 'Personal.html' : 'Login.html'" class="flex_column  flex_1">
+				<img style="width: .41rem;height: .44rem;margin: 0 auto;z-index: 2 " src="../img/slice/personal.png" alt="">
+				<p class="color-999 font20r ">个人中心</p>
+			</a>
+			<!-- 弧线 -->
+			<!-- <div class="semi-circle">
+				
+			</div> -->
+		</footer>
+		</section> 
+	</body>
+	<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+	<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+	<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+	<script type="text/javascript" src="../lib/vue.js"></script>
+	<script type="text/javascript" src="../lib/swiper.min.js"></script>
+	<script type="text/javascript" src="../lib/date-choice.js"></script>
+	<script type="text/javascript" src="../lib/form-check.js"></script>
+	<script type="text/javascript" src="../lib/dragDown.js"></script>
+	<script type="text/javascript" src="../lib/wx_func.js"></script>
+	<script type="text/javascript" src="../lib/page.js"></script>
+	<script>
+
+        //Vue初始化
+        vue_init({
+            data: {
+                bannerList: [],
+                MemberInfo: localStorage.iClient ? JSON.parse(localStorage.iClient) : '',
+                msgNum: 0,
+                ClientList: [],
+                msgList: [],
+                ConsultList: [],
+                unit:'',
+                dept:'',
+            },
+            methods: {
+                timeDo(time){
+                    time = time.split(" ")[0]
+                    return time
+                }
+            },
+            mounted: function () {
+                $("body").queue("ajaxRequests", function () {
+                    //获取轮播
+                    go_ajax({
+                        url: "/router?method=banner.getlist",
+                        data: {
+                        },
+                        success: function (res) {
+                            $("body").dequeue("ajaxRequests");
+                            if (res.success) {
+                                app.bannerList = res.data;
+                                setTimeout(function () {
+                                    $(".swiper-container").Swiper({
+                                        autoplay: 3000,
+                                        fenye: ".fenye",
+                                        loop: true,
+                                        centeredSlides: true,
+                                        slidesPerView: 1.4,
+                                        fenye: ".fenye",
+                                        initialSlide: 0,
+                                        loopAdditionalSlides: 100,
+                                        fenyeStyle: {
+                                            other: "width:5px;height:5px;background-color: #666;border-radius:0;opacity:1;box-shadow: 0px 4px 4px #cec2c2;",
+                                            active: "width:8px;height:8px; background-color: #e62129;box-shadow: 4px 0px 8px #afa8a8;-webkit-transform: rotate(45deg);"
+                                        }
+
+                                    })
+                                }, 0)
+
+                            } else {
+                                go_alert2(res.message)
+                            }
+
+                        }
+                    })
+                });
+                
+                //获取未读站内信条数
+                if (localStorage.iClient) {
+                    go_ajax({
+                        url: "/router?method=msg.unreadcount",
+                        data: {
+                            "iClientID": JSON.parse(localStorage.iClient).ID
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                app.msgNum = res.data;
+                            } else {
+                                go_alert2(res.message)
+                            }
+
+                        }
+                    })
+                }
+                    //获取值班人列表
+                if (localStorage.iClient) {
+                    
+                    $("body").queue("ajaxRequests", function () {
+                        go_ajax({
+                            url: "/router?method=client.getdutylist",
+                            data: {
+                                "iClientID": JSON.parse(localStorage.iClient).ID
+                            },
+                            success: function (res) {
+                                $("body").dequeue("ajaxRequests");
+                                if (res.success) {
+                                    app.ClientList = res.data;
+                                    setTimeout(function () {
+                                        $(".swiper-container2").Swiper({
+                                            slidesPerView: 1,
+                                            direction: 'vertical',
+                                            autoplay: '3000'
+                                        })
+                                    }, 0)
+                                } else {
+                                    go_alert2(res.message)
+                                }
+
+                            }
+                        })
+                    })
+                };
+                
+                
+                if (localStorage.iClient) {
+                    $("body").queue("ajaxRequests", function () {
+                    //获取点检员单位
+                        var iClient = JSON.parse(localStorage.iClient);
+                        if (iClient.iType != 0) {
+                            go_ajax({
+                                url: '/router?method=client.get',
+                                data: { iClientID: JSON.parse(localStorage.iClient).ID },
+                                success: function (res) {
+                                    $("body").dequeue("ajaxRequests");
+                                    if (res.success) {
+                                        app.unit = res.data.sUnitName;
+                                    }
+                                }
+                            })
+                        } else {
+                            go_ajax({
+                                url: "/router?method=duty.getlist",
+                                data: { iClientID: JSON.parse(localStorage.iClient).ID },
+                                success: function (res) {
+                                    $("body").dequeue("ajaxRequests");
+                                    if (res.data.length != 0) {
+                                        app.unit = res.data[0].sName
+                                        //app.dept = res.data[0].DeptList[0].sName
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+                
+
+
+                if (localStorage.iClient) {
+                    $("body").queue("ajaxRequests", function () {
+                    //我的消息
+                    
+                        go_ajax({
+                            type: 'POST',
+                            url: '/router?method=msg.getlist',
+                            data: {
+                                "iClientID": JSON.parse(localStorage.iClient).ID,
+                                "page": 1
+                            },
+                            success: function (res) {
+                                $("body").dequeue("ajaxRequests");
+                                if (res.success) {
+                                    for (idx in res.data) {
+                                        var time = ""
+                                        time = res.data[idx].dCreateTime.replace(/T/g, " ")
+                                        time = time.split(".")
+                                        if (time.length >= 2) {
+                                            time = time.slice(0, 1)
+                                        }
+                                        time = time[0].replace(/-/g, ".")
+                                        res.data[idx].dCreateTime = time
+                                        time = time.split(" ")
+                                    }
+                                    app.msgList = res.data.slice(0, 2);
+                                    console.log(app.msgList)
+                                }
+
+                            }
+                        })
+                    })
+                }
+
+                $("body").queue("ajaxRequests", function () {
+                    //获取咨询
+                    go_ajax({
+                        url: "/router?method=article.getlist",
+                        data: {
+                            "iType": 2,
+                            "page": 1
+                        },
+                        success: function (res) {
+                            $("body").dequeue("ajaxRequests");
+                            if (res.success) {
+                                for (idx in res.data) {
+                                    var time = ""
+                                    time = res.data[idx].dCreateTime.replace(/T/g, " ")
+                                    time = time.split(".")
+                                    if (time.length >= 2) {
+                                        time = time.slice(0, 1)
+                                    }
+                                    time = time[0].replace(/-/g, ".")
+                                    res.data[idx].dCreateTime = time
+                                    time = time.split(" ")
+                                }
+                                app.ConsultList = res.data.slice(0,3);
+                            } else {
+                                go_alert2(res.message)
+                            }
+
+                        }
+                    })
+                })
+                $("body").dequeue("ajaxRequests");
+            }
+        })
+        goBack()
+		
+        function toMyEqu() {
+            //location.href="MemberInfo ? 'MyEquipment.html' : 'Login.html'"
+            if (app.MemberInfo && app.MemberInfo.iType != 4) {
+                location.href = "MyEquipment.html"
+            }
+            if (!app.MemberInfo) {
+                location.href = "Login.html"
+            }
+        }
+
+	</script>
+
+</html>

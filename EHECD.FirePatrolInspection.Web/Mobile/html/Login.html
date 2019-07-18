@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/global.css">
+		<link rel="stylesheet" type="text/css" href="../css/zyl.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/myh.css"/>
+	</head>
+     <!--myh-->
+	<body>
+		<section class="main hgt_all flex_column">
+				
+			<header>
+				<i id="backBtn" class="flex_1"></i>
+				<h1 class="flex_1 text-center">登录</h1>
+				<p class="flex_1 color-fff font24r text-right"></p>
+			</header>
+			<form style="z-index:0;" class="login_page overflow_auto flex_1 relative">
+			         <div class="absolute_mid">
+			         	<img src="../img/slice/logo1.png"  class="logo"/>
+			         	<div class="login_item  flex_dom flex_item_mid">
+			         		<img src="../img/slice/logo_tag1.png"/><p><input v-model="sPhone" match="tel" alert="请输入正确的手机号码"  required type="text" placeholder="请输入手机号码"  class="placeholderccc font24r"/></p>
+			         	</div>
+			         	<div class="login_item flex_dom flex_item_mid">
+			         		<img src="../img/slice/logo_tag2.png"/><p><input v-model="sPwd" required type="password" placeholder="请输入密码" class="placeholderccc font24r"/></p>
+			         	</div>
+			         	<div class="text-right l-h-06rem">
+			         		<a href="forgetPwd.html" class="color-red font24r">忘记密码？</a>
+			         	</div>
+			         	<div class="submit text-center">
+			         		<button type="submit" class="font24r">登录</button>
+			         	</div>
+			         	<p class="text-center m-t-20r"><a href="ChooseAccType.html" class="color-red border-b-initial font24r">没有账号,去注册</a></p>
+
+			         </div>
+
+			</form>
+			
+			
+		</section>
+	</body>
+	<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+	<script type="text/javascript" src="../lib/uploadPreview.js"></script> 
+	<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+	<script type="text/javascript" src="../lib/vue.js"></script>
+	<script type="text/javascript" src="../lib/swiper.min.js"></script>
+	<script type="text/javascript" src="../lib/date-choice.js"></script>
+	<script type="text/javascript" src="../lib/form-check.js"></script>
+	<script type="text/javascript" src="../lib/dragDown.js"></script>
+	<script type="text/javascript" src="../lib/wx_func.js"></script>
+	<script type="text/javascript" src="../lib/page.js"></script>
+
+<script>
+
+        vue_init({
+            data: {
+                sPhone: "",
+                sPwd: ""
+            },
+            methods: {
+                login() {
+                    
+                }
+            }
+        })
+
+        // 配置表单插件
+        $(".main").form_check({
+            /********自定义匹配规则*******/
+            check_rule: {
+
+            },
+            /**********验证码回调，在验证码按钮上code_for="#tel"关联手机号输入框***********/
+            codeFunc: function (tel, codeBtn) {
+                codeDownTime(codeBtn)
+            },
+            success: function () {
+
+                go_ajax({
+                    url: "/router?method=client.login",
+                    data: {
+                        sPhone: app.sPhone,
+                        sPwd: app.sPwd
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            localStorage.iClient = JSON.stringify(res.data);
+                            location.href = "Index.html";
+                            sendId(res.data);
+                        } else {
+                            go_alert2(res.message)
+                        }
+                    }
+                })
+            },
+            error: function () {
+                go_alert2("请填写账户信息!")
+            }
+
+        })
+
+        // 后退按钮
+        goBack()
+
+</script>
+
+
+
+</html>

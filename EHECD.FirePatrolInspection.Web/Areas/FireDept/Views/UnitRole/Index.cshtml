@@ -1,0 +1,168 @@
+﻿@{
+    ViewBag.Title = "角色管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    $(function() {
+        $('#List').datagrid({
+            checkbox: true,
+            title: '角色管理',
+            url: '/FireDept/UnitRole/List',
+            idField: "ID",
+            striped: true,
+            pagination: true,
+            remoteSort: false,
+            pageList: [20, 30, 50],
+            pageSize: 20,
+            border: false,
+            fit: true,//自动大小
+            rownumbers: true,//行号
+            toolbar: "#Toolbar",
+            loadMsg: "正在加载...",
+            columns: [
+                [
+                    { field: '', checkbox: true, },
+                    { field: 'sRoleName', title: '角色名', align: 'center', width: 300, sortable: true },
+                    { field: 'dCreateTime', title: '添加时间', align: 'center', width: 300, sortable: true },
+                    { field: 'sDescription', title: '备注', align: 'center', width: 300, sortable: true }
+                ]
+            ],
+            onDblClickRow: onRowDbClick
+        });
+
+        $("#searchForm input").keydown(function(e) { //回车搜索
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                Search();
+                return;
+            }
+        });
+    });
+    //$("#List").datagrid('getSelections')//获得选中的行
+
+    function Search() {
+        //var search = $("#searchForm").serializeArray();
+        var param = $("#searchForm").serializeObject();
+        $('#List').datagrid('load', param);
+        $('#List').datagrid('clearSelections');
+    }
+
+    //打开新增窗口
+    function openAdd() {
+        $('#addRole').dialog({
+            title: '新增角色',
+            iconCls: 'icon-save',
+            width: 700,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/FireDept/UnitRole/Create',
+            modal: true,
+            buttons: [{
+                text: '确定',
+                iconCls: 'icon-ok',
+                id: 'addBtn',
+                handler: function (e) { if (typeof (eval(addRole)) == "function") { addRole(); } else { $('#addRole').dialog('close'); } }
+            }]
+        });
+    }
+
+    //打开编辑窗口
+    function openEdit() {
+        var selected = $("#List").datagrid('getSelections');
+        if (selected.length != 1) {
+            msgShow('系统提示', '请选择一条数据', 'warning');
+            return;
+        }
+        var id = selected[0].ID;
+        showEditDialog(id);
+    }
+
+    //双击行事件
+    function onRowDbClick(index, row) {
+        var id = row.ID;
+        showEditDialog(id);
+    }
+
+    //打开编辑页面
+    function showEditDialog(id) {
+        $('#editRole').dialog({
+            title: '编辑角色',
+            iconCls: 'icon-save',
+            width: 700,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/FireDept/UnitRole/Edit?id=' + id,
+            modal: true,
+            buttons: [{
+                text: '确定',
+                iconCls: 'icon-ok',
+                id: 'editBtn',
+                handler: function (e) { if (typeof (eval(editRole)) == "function") { editRole(); } else { $('#editRole').dialog('close'); } }
+            }]
+        });
+    }
+
+    //删除
+    function del() {
+        var selected = $("#List").datagrid('getSelections');
+        if (selected.length < 1) {
+            msgShow('系统提示', '请至少选择一条数据', 'warning');
+            return;
+        }
+        var ids = '';
+        $(selected).each(function () {
+            ids += this.ID + ",";
+        });
+        $.messager.confirm('系统提示', '确定删除?', function (r) {
+            if (r) {
+                $('#delBtn').linkbutton('enable');
+                $.ajax({
+                    type: "POST",
+                    url: "/FireDept/UnitRole/Delete?ids=" + ids, //用与处理ajax的地址及函数
+                    data: '',
+                    dataType: "json",
+                    success: function (result) {
+                        $('#delBtn').linkbutton('enable');
+                        if (result.success) {
+                            msgShow('系统提示', result.message, 'info');
+                            Search();
+                        }
+                        else {
+                            msgShow('系统提示', result.message, 'warning');
+                        }
+                    },
+                    error: function (xhr, msg, e) {
+                        msgShow('系统提示', '删除角色出错', 'warning');
+                        $('#delBtn').linkbutton('enable');
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+<div id="Toolbar">
+    <form id="searchForm">
+        <table style="margin: 0px; padding: 0px; border-collapse: collapse; border: 0px solid #ccc;">
+            <tr>
+                <td>
+                    <span>角色名称:</span>
+                    <input name="sRoleName" type="text" class="easyui-textbox" />
+                    <a href="#" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-search',plain:true" onclick="Search();">查询</a>
+                    @*<a id="textClear" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-reload',plain:true">重置选择</a>*@
+                </td>
+            </tr>
+        </table>
+    </form>
+    <a href="#" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-add',plain:true" onclick="openAdd()">新增</a>
+    <a href="#" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-edit',plain:true" onclick="openEdit()">编辑</a>
+    <a href="#" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-remove',plain:true" id="delBtn" onclick="del()">删除</a>
+    <div id="addRole"></div>
+    <div id="editRole"></div>
+</div>
+<table id="List"></table>
+
+

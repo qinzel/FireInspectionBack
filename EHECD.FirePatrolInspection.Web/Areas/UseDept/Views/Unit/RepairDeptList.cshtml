@@ -1,0 +1,139 @@
+﻿@{
+    ViewBag.Title = "维护公司管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/ueditor/ueditor.config.js"></script>
+<script src="~/Content/ueditor/ueditor.all.min.js"></script>
+<div id="datagrid_list_toolbar_repair_unit"></div>
+<table id="datagrid_repair_unit"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_repair_unit').datagrid({
+            //checkbox: true,
+            singleSelect: true, //是否单选
+            title: '维护公司管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_repair_unit",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_repair_unit").serializeObject(),
+            url: '/UseDept/Unit/GetRelRepairDeptGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+                        field: 'sName', title: '单位名称', width: 150
+                    },
+                    {
+                        field: 'sAddress', title: '单位地址', width: 200, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            return value.length > 20 ? value.substr(0, 20) + '...' : value;
+                        }
+                    },
+                    {
+						field: 'sAdminName', title: '平台管理员', width: 100
+                    },
+                    {
+						field: 'sContact', title: '联系电话', width: 100
+                    },
+                    {
+                        field: 'sLegalPerson', title: '法人', width: 150
+                    },
+                    {
+                        field: 'sQualifications', title: '资质', width: 150
+                    },
+                    {
+                        field: 'iDeviceCount', title: '负责本单位设备数', width: 150
+                    },
+                    {
+                        field: 'iStatus', title: '操作', width: 100, align: 'center', formatter: function (value, row, index) {
+                            var btn = "<a class=\"easyui-linkbutton l-btn l-btn-small l-btn-plain\" data-options=\"iconCls:'icon-detail',plain:true\" onclick=\"showDeviceList(" + row.ID + ")\">" +
+	                                      "<span class=\"l-btn-left l-btn-icon-left\">" +
+		                                      "<span class=\"l-btn-text\">查看设备</span>" +
+		                                      "<span class=\"l-btn-icon icon-detail\">&nbsp;</span>" +
+	                                      "</span>" +
+                                      "</a>";
+                            return btn;
+                        }, styler: function (value, row, index) {
+                            return 'cursor: pointer;';
+                        }
+                    }
+                ]
+            ],
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('appendRow', { sName: '<div style="text-align:center;color:#7f99be">暂无维护公司信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sName', colspan: 8 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_repair_unit").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_repair_unit').datagrid('load', $("#search_form_repair_unit").serializeObject());
+        $('#datagrid_repair_unit').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_repair_unit').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_repair_unit').datagrid('clearSelections');
+    }
+
+    //该维护单位负责的所有设备
+    function showDeviceList(id) {
+        window.devListWindow = $('<div />').dialog({
+            title: '设备列表',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/UseDept/Unit/DeviceList/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        devListWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                devListWindow.dialog('destroy');
+            }
+        });
+    }
+</script>

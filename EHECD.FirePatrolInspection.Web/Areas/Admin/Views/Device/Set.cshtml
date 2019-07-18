@@ -1,0 +1,426 @@
+﻿@{
+    ViewBag.Title = "设置设备";
+}
+<script src="~/Content/backstage/js/My97DatePicker/WdatePicker.js"></script>
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Device
+@if (Model.ID == 0)
+{
+    <a class="easyui-linkbutton" style="margin: 10px;" data-options="iconCls:'icon-add',plain:true" onclick="setInit();">复制最近设备信息</a>
+}
+<form id="form_device">
+    <input type="hidden" name="ID" id="ID" value="@Model.ID"/>
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 15%"><span class="red">*</span>设备编号：</td>
+                <td>
+					<input type="text" id="sNumber" name="sNumber" value="@Model.sNumber" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[20]'],required:true" missingmessage="请输入设备设备编号."/>
+                </td>
+                <td style="width: 15%"><span class="red">*</span>设备类型：</td>
+                <td>
+                    @Html.DropDownList("iDeviceTypeID", ViewBag.typeList as IEnumerable<SelectListItem>, new { @class = "query-sel", style = "width: 120px", name = "iDeviceTypeID" })
+                </td>
+                <td style="width: 15%">数量：</td>
+                <td>
+					<input type="text" id="iNumber" name="iNumber" value="@(Model.iNumber==0?string.Empty:Model.iNumber.ToString())" style="width: 120px" class="easyui-textbox" data-options="validType:['num', 'maxLength[4]']" missingmessage="请输入设备数量."/>
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 15%"><span class="red">*</span>设备名称：</td>
+                <td colspan="5">
+					<input type="text" id="sName" name="sName" value="@Model.sName" style="width: 643px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[20]'],required:true" missingmessage="请输入设备设备名称."/>
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 15%"><span class="red">*</span>设备位置：</td>
+                <td colspan="5">
+					<input type="text" id="sLocation" name="sLocation" value="@Model.sLocation" style="width: 643px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[80]'],required:true" missingmessage="请输入设备设备位置."/>
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 15%">设备型号：</td>
+                <td>
+					<input type="text" id="sModel" name="sModel" value="@Model.sModel" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[20]']" missingmessage="请输入设备设备型号."/>
+                </td>
+                <td style="width: 15%">设备规格：</td>
+                <td>
+					<input type="text" id="sSpec" name="sSpec" value="@Model.sSpec" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[20]']" missingmessage="请输入设备设备规格."/>
+                </td>
+                <td style="width: 15%">安装日期：</td>
+                <td>
+                    <input type="text" id="sInstallDate" name="sInstallDate" value="@Model.sInstallDate" style="width: 112px" readonly="readonly" placeholder="安装日期" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 15%">生产厂家：</td>
+                <td colspan="5">
+					<input type="text" id="sManufacturer" name="sManufacturer" value="@Model.sManufacturer" style="width: 643px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[50]']" missingmessage="请输入设备生产厂家."/>
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 15%"><span class="red">*</span>所属使用单位：</td>
+                <td>
+                    @if (Model.ID == 0)
+                    {
+                        @Html.DropDownList("iUseDeptID", ViewBag.unitList as IEnumerable<SelectListItem>, new { @class = "query-sel", style = "width: 120px", name = "iUseDeptID" })
+                    }
+                    else
+                    {
+                        if (Model.iUseDeptID > 0 && Model.iRepairDeptID > 0 && Model.iClientID > 0)
+                        {
+                            @Html.DropDownList("iUseDeptID", ViewBag.unitList as IEnumerable<SelectListItem>, new { @class = "query-sel", style = "width: 120px", @disabled = "disabled", name = "iUseDeptID" })
+                        }
+                        else
+                        {
+                            @Html.DropDownList("iUseDeptID", ViewBag.unitList as IEnumerable<SelectListItem>, new { @class = "query-sel", style = "width: 120px", name = "iUseDeptID" })
+                        }
+                    }
+                </td>
+                <td style="width: 15%"><span class="red">*</span>责任人：</td>
+                <td>
+                    <select name="iClientID" id="iClientID" class="query-sel" disabled="disabled" style="width: 120px">
+                        <option>请选择</option>
+                    </select>
+                </td>
+                <td style="width: 15%"><span class="red">*</span>维护公司：</td>
+                <td>
+                    <select name="iRepairDeptID" id="iRepairDeptID" class="query-sel" disabled="disabled" style="width: 120px">
+                        <option>请选择</option>
+                    </select>
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 15%">生产日期：</td>
+                <td>
+                    <input type="text" id="sProductionDate" name="sProductionDate" data-tip="生产日期" data-tag="date" placeholder="生产日期" value="@Model.sProductionDate" style="width: 112px" readonly="readonly" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />
+                </td>
+                <td style="width: 15%">过期年限：</td>
+                <td>
+					<input type="text" id="iExpiredYears" name="iExpiredYears" data-tip="过期年限" data-tag="date" value="@(Model.iExpiredYears==0?string.Empty:Model.iExpiredYears.ToString())" style="width: 120px" class="easyui-textbox" data-options="validType:['num', 'maxLength[2]']" missingmessage="请输入设备过期年限."/>
+                </td>
+                <td style="width: 15%">强制报废年限：</td>
+                <td>
+					<input type="text" id="iForciblyScrappedYears" name="iForciblyScrappedYears" data-tip="强制报废年限" data-tag="date" value="@(Model.iForciblyScrappedYears==0?"":Model.iForciblyScrappedYears.ToString())" style="width: 120px" class="easyui-textbox" data-options="validType:['num', 'maxLength[2]']" missingmessage="请输入设备强制报废年限."/>
+                </td>
+            </tr>
+            @if (Model.ID > 0)
+            {
+                <tr>
+                    <td style="width: 15%">设备二维码：</td>
+                    <td colspan="5">
+                        <img src="@Model.sQRCode" style="width: 100px; height: 100px" />
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="6" style="text-align: center !important">
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="showRelDeviceList(@Model.ID);">编辑关联设备</a>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 15%">关联设备：</td>
+                <td id="tdRelDevice" colspan="5">
+                    <input type="hidden" id="sRelDeviceIDs" value="@Model.sDeviceIDs" />
+                    @if (Model.DeviceList != null && Model.DeviceList.Count > 0)
+                    {
+                        var itemAry = new List<string>();
+                        foreach (var item in Model.DeviceList)
+                        {
+                            itemAry.Add(item.sName);
+                        }
+                        <span>@string.Join(",", itemAry)</span>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script>
+    var did = @Model.ID;
+    var rpr = @Model.iRepairDeptID;
+    var clt = @Model.iClientID;
+
+    $(function () {
+        window.saveModel = function () {
+            if (!$("select[name=iDeviceTypeID]").val().length) {
+                msgShow('提示', '请选择设备类型!', 'warning');
+                return;
+            }
+            if (!$("select[name=iRepairDeptID]").val().length) {
+                msgShow('提示', '请选择维护公司!', 'warning');
+                return;
+            }
+            if (!$("select[name=iClientID]").val().length) {
+                msgShow('提示', '请选择责任人!', 'warning');
+                return;
+            }
+            if (!$("select[name=iUseDeptID]").val().length) {
+                msgShow('提示', '请选择使用单位!', 'warning');
+                return;
+            }
+
+            if (!$("#form_device").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+
+            //过期设备不能添加
+            var id = parseInt($("#ID").val());
+            if(id == 0 && !!$("input[name='sProductionDate']").val()){
+                var productDate = new Date( $("input[name='sProductionDate']").val());
+                var expiredYear = $("input[name='iExpiredYears']").val();
+                var year =  productDate.getFullYear();
+                productDate.setFullYear(year + parseInt(expiredYear));
+                var now = new Date();
+                if(Date.parse(now) - Date.parse(productDate) > 0){
+                    msgShow('提示', '设备已过期!', 'warning');
+                    return;
+                }
+            }
+         
+
+            var $date = $("input[data-tag=date]");
+            if (!$date.eq(0).val().length && !$date.eq(1).val().length && !$date.eq(2).val().length) {
+                // 全部填写后不验证
+            }
+            else {
+                for (var i = 0; i < $date.length; i++) {
+                    var $obj = $date.eq(i);
+                    if (!$obj.val().length) {
+                        msgShow('提示', '' + $obj.attr("data-tip") + '不能为空!', 'warning');
+                        return;
+                    }
+                }
+            }
+
+            // 关联设备ID集
+            var selectIds = [];
+            var selectIdsString = "";
+            if (relAry.length > 0) {
+                for (var i = 0; i < relAry.length; i++) {
+                    selectIds.push(relAry[i].ID);
+                }
+                selectIdsString = selectIds.join();
+            }
+            else {
+                selectIdsString = $(".panel.window #sRelDeviceIDs").val();
+            }
+
+            $("#iUseDeptID").removeAttr("disabled");
+            $("#iClientID").removeAttr("disabled");
+            $("#iRepairDeptID").removeAttr("disabled");
+
+            var data = $("#form_device").serialize();
+            data += "&sDeviceIDs=" + selectIdsString;
+
+            $("#save_window_okbtn_device").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Device/Set", //用与处理ajax的地址及函数
+                data: data,
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_device').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.setWindow.dialog('close');//关闭新建窗口
+                        clearSelections();
+                        reload();
+                        //if (res.code == 0) {
+                        //    reload(1);
+                        //}
+                        //else {
+                        //    clearSelections();
+                        //    reload();
+                        //}
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_device').linkbutton('enable');
+                }
+            });
+        }
+
+        if(did > 0) {
+            setRepairDept('@Model.iUseDeptID');
+            setClients('@Model.iUseDeptID');
+        }
+
+        $("#iUseDeptID").on("change", function() {
+            var $self = $(this);
+            setRepairDept($self.val());
+            setClients($self.val());
+        });
+    });
+
+    var relAry = [];//已选择的关联设备集合
+
+    function showRelDeviceList(id) {
+        var dept = $("#iUseDeptID").val();
+        if(!dept){
+            msgShow('提示', '请先选择使用单位', 'warning');
+            return;
+        }
+        window.deviceListWindow = $('<div />').dialog({
+            title: '设备列表',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/Admin/Device/RelDeviceList?id=' + id+'&iUseDeptID='+dept,
+            modal: true,
+            buttons: [
+                {
+                    text: '完成',
+                    iconCls: 'icon-ok',
+                    handler: function (e) {
+                        deviceListWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                relAry = $('#datagrid_device_rel_list').datagrid("getSelections");
+                if(relAry.length) {
+                    var nameAry = [];
+                    for(var i = 0; i < relAry.length; i++) {
+                        var obj = relAry[i];
+                        nameAry.push(obj.sName);
+                    }
+                    $(".panel.window #tdRelDevice").text(nameAry.join('、'));
+                }
+                else {
+                    $(".panel.window #tdRelDevice").text("-");
+                }
+                deviceListWindow.dialog('destroy');
+            }
+        });
+    }
+
+    function setInit() {
+        $.ajax({
+            type: "GET",
+            url: "/Admin/Device/GetDeviceInfo", //用与处理ajax的地址及函数
+            success: function (res) {
+                if(res.length) {
+                    var data = JSON.parse(res);
+
+                    $(".panel.window #sNumber").textbox("setValue", data.sNumber);
+                    $(".panel.window select[name=iDeviceTypeID]").val(data.iDeviceTypeID);
+                    $(".panel.window #iNumber").textbox("setValue", (data.iNumber == 0 ? "" : data.iNumber));
+                    $(".panel.window #sName").textbox("setValue", data.sName);
+                    $(".panel.window #sLocation").textbox("setValue", data.sLocation);
+                    $(".panel.window #sModel").textbox("setValue", data.sModel);
+                    $(".panel.window #sSpec").textbox("setValue", data.sSpec);
+                    $(".panel.window #sInstallDate").val(data.sInstallDate);
+                    $(".panel.window #sManufacturer").textbox("setValue", data.sManufacturer);
+                    $(".panel.window select[name=iRepairDeptID]").val(data.iRepairDeptID);
+                    $(".panel.window select[name=iClientID]").val(data.iClientID);
+                    $(".panel.window select[name=iUseDeptID]").val(data.iUseDeptID);
+                    $(".panel.window #sProductionDate").val(data.sProductionDate);
+                    $(".panel.window #iExpiredYears").textbox("setValue", (data.iExpiredYears == 0 ? "" : data.iExpiredYears));
+                    $(".panel.window #iForciblyScrappedYears").textbox("setValue", (data.iForciblyScrappedYears == 0 ? "" : data.iForciblyScrappedYears));
+
+                    $("#iUseDeptID").removeAttr("disabled");
+                    $("#iClientID").removeAttr("disabled");
+                    $("#iRepairDeptID").removeAttr("disabled");
+                    setRepairDept("" + data.iUseDeptID + "", data.iRepairDeptID);
+                    setClients("" + data.iUseDeptID + "", data.iClientID);
+                    
+                    if(!!data.DeviceList && data.DeviceList.length > 0) {
+                        relAry = data.DeviceList;
+                        var nameAry = [];
+                        for(var i = 0; i < data.DeviceList.length; i++) {
+                            var obj = data.DeviceList[i];
+                            nameAry.push(obj.sName);
+                        }
+                        $(".panel.window #tdRelDevice").text(nameAry.join('、'));
+                    }
+                    else {
+                        $(".panel.window #tdRelDevice").text("-");
+                    }
+                }
+            }
+        });
+    }
+
+    function setRepairDept(id, rId) {
+        if(!id.length) {
+            $("#iRepairDeptID").html("<option>请选择</option>").attr("disabled", "disabled");
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "/Admin/Device/GetRepairDeptList", //用与处理ajax的地址及函数
+            data: {
+                iUseDeptID: parseInt(id)
+            },
+            success: function (res) {
+                if(res.length) {
+                    $("#iRepairDeptID").html("<option>请选择</option>");
+                    var data = JSON.parse(res);
+                    if(data.length) {
+                        if(did == 0 || (did > 0 && rpr == 0 && clt == 0)) {
+                            $("#iRepairDeptID").removeAttr("disabled");
+                        }
+                        var content = "";
+                        for(var i = 0; i < data.length; i++) {
+                            var obj = data[i];
+                            content += "<option value='" + obj.ID + "'" 
+                                + (did > 0 
+                                    ? (rpr > 0 ? (rpr == obj.ID ? "selected" : "") : "") 
+                                    : (rId == undefined ? "" : (rId == obj.ID ? "selected" : "")))
+                                + ">" + obj.sName + "</option>";
+                        }
+                        $("#iRepairDeptID").append(content);
+                    }
+                }
+            }
+        });
+    }
+
+    function setClients(id, cId) {
+        if(!id.length) {
+            $("#iClientID").html("<option>请选择</option>").attr("disabled", "disabled");
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "/Admin/Device/GetClientList", //用与处理ajax的地址及函数
+            data: {
+                iUseDeptID: parseInt(id)
+            },
+            success: function (res) {
+                if(res.length) {
+                    $("#iClientID").html("<option>请选择</option>");
+                    var data = JSON.parse(res);
+                    if(data.length) {
+                        if(did == 0 || (did > 0 && rpr == 0 && clt == 0)) {
+                            $("#iClientID").removeAttr("disabled");
+                        }
+                        var content = "";
+                        for(var i = 0; i < data.length; i++) {
+                            var obj = data[i];
+                            content += "<option value='" + obj.ID + "'" 
+                                + (did > 0 
+                                    ? (clt > 0 ? (clt == obj.ID ? "selected" : "") : "") 
+                                    : (cId == undefined ? "" : (cId == obj.ID ? "selected" : ""))) 
+                                + ">" + obj.sName + "</option>";
+                        }
+                        $("#iClientID").append(content);
+                    }
+                }
+            }
+        });
+    }
+</script>

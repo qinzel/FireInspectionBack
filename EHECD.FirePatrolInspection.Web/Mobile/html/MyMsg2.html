@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+	<style>
+		.no_data {
+			width: calc(100% - .4rem) !important;
+		}
+	</style>
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<i id="backBtn" class="flex_1"></i>
+			<h1 class="flex_1 text-center">意见反馈</h1>
+			<p class="flex_1 color-fff font24r text-right"></p>
+		</header>
+
+		<!-- 主要内容 -->
+		<div class="main-wrap main-fix pad20r">
+			<!-- 模板 -->
+			<div @click="toDetail(item.ID)" v-for="item in list" style="justify-content: center;" class="wid100 bg-fa hgt12rem flex_column p_both20r m-b-20r">
+				<div class="between-center m-b-15r">
+					<p class="flex_dom flex_item_mid fw-b color-333" style="width: 90%;">
+						<span style="height: .1rem;background-color: #518EFD" class="block wid01rem radius_half m-r-10r font24r"></span>
+						<span class="only_line" style="width: 90%" v-cloak>{{ item.sTitle }}</span>
+					</p>
+					<!-- <p class="flex_dom flex_item_mid fw-b color-666 font24r">中美2018携手消防演习</p> -->
+					<img style="width: .26rem;" src="../img/slice/trash-can.png" alt="">
+				</div>
+				<div class="between-center">
+					<p class="font22r color-999" v-cloak>{{ item.dCreateTime }}</p>
+					<img style="width: .3rem" src="../img/slice/icon-arrow-r.png" alt="">
+				</div>
+			</div>
+
+			<!-- 暂无反馈 -->
+			<div class="no_data">
+				<p>暂无反馈</p>
+			</div>
+		</div>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script>
+    getUserInfo();
+    vue_init({
+        data: {
+            list: []
+        },
+        mounted: function () {
+            go_ajax({
+                url: "http://fire.server75.ehecd.com/router?method=fb.getlist",
+                data: {
+                    iClientID: JSON.parse(localStorage.iClient).ID,
+                    page: 1,
+                },
+                success: function (res) {
+                    console.log(res.data)
+                    for (idx in res.data) {
+                        var time = ""
+                        time = res.data[idx].dCreateTime.replace(/T/g, " ")
+                        time = time.split(".")
+                        
+                        if (time.length >= 2) {
+                            time = time.slice(0, 1)
+                        }
+                        time = time[0]
+                        time = time.split(" ")
+                        time = time[0].replace(/-/g,".")
+                        res.data[idx].dCreateTime = time
+                    }
+                    app.list = res.data
+                }
+            })
+        },
+        methods: {
+            toDetail(idx) {
+                location.href = `65-详情(zyl).html?${idx}`
+            }
+        }
+    })
+
+    goBack()
+
+</script>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+
+</html>

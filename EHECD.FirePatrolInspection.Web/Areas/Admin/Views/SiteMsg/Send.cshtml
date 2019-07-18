@@ -1,0 +1,75 @@
+﻿@{
+    ViewBag.Title = "发送站内信";
+}
+<form id="form_client_msg">
+    <input type="hidden" name="sReceiveClient" value="@ViewBag.sIds" />
+    <input type="hidden" name="iType" value="1" />
+    <div>
+        <table class="gridtable">
+            <tr>
+                <td style="width: 80px">标题：</td>
+                <td>
+                    <input type="text" name="sTitle" value="" style="width: 632px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml','maxLength[30]'],required:true" missingmessage="请输入标题." />
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">内容：</td>
+                <td>
+                    <textarea id="sContent" style="width: 630px; height: 350px"></textarea>
+                    <input type="hidden" name="sContent" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+@Html.Action("Init", "Uediter", new { area = "", module = "Article", field = "SiteMsg" })
+<script>
+    $(function () {
+        UE.ehecd_editer_init('sContent', '');
+
+        window.saveModel = function() {
+            if (!$("#form_client_msg").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+
+            var content = UE.getEditor('sContent').getContent().replace(/[']/g, "").replace(/[\x00-\x1f\x7f]/i, "").replace("\n", "<br/>");
+            if ($.trim(content) == '') {
+                msgShow('提示', '请输入内容!', 'warning');
+                return;
+            }
+
+            $("input[name=sContent]").val(content);
+
+            $("#save_window_okbtn_client_msg").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/SiteMsg/Send", //用与处理ajax的地址及函数
+                data: $("#form_client_msg").serialize(),
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_client_msg').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.sendWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_client_msg').linkbutton('enable');
+                }
+            });
+        }
+    });
+</script>

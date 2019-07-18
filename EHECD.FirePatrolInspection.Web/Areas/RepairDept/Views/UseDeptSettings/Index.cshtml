@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "设置后台基础设置";
+    EHECD_Unit unit = ViewBag.unit;
+    LoginUser user = ViewBag.logUser;
+    IEnumerable<EHECD_Unit> dutyList = ViewBag.dutyList;
+}
+@using EHECD.EntityFramework.Models;
+@using EHECD.FirePatrolInspection.Entity;
+@model EHECD_UseDeptSettings
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #FBFBFB;
+    }
+</style>
+<form id="form_settings">
+    <div class="easyui-layout" data-options="fit:true">
+        <table class="gridtable">
+            <tr>
+                <td style="text-align: left !important; padding: 10px 5px; font-size: 20px">@(unit.sPhone)，@(unit.sName)</td>
+            </tr>
+            <tr>
+                <td style="text-align: left !important; margin: 5px 0; font-size: 14px; font-weight: bold">关联使用单位：</td>
+            </tr>
+            @if (dutyList != null && dutyList.Count() > 0)
+            {
+                foreach (EHECD_Unit u in dutyList)
+                {
+                    <tr>
+                        <td>
+                            <table cellpadding="0" cellspacing="0" style="width: 100%;">
+                                <tr>
+                                    <td style="text-align: left !important; border-bottom: 0 !important">@(u.sName)，@(u.iDeviceCount)台设备，平台管理员：@(u.sAdminName)，联系电话：@u.sContact</td>
+                                </tr>
+                                @if (u.ClientList != null && u.ClientList.Count > 0)
+                                {
+                                    foreach (EHECD_Client c in u.ClientList)
+                                    {
+                                        <tr>
+                                            <td style="text-align: left !important; border-top: 0 !important">值班人员：@(c.sName)，电话：@c.sPhone</td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+</form>

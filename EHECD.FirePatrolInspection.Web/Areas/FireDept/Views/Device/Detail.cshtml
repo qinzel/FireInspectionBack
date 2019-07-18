@@ -1,0 +1,146 @@
+﻿@{
+    ViewBag.Title = "查看设备详情";
+}
+
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Device
+
+<table class="gridtable">
+	<tr>
+        <td style="width: 85px">设备编号：</td>
+        <td>
+			@Model.sNumber
+        </td>
+        <td style="width: 85px">设备类型：</td>
+        <td>
+			@Model.sDeviceTypeName
+		</td>
+        <td style="width: 85px">数量：</td>
+        <td>
+			@Model.iNumber
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 85px">设备名称：</td>
+        <td colspan="5">
+			@Model.sName
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 85px">设备位置：</td>
+        <td colspan="5">
+			@Model.sLocation
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 85px">设备型号：</td>
+        <td>
+			@Model.sModel
+		</td>
+        <td style="width: 85px">设备规格：</td>
+        <td>
+			@Model.sSpec
+		</td>
+        <td style="width: 85px">生产日期：</td>
+        <td>
+            @Model.sProductionDate
+        </td>
+    </tr>
+	<tr>
+        <td style="width: 85px">安装日期：</td>
+        <td>
+			@Model.sInstallDate
+		</td>
+        <td style="width: 85px">生产厂家：</td>
+        <td>
+			@Model.sManufacturer
+		</td>
+        <td style="width: 85px">所属使用单位：</td>
+        <td>
+            @Model.sUnitName
+        </td>
+    </tr>
+	<tr>
+        <td style="width: 85px">责任人：</td>
+        <td>
+			@Model.sClientName
+		</td>
+        <td style="width: 85px">所属部门：</td>
+        <td>
+            @Model.sOrganName
+        </td>
+        <td style="width: 85px">维护公司：</td>
+        <td>
+            @Model.sRepairDeptName
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 85px">设备二维码：</td>
+        <td>
+            @if (Model.sQRCode.Length > 0)
+            {
+                <img src="@Model.sQRCode" style="width: 100px" />
+            }
+            else
+            {
+                <span>-</span>
+            }
+        </td>
+        <td style="width: 85px">关联设备：</td>
+        <td colspan="3" style="vertical-align:top">
+            @if (Model.DeviceList != null && Model.DeviceList.Count > 0)
+            {
+                foreach (var device in Model.DeviceList)
+                {
+                    <span style="margin-right: 5px">@device.sName</span>
+                }
+            }
+        </td>
+    </tr>
+	<tr>
+        <td style="width: 85px">上次巡检日期：</td>
+        <td>
+			@(Model.sLastInspectionDate == null ? "-" : (Model.sLastInspectionDate.Length > 0 ? Model.sLastInspectionDate : "-"))
+		</td>
+        <td style="width: 85px">上次维修日期：</td>
+        <td>
+			@(Model.sLastRepairDate == null ? "-" : (Model.sLastRepairDate.Length > 0 ? Model.sLastRepairDate : "-"))
+		</td>
+        <td style="width: 85px">上次更换日期：</td>
+        <td>
+			@(Model.sLastChangeDate == null ? "-" : (Model.sLastChangeDate.Length > 0 ? Model.sLastChangeDate : "-"))
+		</td>
+    </tr>
+    <tr>
+        <td colspan="6" style="text-align: center !important">
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-score',plain:true" onclick="showRecordList(@Model.ID);">巡检记录</a>
+        </td>
+    </tr>
+</table>
+<script>
+    //该使用单位下辖所有点检员
+    function showRecordList(id) {
+        window.recordListWindow = $('<div />').dialog({
+            title: '巡检记录列表',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/FireDept/InspectionRecord/DeviceRecordList/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        recordListWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                recordListWindow.dialog('destroy');
+            }
+        });
+    }
+</script>

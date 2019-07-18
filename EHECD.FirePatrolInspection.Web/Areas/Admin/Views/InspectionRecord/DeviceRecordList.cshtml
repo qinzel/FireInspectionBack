@@ -1,0 +1,191 @@
+﻿			
+@{
+    ViewBag.Title = "巡检记录管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Content/backstage/js/My97DatePicker/WdatePicker.js"></script>
+<div id="datagrid_list_toolbar_dev_inspectionrecord">
+    <form id="search_form_dev_inspectionrecord">
+        <input type="hidden" name="condition.iDeviceID" value="@ViewBag.iDeviceID" />
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sOperator" type="text" data-options="prompt:'请输入操作人'" class="easyui-textbox"/>
+        <span style="margin-left: 5px">时间：</span>
+        <input type="text" id="dStartTime" name="condition.dStartTime" readonly="readonly" placeholder="开始时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd HH' })" class="Wdate query-datepicker" />&nbsp;~
+        <input type="text" id="dEndTime" name="condition.dEndTime" readonly="readonly" placeholder="结束时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd HH' })" class="Wdate query-datepicker" />&nbsp;&nbsp;
+        <span style="margin-left: 5px">巡检结果：</span>
+        <select name="condition.iStatus" class="query-sel">
+            <option value="">全部</option>
+            <option value="0">正常</option>
+            <option value="1">异常</option>
+        </select>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="devInsDatagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_dev_inspectionrecord"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_dev_inspectionrecord').datagrid({
+            singleSelect: true, //是否单选
+            title: '巡检记录管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_dev_inspectionrecord",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_dev_inspectionrecord").serializeObject(),
+            url: '/Admin/InspectionRecord/GetAllTypeListGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'sNumber', title: '设备编号', width: 100
+                    },
+                    {
+                        field: 'sName', title: '设备名称', width: 100
+                    },
+                    {
+                        field: 'iRecordType', title: '类型', width: 100, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            switch (value) {
+                                case 0:
+                                    return "巡检";
+                                case 1:
+                                    return "维修";
+                                case 2:
+                                    return "更换";
+                            }
+                        }
+                    },
+                    {
+                        field: 'sOperator', title: '巡检人/维修人/更换人', width: 150, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (row["iSource"] == 0) {
+                                return value;
+                            }
+                            else {
+                                return "后台添加";
+                            }
+                        }
+                    },
+                    {
+						field: 'dCreateTime', title: '时间', width: 100
+                    },
+                    {
+                        field: 'iStatus', title: '巡检结果', width: 100, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (value) {
+                                return "<span style=\"color: red\">异常</span>";
+                            }
+                            return "<span style=\"color: cornflowerblue\">正常</span>";
+                        }
+                    },
+                    {
+                        field: 'iClientID', title: '操作', width: 100, align: 'center', formatter: function (value, row, index) {
+                            var btn = "<a class=\"easyui-linkbutton l-btn l-btn-small l-btn-plain\" data-options=\"iconCls:'icon-detail',plain:true\" onclick=\"showTypeRecordDetail(" + row.ID + ", " + row.iRecordType + ")\">" +
+	                                      "<span class=\"l-btn-left l-btn-icon-left\">" +
+		                                      "<span class=\"l-btn-text\">查看结果</span>" +
+		                                      "<span class=\"l-btn-icon icon-detail\">&nbsp;</span>" +
+	                                      "</span>" +
+                                      "</a>";
+                            return btn;
+                        }, styler: function (value, row, index) {
+                            return 'cursor: pointer;';
+                        }
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showTypeRecordDetail(rowData.ID, rowData.iRecordType);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('appendRow', { sNumber: '<div style="text-align:center;color:#7f99be">暂无巡检记录信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sNumber', colspan: 7 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_dev_inspectionrecord").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                devInsDatagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function devInsDatagridReload() {
+        $('#datagrid_dev_inspectionrecord').datagrid('load', $("#search_form_dev_inspectionrecord").serializeObject());
+        $('#datagrid_dev_inspectionrecord').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_dev_inspectionrecord').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_dev_inspectionrecord').datagrid('clearSelections');
+    }
+
+    //查看设备巡检详情
+    function showTypeRecordDetail(id, type) {
+        var title = "";
+        switch (type) {
+            case 0:
+                title = "巡检";
+                break;
+            case 1:
+                title = "维修";
+                break;
+            case 2:
+                title = "更换";
+                break;
+        }
+        window.typeRecordWindow = $('<div />').dialog({
+            title: '设备' + title + '详情',
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/Admin/InspectionRecord/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        typeRecordWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                typeRecordWindow.dialog('destroy');
+            }
+        });
+    }
+</script>

@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+	<style>
+		textarea {
+			resize: none;
+			border: 0;
+			padding: .2rem;
+			border-top-left-radius: .1rem;
+			border-top-right-radius: .1rem;
+		}
+
+		#counterBox {
+			border-bottom-left-radius: .1rem;
+			border-bottom-right-radius: .1rem;
+		}
+
+		.uploadimg-wrap>div+div {
+			margin-left: calc( (100% - 1.3rem*4) / 3 - .15rem / 3);
+		}
+
+		.uploadimg-wrap>div:nth-child(4n + 1) {
+			margin-left: 0;
+			margin-bottom: calc( (100% - 1.3rem*4) / 3);
+		}
+        .uploadimg-wrap{
+            -webkit-flex-wrap:wrap !important;
+            flex-wrap: wrap !important;
+        }
+	</style>
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<i id="backBtn" class="flex_1"></i>
+			<h1 class="flex_1 text-center">新建反馈</h1>
+			<p class="flex_1 color-fff font24r text-right"></p>
+		</header>
+
+		<div class="main-fix p_both20r font24r">
+
+			<div class="hgt09rem flex_dom flex_item_mid border-b-eee font24r m-b-20r">
+				<input v-model="sTitle" maxlength="25" class="placeholderccc wid100 font22r" type="text" placeholder="反馈标题 （4-25字符）">
+			</div>
+			<div>
+				<textarea v-model="sContent" oninput="wordCounter()" placeholder="请输入1000字符以内反馈内容" maxlength="1000" name="" id="" class="block wid100 hgt35rem bg-fa placeholderccc font24r"></textarea>
+				<p id="counterBox" class="text-right bg-fa wid100 pad20r color-333">1000</p>
+			</div>
+
+			<div>
+				<p class="l-h-085rem font24r fw-b color-000">上传照片&nbsp;
+					<span class="font22r color-999 fw-n">(最多5张)</span>
+				</p>
+                <!--上传图片-->
+                <div class="flex_dom uploadimg-wrap">
+                    <div class="relative swiper_clickLook" v-for="sImg in sGoodsImg">
+                        <img style="width: 1.2rem; height: 1.2rem;" class="block" :src="sImg" alt="">
+                        <img onclick="deletegoodsimg(this)" style="width: .3rem;top: 0;right: 0;transform: translate(50%,-50%);padding: .1rem;box-sizing: content-box;" class="abolute" src="../img/slice/icon-del.png" alt="">
+                    </div>
+                    <div v-show="sGoodsImg.length<5">
+                        <img onclick="updategoodsimg()" style="width: 1.2rem; height: 1.2rem;" src="../img/slice/upload-img.png" alt="">
+                    </div>
+                </div>
+			</div>
+
+			<div @click="submit" class="p-v-30r">
+				<button style="margin: auto;border-radius: .3rem;" class="bg-fade block wid32rem l-h-06rem color-fff font24r ">提交</button>
+			</div>
+
+		</div>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script>
+    getUserInfo();
+    vue_init({
+        data: {
+            sTitle: "",
+            sContent: "",
+            sImageSrc: "",
+            sGoodsImg: [],
+            iUnitID: JSON.parse(localStorage.iClient).iType != 0 ? JSON.parse(localStorage.iClient).iUnitID : 0
+        },
+        methods: {
+            submit() {
+                if (app.sTitle == "" || app.sContent == "") {
+                    go_alert2("请完善反馈内容")
+                }
+                else if(app.sTitle.length < 4){
+                    go_alert2("标题太短")
+                }
+                else {
+                    go_ajax({
+                        url: "/router?method=fb.add",
+                        data: {
+                            iClientID: JSON.parse(localStorage.iClient).ID,
+                            sTitle: app.sTitle,
+                            sContent: app.sContent,
+                            sImageSrc: app.sGoodsImg.join(","),
+                            iUnitID: app.iUnitID
+                        },
+                        success: function (res) {
+                            if (res.message == "提交意见反馈成功") {
+                                go_alert({
+                                    msg: ["你的反馈已提交", "#333"],
+                                    agree_text: ["确定", "red"],
+                                    yesFunc: function () {
+                                        goBackFunc();
+                                    }
+                                })
+                            } else {
+                                go_alert2(res.message)
+                            }
+                        }
+                    })
+                }
+            }
+        }
+    })
+
+    //上传评价图片
+    function updategoodsimg() {
+        updateimg(5 - app.sGoodsImg.length);
+    }
+
+    //上传图片完成后回调
+    function updateimgsuccess(sImg) {
+        app.sGoodsImg = app.sGoodsImg.concat(sImg.split(','));
+    }
+
+    //删除图片
+    function deletegoodsimg(btn) {
+        var i = $(".swiper_clickLook").index($(btn).parent());
+        app.sGoodsImg.splice(i, 1);
+    }
+
+	// textarea计数器
+	function wordCounter() {
+		let wordNum = $("textarea")[0].value.length;
+		$("#counterBox").html(1000 - wordNum)
+	}
+
+    // 后退按钮
+    goBack()
+
+</script>
+
+</html>

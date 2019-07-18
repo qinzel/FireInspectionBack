@@ -1,0 +1,17 @@
+﻿<script src="~/Content/ueditor/third-party/webuploader/webuploader.min.js"></script>
+<script src="~/Content/ueditor/third-party/webuploader/webuploader-sigle.js"></script>
+
+<script type="text/javascript">
+    (function ($) {
+        $.fn.extend({
+            sigleImageUploader: function(ele, callback) {
+                $(ele).uploader('@Html.Raw(ViewBag.serverUrl)', callback);
+                return {
+                    getImgsrc: function() {
+                        return $(ele).find('input[type=hidden]').val();
+                    }
+                }
+            }
+        });
+    })($);
+</script>

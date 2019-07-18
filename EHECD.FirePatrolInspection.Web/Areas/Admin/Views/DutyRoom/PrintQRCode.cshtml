@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "二维码详情";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using EHECD.FirePatrolInspection.Entity
+@model List<EHECD_DutyRoom>
+<div style="width: 100%">
+    @if (Model != null && Model.Count > 0)
+    {
+        foreach (var item in Model)
+        {
+            <img style="float: left; margin: 10px" src="@item.sQRCode" />
+        }
+    }
+</div>
+<script>
+    window.print();
+    setTimeout(function () {
+        window.close();
+    }, 200);
+</script>

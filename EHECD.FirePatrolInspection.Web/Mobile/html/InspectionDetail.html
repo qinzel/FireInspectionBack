@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+	<style>
+		.main-fix .mod+.mod {
+			border-top: 1px solid #eee;
+		}
+	</style>
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<i id="backBtn" class="flex_1"></i>
+			<h1 class="flex_1 text-center">巡检详情</h1>
+			<p class="flex_1 color-fff font24r text-right"></p>
+		</header>
+
+		<div class="main-fix p-b-30r" v-cloak>
+			<!-- 指标模板 -->
+			<div v-for="item in detail.DetailList" class="mod m_both20r hgt09rem between-center font24r">
+				<p style="max-width: 80%;" class="only_line color-333">{{ item.sName }}</p>
+				<p v-if="!item.iStatus" class="color-blue">正常</p>
+				<p v-else class="color-red">异常</p>
+			</div>
+			<p class="holder"></p>
+			<div class="font22r color-666 p_both20r m-t-20r l-h-04rem">
+				<p>设备异常情况描述：<span>{{ detail.sDesc }}</span></p>
+			</div>
+		</div>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script>
+    vue_init({
+        data: {
+            detail: {}
+        },
+        mounted: function () {
+            go_ajax({
+                url: "/router?method=ins.get",
+                data: {
+                    iInspectionRecordID: parseInt(location.search.substring(1).replace('xId=', ''))
+                },
+                success: function (res) {
+                    app.detail = res.data
+                }
+            })
+        }
+    })
+
+    // 后退按钮
+    goBack()
+
+</script>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+
+</html>

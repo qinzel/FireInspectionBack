@@ -1,0 +1,539 @@
+﻿@{
+    ViewBag.Title = "运维统计管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    IEnumerable<EHECD_SiteMsg> msgList = ViewBag.msgList;
+    LoginUser user = ViewBag.user;
+    EHECD_Unit unit = ViewBag.unit;
+    int clientCount = ViewBag.clientCount;
+    IEnumerable<EHECD_Unit> dutyList = ViewBag.dutyList;
+}
+@using EHECD.EntityFramework.Models;
+@using EHECD.FirePatrolInspection.Entity;
+<script src="~/Content/backstage/echarts/echarts.min.js"></script>
+<script src="~/Content/backstage/echarts/macarons.js"></script>
+<style>
+    body {
+        margin: 0 !important;
+        height: 100%;
+    }
+    .tasks td {
+        height: 20px;
+        line-height: 20px;
+    }
+
+    /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/  
+    ::-webkit-scrollbar  
+    {  
+        width: 2px;  
+        height: 2px;  
+        background-color: #f5f5f5;  
+    }  
+  
+    /*定义滚动条轨道 内阴影+圆角*/  
+    ::-webkit-scrollbar-track  
+    {  
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);  
+        border-radius: 10px;  
+        background-color: #F5F5F5;  
+    }  
+  
+    /*定义滑块 内阴影+圆角*/  
+    ::-webkit-scrollbar-thumb  
+    {  
+        border-radius: 10px;  
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);  
+        background-color: #c7c7c7;  
+    }
+</style>
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'west',title:'设备信息',split:true,collapsible:false" style="width:70%;">
+        <div style="padding: 20px 0 0 30px">
+            <span style="margin-left: 5px">查看使用单位：</span>
+            @Html.DropDownList("iUseDeptID", ViewBag.unitList as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "iUseDeptID" })
+        </div>
+        <div style="display: inline-flex; padding: 20px 50px 0 50px">
+            <div id="first" style="width:320px; height: 280px; margin-right: 30px"></div>
+            <div id="second" style="width:320px; height: 280px; margin-left: 30px"></div>
+        </div>
+    </div>
+    <div data-options="region:'center',title:'账号信息',split:true,minWidth:300" style="width:30%;">
+        <div style="padding: 20px 30px; cursor: pointer" onclick="showDetailDialog(@unit.ID)">
+            <table class="gridtable">
+                <tr>
+                    <td style="width: 90px">单位名称：</td>
+                    <td>@unit.sName</td>
+                </tr>
+                <tr>
+                    <td style="width: 90px">单位地址：</td>
+                    <td>@unit.sAddress</td>
+                </tr>
+                <tr>
+                    <td style="width: 90px">平台管理员：</td>
+                    <td>@unit.sAdminName</td>
+                </tr>
+                <tr>
+                    <td style="width: 90px">联系电话：</td>
+                    <td>@unit.sContact</td>
+                </tr>
+                <tr>
+                    <td style="width: 90px">关联使用单位：</td>
+                    <td>
+                        @if (dutyList != null && dutyList.Count() > 0)
+                        {
+                            foreach (EHECD_Unit u in dutyList)
+                            {
+                                <table cellpadding="0" cellspacing="0" style="width: 100%; padding: 0; border-bottom: 1px solid #ccc;background-color: #fff !important">
+                                    <tr>
+                                        <td style="text-align: left !important; border: 0 !important; background-color: #fff !important">@(u.sName)，@(u.iDeviceCount)台设备</td>
+                                    </tr>
+                                </table>
+                            }
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 90px">当前登录账号：</td>
+                    <td>@user.sLoginName</td>
+                </tr>
+                <tr>
+                    <td style="width: 90px">单位账号数：</td>
+                    <td>@clientCount</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div data-options="region:'south',title:'其他业务',split:true" style="height:400px;">
+        <div class="easyui-layout" data-options="fit:true">
+            <div data-options="region:'west',split:true,collapsible:false,border:true" style="width:70%">
+                <div style="padding: 20px 0 0 30px">
+                    <span style="margin-left: 5px">年份：</span>
+                    @Html.DropDownList("sYearNumber", ViewBag.yearList as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "sYearNumber" })
+                </div>
+                <div style="display: inline-flex; padding: 20px 0 0 0;width:100%;">
+                    <div id="third" style="width:100%; height: 250px; margin: 10px 0 0 30px"></div>
+                </div>
+            </div>
+            <div data-options="region:'east',split:false,collapsible:false,border:true" style="width:30%">
+                <div style="padding: 5px 10px">待办任务（0条）</div>
+                <div style="margin: 10px">
+                    <table class="tasks" style="border-top: 1px solid #808080; width:100%">
+                        <tr><td></td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        barInit();
+        statusInit();
+        expiredInit();
+
+        var unitList = $("#iUseDeptID").children();
+        if(!unitList.length) {
+            msgShow('提示', '暂无相关联的使用单位运维数据!', 'warning');
+            return;
+        }
+
+        $("#iUseDeptID").on("change", function (e) {
+            barInit();
+            statusInit();
+            expiredInit();
+            e.stopPropagation();
+        });
+
+        $("#sYearNumber").on("change", function (e) {
+            barInit();
+            e.stopPropagation();
+        });
+    });
+
+    // 正常/异常数据
+    function statusInit() {
+        //指定图标的配置和数据
+        var option = {
+            title: {
+                text: '设备信息',
+                subtext: '正常/异常数量占比',
+                x: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {d}%，数量{c}"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: ['异常占比', '正常占比']
+            },
+            color: ['rgb(216, 122, 128)', 'rgb(90, 177, 239)'],
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: { show: true },
+                    dataView: { show: true, readOnly: false },
+                    magicType: {
+                        show: true,
+                        type: ['pie', 'funnel'],
+                        option: {
+                            funnel: {
+                                x: '25%',
+                                width: '50%',
+                                funnelAlign: 'left',
+                                max: 1548
+                            }
+                        }
+                    },
+                    restore: { show: true },
+                    saveAsImage: { show: true }
+                }
+            },
+            calculable: true,
+            series: []
+        };
+        
+        echarts.init(document.getElementById('first')).dispose();//销毁前一个实例
+        //初始化echarts实例
+        var myFirstChart = echarts.init(document.getElementById('first'), 'macarons');
+        //使用制定的配置项和数据显示图表
+        myFirstChart.setOption(option);
+        myFirstChart.showLoading();
+
+        if($("#iUseDeptID").val()) {
+            $.ajax({
+                type: 'POST',
+                url: '/FireDept/Statistics/GetDeviceStatusGridData',
+                data: {
+                    iUseDeptID: $("#iUseDeptID").val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    var res = [];
+                    for (var i = 0; i < data.length; i++) {
+                        res.push(JSON.parse(data[i]));
+                    }
+                    myFirstChart.hideLoading();
+                    //使用制定的配置项和数据显示图表
+
+                    myFirstChart.setOption({
+                        series: [
+                            {
+                                name: '设备信息',
+                                type: 'pie',
+                                radius: '55%',
+                                center: ['50%', '60%'],
+                                data: res
+                            }
+                        ]
+                    });
+                    myFirstChart.on("click", function (param) {
+                        if (param.data != null) {
+                            window.devStatusListWindow = $('<div />').dialog({
+                                title: '设备列表',
+                                iconCls: 'icon-save',
+                                width: 800,
+                                height: 500,
+                                closed: false,
+                                cache: false,
+                                href: '/FireDept/Statistics/DeviceStatusList/' + $("#iUseDeptID").val() + "?iStatus=" + param.data.istatus,
+                                modal: true,
+                                buttons: [
+                                    {
+                                        text: '关闭',
+                                        iconCls: 'icon-no',
+                                        handler: function (e) {
+                                            devStatusListWindow.dialog('close');
+                                        }
+                                    }
+                                ],
+                                onClose: function () {
+                                    devStatusListWindow.dialog('destroy');
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            myFirstChart.hideLoading();
+        }
+    }
+
+    // 过期/未过期数据
+    function expiredInit() {
+        //指定图标的配置和数据
+        var option = {
+            title: {
+                text: '设备信息',
+                subtext: '过期/未过期数量占比',
+                x: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {d}%，数量{c}"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: ['过期占比', '未过期占比']
+            },
+            color: ['rgb(216, 122, 128)', 'rgb(90, 177, 239)'],
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: { show: true },
+                    dataView: { show: true, readOnly: false },
+                    magicType: {
+                        show: true,
+                        type: ['pie', 'funnel'],
+                        option: {
+                            funnel: {
+                                x: '25%',
+                                width: '50%',
+                                funnelAlign: 'left',
+                                max: 1548
+                            }
+                        }
+                    },
+                    restore: { show: true },
+                    saveAsImage: { show: true }
+                }
+            },
+            calculable: true,
+            series: []
+        };
+        
+        echarts.init(document.getElementById('second')).dispose();//销毁前一个实例
+        //初始化echarts实例
+        var mySecondChart = echarts.init(document.getElementById('second'), 'macarons');
+        //使用制定的配置项和数据显示图表
+        mySecondChart.setOption(option);
+        mySecondChart.showLoading();
+
+        if($("#iUseDeptID").val()) {
+            $.ajax({
+                type: 'POST',
+                url: '/FireDept/Statistics/GetDeviceExpiredGridData',
+                data: {
+                    iUseDeptID: $("#iUseDeptID").val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    var res = [];
+                    for (var i = 0; i < data.length; i++) {
+                        res.push(JSON.parse(data[i]));
+                    }
+                    mySecondChart.hideLoading();
+                    //使用制定的配置项和数据显示图表
+
+                    mySecondChart.setOption({
+                        series: [
+                            {
+                                name: '设备信息',
+                                type: 'pie',
+                                radius: '55%',
+                                center: ['50%', '60%'],
+                                data: res
+                            }
+                        ]
+                    });
+                    mySecondChart.on("click", function (param) {
+                        if (param.data != null) {
+                            window.devExpiredListWindow = $('<div />').dialog({
+                                title: '设备列表',
+                                iconCls: 'icon-save',
+                                width: 800,
+                                height: 500,
+                                closed: false,
+                                cache: false,
+                                href: '/FireDept/Statistics/DeviceExpiredList/' + $("#iUseDeptID").val() + "?iExpired=" + param.data.istatus,
+                                modal: true,
+                                buttons: [
+                                    {
+                                        text: '关闭',
+                                        iconCls: 'icon-no',
+                                        handler: function (e) {
+                                            devExpiredListWindow.dialog('close');
+                                        }
+                                    }
+                                ],
+                                onClose: function () {
+                                    devExpiredListWindow.dialog('destroy');
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            mySecondChart.hideLoading();
+        }
+    }
+
+    // 巡检数据
+    function barInit() {
+        var option = {
+            legend: {
+                data: ['巡检数']
+            },
+            color: ['rgb(195,52,48)'],
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            series: []
+        };
+        
+        echarts.init(document.getElementById('third')).dispose();//销毁前一个实例
+        //初始化echarts实例
+        var myThirdChart = echarts.init(document.getElementById('third'), 'macarons');
+        myThirdChart.setOption(option);
+        myThirdChart.showLoading();
+
+        if($("#iUseDeptID").val()) {
+            $.ajax({
+                type: 'POST',
+                url: '/FireDept/Statistics/GetRecordGridData',
+                data: {
+                    iUseDeptID: $("#iUseDeptID").val(),
+                    sYearNumber: $("#sYearNumber").val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    myThirdChart.hideLoading();
+                    //使用制定的配置项和数据显示图表
+
+                    myThirdChart.setOption({
+                        title: {
+                            text: '巡检总量统计',
+                            subtext: $("#sYearNumber").val()
+                        },
+                        series: [
+                            {
+                                name: '巡检数',
+                                type: 'bar',
+                                barWidth: '60%',
+                                data: data,
+                                markPoint: {
+                                    data: [
+                                        { type: 'max', name: '最大值' },
+                                        { type: 'min', name: '最小值' }
+                                    ]
+                                }
+                            }
+                        ]
+                    });
+                    myThirdChart.on("click", function (param) {
+                        if (param.value == 0 || param.name.indexOf('月') == -1) {
+                            return;
+                        }
+                        window.devRecordListWindow = $('<div />').dialog({
+                            title: '设备列表',
+                            iconCls: 'icon-save',
+                            width: 800,
+                            height: 500,
+                            closed: false,
+                            cache: false,
+                            href: '/FireDept/Statistics/InspectionRecordList/' + $("#iUseDeptID").val() + "?sYearNumber=" + $("#sYearNumber").val() + "&iMonth=" + param.dataIndex,
+                            modal: true,
+                            buttons: [
+                                {
+                                    text: '关闭',
+                                    iconCls: 'icon-no',
+                                    handler: function (e) {
+                                        devRecordListWindow.dialog('close');
+                                    }
+                                }
+                            ],
+                            onClose: function () {
+                                devRecordListWindow.dialog('destroy');
+                            }
+                        });
+                    });
+                }
+            });
+        }
+        else {
+            myThirdChart.hideLoading();
+        }
+    }
+
+    function showDetailDialog(id) {
+        window.unitDetailWindow = $('<div />').dialog({
+            title: '单位详情',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/FireDept/Unit/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        unitDetailWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                unitDetailWindow.dialog('destroy');
+            }
+        });
+    }
+
+    function showMsgDetailDialog(id) {
+        window.siteMsgDetailWindow = $('<div />').dialog({
+            title: '站内信详情',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/FireDept/SiteMsg/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        siteMsgDetailWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                siteMsgDetailWindow.dialog('destroy');
+            }
+        });
+    }
+</script>

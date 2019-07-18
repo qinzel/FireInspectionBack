@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Messages>
+  <Message ID="Reg">
+    <Name>注册消息</Name>
+    <TemplateCode>SMS_138535035</TemplateCode>
+  </Message>
+  <Message ID="FindPwd">
+    <Name>找回登录密码</Name>
+    <TemplateCode>SMS_138072398</TemplateCode>
+  </Message>
+  <Message ID="ApplyRefused">
+    <Name>账号审核拒绝通知</Name>
+    <TemplateCode>SMS_170350825</TemplateCode>
+  </Message>
+  <Message ID="ApplyAdopt">
+    <Name>账号审核通过通知</Name>
+    <TemplateCode>SMS_170345799</TemplateCode>
+  </Message>
+  <Message ID="InsMonthly">
+    <Name>本月巡检通知</Name>
+    <TemplateCode>SMS_122896481</TemplateCode>
+  </Message>
+  <Message ID="DeviceAbnormal">
+    <Name>设备异常通知</Name>
+    <TemplateCode>SMS_122896472</TemplateCode>
+  </Message>
+</Messages>

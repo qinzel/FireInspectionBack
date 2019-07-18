@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>我的设备</title>
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!--<meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+    <!--分享使用-->
+    <meta itemprop="name" content="" />
+    <meta itemprop="description" name="description" content="" />
+    <meta itemprop="image" content="img_url" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/global.css">
+    <link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+    <link rel="stylesheet" type="text/css" href="../css/myh.css" />
+</head>
+<!--myh-->
+<body>
+    <section class="main hgt_all flex_column bg-fa">
+        <header>
+            <i id="backBtn" class="flex_1"></i>
+            <h1 class="flex_1 text-center">搜索结果</h1>
+            <p class="flex_1 color-fff font24r text-right"></p>
+        </header>
+        <div class="search_result bg-fff">
+            <h4 class="text-center l-h-06rem  color-999">当前<span class="color-red" v-cloak>{{meList.length}}</span>条搜索结果</h4>
+            <div class="status_choice child_borderLine_top border-t-eee borderColor-eee p_both20r">
+                <div class="status_item flex_dom flex_item_between l-h-08rem">
+                    查看状态
+                    <div class="choice_box wid70 flex_dom flex_item_between">
+                        <label><input type="radio" name="choice1" checked="checked"><span class="check_ok3 color-eee  m-r-10r"></span>全部</label>
+                        <label><input type="radio" name="choice1"><span class="check_ok3 color-eee  m-r-10r"></span>正常</label>
+                        <label><input type="radio" name="choice1"><span class="check_ok3 color-eee  m-r-10r"></span>异常</label>
+                    </div>
+                </div>
+                <div class="status_item flex_dom flex_item_between l-h-08rem">
+                    当月是否巡检
+                    <div class="choice_box wid70 flex_dom flex_item_between">
+                        <label><input type="radio" name="choice2" checked="checked"><span class="check_ok3 color-eee  m-r-10r"></span>全部</label>
+                        <label><input type="radio" name="choice2"><span class="check_ok3 color-eee  m-r-10r"></span>已巡检</label>
+                        <label><input type="radio" name="choice2"><span class="check_ok3 color-eee  m-r-10r"></span>未巡检</label>
+                    </div>
+                </div>
+                <div class="status_item flex_dom flex_item_between l-h-08rem">
+                    是否超期
+                    <div class="choice_box wid70 flex_dom flex_item_between">
+                        <label><input type="radio" name="choice3" checked="checked"><span class="check_ok3 color-eee  m-r-10r"></span>全部</label>
+                        <label><input type="radio" name="choice3"><span class="check_ok3 color-eee  m-r-10r"></span>已超期</label>
+                        <label><input type="radio" name="choice3"><span class="check_ok3 color-eee  m-r-10r"></span>未超期</label>
+                    </div>
+                </div>
+                 
+            </div>
+
+
+        </div>
+        <div  id="balanceBox" class="danwei_page flex_1 overflow_auto  p-t-20r bg-fff m-t-20r" v-cloak>
+            <div class="change_nav ">
+                <div class="item_box ">
+                    <div class="danwei_item show">
+                        <div class="setting_detail p_both20r p-b-20r">
+                            <div v-for="item in meList" class="setting_item bg-f8 radius10">
+                                <div class="up p_both20r m-b-30r">
+                                    <div class="title flex_dom p-v-20r">
+                                        <p class="flex_1 font-w6 color-000 m-r-20r" v-cloak>{{item.sDeviceTypeName}}</p><span :class="item.iAbnormalStatus?'color-red font24r':'color-blue font24r'" v-cloak>{{!item.iAbnormalStatus?'正常':'异常'}}</span>
+                                    </div>
+                                    <p class="flex_dom flex_item_between relative top_1 top-10px"><span v-cloak>{{item.sNumber}}</span><span class="flex_1 m-l-20r text-right" v-cloak>{{item.sName}}</span></p>
+                                    <p class="flex_dom flex_item_between relative top_1 top-10px"><span v-cloak>{{item.sOrganName}}·{{item.sUnitName}}</span><span class="flex_1 m-l-20r text-right">责任人 <i v-cloak>{{item.sClientName}}</i></span></p>
+                                    <div style="height:.4rem;" class="date color-ccc m-t-20r between-center">
+                                        <p style="height:.4rem; line-height:.4rem;" class="">上次巡检时间: <span v-cloak>{{item.dCreateTime.substr(0,4)>1000?item.dCreateTime.substr(0,10):' '}}</span></p>
+                                        <div style="height:.4rem;" v-if="Info2.iType==2" class="dothing center"><span @click="item.iAbnormalStatus?goChange(item.ID):go_alert2()" style="height:.4rem !important;line-height:.4rem !important;" class="l-h-04rem btn_o_filled">更换</span><span style="height:.4rem !important;line-height:.4rem !important;" class="l-h-04rem btn_o_filled" @click="item.iAbnormalStatus?goRepair(item.ID):go_alert2()">维修</span></div>
+                                    </div>
+
+                                </div>
+                                <div class="dothings p-v-25r p_both10r flex_dom flex_item_between border-t-eee">
+                                    <a :href="'EquipmentDetail.html?eId='+item.ID">设备详情</a>
+                                    <a :href="'ReplaceRecord.html?'+item.ID">更换记录</a>
+                                    <a :href="'MaintainRecord.html?'+item.ID">维修记录</a>
+                                    <a :href="'InspectionRecord.html?'+item.ID">巡检记录</a>
+                                </div>
+
+
+                            </div>
+                            <div style="top:0;position:relative;height: 2.5rem;" class="no_data m-t-90r">
+                                <p>暂无数据</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script>
+    getUserInfo();
+        // 初始化vue实例
+        vue_init({
+            data: {
+                meList: [],
+                page: 1,
+                totalpage: 2,
+                iStatus: "",
+                bIsRecorded: "",
+                bIsExpired: "",
+                unitId: '',
+                Info2: JSON.parse(localStorage.iClient),
+            },
+            mounted: function () {
+                setTimeout(function () {
+                    getList();
+                },0)
+                
+            },
+            methods: {
+
+            },
+            filters: {
+                format: function (value) {
+                    return value.replace(/T/g, " ").split(' ')[0].replace(/-/g, '.');
+                }
+            },
+            updated: function () {
+
+            }
+        })
+        function getList() {
+            var param = {};
+            if (decodeURI(getUrlParam('unitId')) != "null") {
+                param = {
+                    "page": app.page,
+                    "iUnitID": decodeURI(getUrlParam('unitId')),
+                    "iStatus": app.iStatus,
+                    "bIsRecorded": app.bIsRecorded,
+                    "bIsExpired": app.bIsExpired,
+                    "sName": decodeURI(getUrlParam('keyWords'))
+                }
+            } else {
+                param = {
+                    "iClientID": JSON.parse(localStorage.iClient).ID,
+                    "page": app.page,
+                    "sUnitID": app.unitId,
+                    "iStatus": app.iStatus,
+                    "bIsRecorded": app.bIsRecorded,
+                    "bIsExpired": app.bIsExpired,
+                    "sName": decodeURI(getUrlParam('keyWords'))
+                }
+            }
+            go_ajax({
+                type: 'POST',
+                url: decodeURI(getUrlParam('unitId')) != "null" ? '/router?method=device.getlistbyunit' : '/router?method=device.getlist',
+                data: param,
+                success: function (res) {
+                    if (res.success) {
+                        if (app.page > 1) {
+                            if (res.data.length == 0) {
+                                app.totalpage = app.page;
+                            } else {
+                                app.meList = app.meList.concat(res.data);
+                                app.totalpage = app.page + 1;
+                            }
+                        } else {
+                            app.meList = res.data;
+                        }
+                    } else {
+                        go_alert2(res.message);
+                    }
+                }
+            })
+        }
+        
+        //
+        $(".choice_box label input").click(function () {
+            var idx = $(this).parent('label').index();
+            var index = $(this).parents('.status_item').index();
+            if (index == 0) {
+                app.iStatus = idx - 1;
+                if (idx == 0) {
+                    app.iStatus = '';
+                }
+
+            }
+            if (index == 1) {
+                //app.bIsRecorded = idx - 1;
+                if (idx == 0) {
+                    app.bIsRecorded = '';
+                }
+                if (idx == 1) {
+                    app.bIsRecorded = 1;
+                }
+                if (idx == 2) {
+                    app.bIsRecorded = 0;
+                }
+
+            }
+            if (index == 2) {
+                //app.bIsExpired = idx - 1;
+                if (idx == 0) {
+                    app.bIsExpired = '';
+                }
+                if (idx == 1) {
+                    app.bIsExpired = 1;
+                }
+                if (idx == 2) {
+                    app.bIsExpired = 0;
+                }
+
+            }
+            app.totalpage = 2;
+            app.page = 1;
+            getList();
+        })
+
+        //滑动加载
+        $("#balanceBox").scroll(function () {
+            var all_height = $(this)[0].scrollHeight;
+            //alert(all_height)
+            var dom_height = $(this).height();
+            //console.log($(this).scrollTop())
+            //console.log(all_height - dom_height - 15)
+            if ($(this).scrollTop() >= all_height - dom_height - 13) {
+                console.log(111)
+                app.page = app.page + 1;
+                if (app.page <= app.totalpage)
+                { getList(); }
+            }
+        });
+        //keyword转化
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return unescape(r[2]);
+            } else {
+                return null;
+            }
+        }
+        // 后退按钮
+        goBack();
+</script>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+</html>

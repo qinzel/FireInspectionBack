@@ -1,0 +1,114 @@
+﻿@{
+    ViewBag.Title = "所属使用单位/部门详情";
+    IEnumerable<EHECD_Unit> unitList = ViewBag.unitList;
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Client
+<form id="form_client_change">
+    <input type="hidden" id="ID" name="ID" value="@Model.ID" />
+    <table class="gridtable">
+        @if (unitList != null && unitList.Count() > 0)
+        {
+            foreach (EHECD_Unit unit in unitList)
+            {
+                <tr>
+                    <td style="text-align: left !important">@unit.sName</td>
+                </tr>
+                if (unit.DeptList != null && unit.DeptList.Count > 0)
+                {
+                    foreach (EHECD_Dept dept in unit.DeptList)
+                    {
+                        <tr>
+                            <td style="text-align: left !important">
+                                <div style="margin-left: 10px" data-unitid="@unit.ID">
+                                    <input type="checkbox" id="dept@(dept.ID)" data-deptid="@dept.ID" name="RadioGroup@(unit.ID)" onclick="getValue(this)" />
+                                    <label for="dept@(dept.ID)">@dept.sName</label>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+        }
+        else
+        {
+            <tr><td></td></tr>
+        }
+    </table>
+</form>
+<script>
+    $(function () {
+        window.saveModel = function() {
+            if (!$("#form_client_change").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+
+            var $radios = $("input[type=checkbox][id^=dept]:checked");
+
+            if (!$radios.length) {
+                msgShow('提示', '请选择要修改的单位部门!', 'warning');
+                return;
+            }
+
+            var suids = [];
+            var sdids = [];
+            for (var i = 0; i < $radios.length; i++) {
+                var $obj = $($radios[i]);
+                suids.push($obj.parent().attr("data-unitid"));
+                sdids.push($obj.attr("data-deptid"));
+            }
+
+            $("#save_window_okbtn_client_change").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Client/Change", //用与处理ajax的地址及函数
+                data: {
+                    iClientID: $(".panel.window #ID").val(),
+                    sUnitIds: suids,
+                    sDeptIds: sdids
+                },
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_client_change').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.modifyWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_client_change').linkbutton('enable');
+                }
+            });
+        }
+    });
+
+    function getValue(checkname) {
+        var groups = document.getElementsByTagName("input");
+        var namegroups = new Array();
+        var index = 0;
+        for (i = 0 ; i < groups.length ; i++) {
+            if (groups[i].type == "checkbox" && groups[i].name == checkname.name) {
+                namegroups[index] = groups[i];
+                index++;
+            }
+        }
+        for (g = 0 ; g < namegroups.length ; g++) {
+            if (namegroups[g].id != checkname.id) {
+                namegroups[g].checked = false;
+            }
+        }
+    }
+</script>

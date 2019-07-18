@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "设置意见反馈";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Feedback
+
+<form id="form_feedback">
+    <input type="hidden" name="iFeedbackID" value="@ViewBag.ID"/>
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 15%">内容：</td>
+                <td>
+					<input type="text" name="sContent" style ="width:400px;height:100px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[200]'],required:true,multiline:true" missingmessage="请输入回复内容."/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script>
+    $(function () {
+        window.saveModel = function() {
+            if (!$("#form_feedback").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+            $("#save_window_okbtn_feedback").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/UseDept/Feedback/Reply", //用与处理ajax的地址及函数
+                data: $("#form_feedback").serialize(),
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_feedback').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.setWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_feedback').linkbutton('enable');
+                }
+            });
+        }
+    });
+</script>

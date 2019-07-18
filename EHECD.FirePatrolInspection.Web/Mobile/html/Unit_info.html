@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+	<style>
+		header {
+			height: 2.8rem;
+			background-size: auto;
+			background: url(../img/slice/banner1.png);
+			align-items: flex-start;
+		}
+	</style>
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<div class="hgt09rem flex_dom flex_item_mid wid100">
+				<i id="backBtn" class="flex_1"></i>
+				<h1 class="flex_1 text-center">单位信息</h1>
+				<p class="flex_1 color-fff font24r text-right"></p>
+			</div>
+		</header>
+
+		<!-- 公司信息 -->
+		<div style="top: 2rem;left: 50%;width: calc(100% - .4rem); min-height: 5rem;" class="info-wrap p_both20r box-shadow1 abolute t-mid bg-fff radius10r" v-if="Info.ID" v-cloak>
+			<div class="company-icon center-center">
+				<img style="width: .7rem;margin-bottom: -.07rem" src="../img/slice/icon-company.png" alt="">
+			</div>
+			<div style="margin-top: .9rem;" class="p-b-30r border-b-eee">
+				<p class="font24r color-000 text-center fw-b">
+                    {{Info.sName}}
+					</p>
+				<p class="text-center flex_dom center-center m-t-10r font22r color-666">
+					<img style="width: .27rem" src="../img/slice/icon-location.png" alt="">
+					{{Info.sAddress}}
+				</p>
+				<p class="text-center flex_dom center-center m-t-10r font22r color-666" v-if="MemberInfo.iType == 2 || MemberInfo.iType == 3">
+					<img style="width: .33rem;" src="../img/slice/icon-certification.png" alt="">
+					资质：<span>{{Info.sQualifications}}资质</span>
+				</p>
+			</div>
+			<div class="flex_dom p-t-30r flex_item_between">
+				<!-- 平台管理员姓名 -->
+				<div class="text-center flex_1">
+					<p class="font22r color-666">平台管理员</p>
+					<p class="font24r color-000 fw-b m-t-10r">{{Info.sAdminName}}</p>
+				</div>
+				<!-- 电话 -->
+				<div class="text-center flex_1">
+					<p class="font22r color-666">联系电话</p>
+					<p class="font24r color-000 fw-b m-t-10r">{{Info.sContact}}</p>
+				</div>
+				<!-- 法人 -->
+				<div class="text-center flex_1" v-if="MemberInfo.iType == 2 || MemberInfo.iType == 3">
+						<p class="font22r color-666">法人</p>
+						<p class="font24r color-000 fw-b m-t-10r">{{Info.sLegalPerson}}</p>
+					</div>
+			</div>
+            <div class="text-center">
+                <a class="inline_div" :href="'tel:'+Info.sContact">
+                    <img class="m-t-30r" style="width: 1rem;height: 1rem;" src="../img/slice/icon-dial.png" alt="">
+                </a>
+            </div>
+		</div>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script>
+    getUserInfo();
+    vue_init({
+        data: {
+            Info: {},
+            MemberInfo: localStorage.iClient ? JSON.parse(localStorage.iClient) : ''
+        },
+        mounted: function() {
+            var iClient = JSON.parse(localStorage.iClient);
+            go_ajax({
+                url: "/router?method=unit.get",
+                data: {
+                    iUnitID: iClient.iUnitID
+                },
+                success: function (res) {
+                    if (res.success) {
+                        app.Info = res.data;
+                    } else {
+                        go_alert2(res.message);
+                    }
+                }
+            });
+        }
+    })
+    // 后退按钮
+    goBack()
+</script>
+
+</html>

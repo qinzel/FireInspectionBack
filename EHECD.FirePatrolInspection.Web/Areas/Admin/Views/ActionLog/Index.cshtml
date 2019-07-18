@@ -1,0 +1,100 @@
+﻿@{
+    ViewBag.Title = "操作日志管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/backstage/js/My97DatePicker/WdatePicker.js"></script>
+<meta http-equiv="content-type" content="application/ms-excel; charset=UTF-8" />
+
+<script type="text/javascript">
+    $(function () {
+        $('#List').datagrid({
+            checkbox: true,
+            title: '操作日志',
+            url: '/Admin/ActionLog/GetList',
+            idField: "ID",
+            striped: true,
+            pagination: true,
+            remoteSort: false,
+            pageList: [20, 30, 50],
+            pageSize: 20,
+            border: false,
+            fit: true,//自动大小
+            rownumbers: true,//行号
+            toolbar: "#Toolbar",
+            loadMsg: "正在加载...",
+            columns: [[
+                { field: 'sType', title: '类型', align: 'center', width: 150, sortable: false },
+                { field: 'dInsertTime', title: '操作时间', align: 'center', width: 150, sortable: false },
+                { field: 'sRealName', title: '操作人', align: 'center', width: 150, sortable: false },
+                { field: 'sIpAddress', title: 'IP', align: 'center', width: 150, sortable: false },
+                { field: 'sContent', title: '内容', align: 'left', width: 300, sortable: false},
+            ]],
+            onDblClickRow: onRowDbClick
+        });
+
+        $("#searchForm input").keydown(function (e) {//回车搜索
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                Search();
+                return;
+            }
+        });
+    })
+
+    function Search() {
+        //var search = $("#searchForm").serializeArray();
+        var param = $("#searchForm").serializeObject();
+        $('#List').datagrid('load', param);
+    }
+
+    //双击行事件
+    function onRowDbClick(index, row) {
+        var id = row.ID;
+        showDetail(id);
+    }
+
+    //打开编辑页面
+    function showDetail(id) {
+        $('#Detail').dialog({
+            title: '查看日志详情',
+            iconCls: 'icon-save',
+            width: 500,
+            height: 350,
+            closed: false,
+            cache: false,
+            href: '/Admin/ActionLog/Detail/' + id,
+            modal: true
+        });
+    }
+
+    function Export()
+    {
+        var value = $("#searchForm").formSerialize();
+        var url = "/Admin/ActionLog/Export?" + value;
+        location.href = url;
+    }
+
+</script>
+<div id="Detail"></div>
+<div id="Toolbar">
+    <form id="searchForm">
+        <table style="margin: 0px; padding: 0px; border-collapse: collapse; border: 0px solid #ccc;">
+            <tr>
+                <td>
+                    <span style="margin-left:20px">操作人:</span>
+                    <input name="sName" type="text" class="easyui-textbox" />
+                    <span>操作时间:</span>
+                    <input type="text" id="sStartTime" name="sStartTime" readonly="readonly" placeholder="开始时间" style="width: 100px;border: 1px solid #ccc !important;border-radius: 5px;padding: 0 3px;vertical-align: middle;" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate" />&nbsp;~
+                    <input type="text" id="sEndTime" name="sEndTime" readonly="readonly" placeholder="结束时间" style="width: 100px;border: 1px solid #ccc !important;border-radius: 5px;padding: 0 3px;vertical-align: middle;" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate" />&nbsp;&nbsp;
+                    @*<input type="text" name="sStartTime" class="easyui-datebox" data-options="editable:false" />-<input name="sEndTime" type="text" class="easyui-datebox" data-options="editable:false" />*@
+
+                    <span>类型:</span>
+                    <input class="easyui-combobox" id="sType" name="sType" data-options="editable:false,valueField:'id',textField:'text',url:'/Admin/ActionLog/GetTypeList'" />
+                    <a href="#" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-search',plain:true" onclick="Search();">查询</a>
+                    @*<a href="#" class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-redo',plain:true" onclick="Export();">导出</a>*@
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<table id="List"></table>

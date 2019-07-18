@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "查看文章详情";
+}
+
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Article
+<style>
+    .scontent img {
+        max-width: 100% !important;
+        display: block;
+    }
+</style>
+<table class="gridtable">
+	<tr>
+        <td style="width: 12%">标题：</td>
+        <td>
+			@Model.sTitle
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 12%">内容：</td>
+        <td class="scontent">
+			@Html.Raw(Model.sContent)
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 12%">排序序号：</td>
+        <td>
+			@Model.sSortNumber
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 12%">列表图片：</td>
+        <td>
+			@if (Model.sImageSrc.Length > 0)
+            {
+                <img src="@Model.sImageSrc" style="width: 300px" />
+            }
+            else
+            {
+                <span>-</span>
+            }
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 12%">文章类别：</td>
+        <td>
+			@switch (Model.iType)
+            {
+                case 0:
+                    <span>法律知识</span>
+                    break;
+                case 1:
+                    <span>消防知识</span>
+                    break;
+                case 2:
+                    <span>资讯</span>
+                    break;
+                case 3:
+                    <span>帮助</span>
+                    break;
+                case 4:
+                    <span>关于我们</span>
+                    break;
+            }
+		</td>
+    </tr>
+	<tr>
+        <td style="width: 12%">创建时间：</td>
+        <td>
+			@Model.dCreateTime.ToString("yyyy-MM-dd HH:mm:ss")
+		</td>
+    </tr>
+</table>

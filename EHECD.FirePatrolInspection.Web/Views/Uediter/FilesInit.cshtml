@@ -1,0 +1,17 @@
+﻿<link href="/Content/ueditor/single_upload/uediter-single-upload.css" rel="stylesheet" />
+<script type="text/plain" id="ehecd_uediter_single_upload">
+</script>
+<script type="text/javascript">
+    ; (function () {
+        var _editor = UE.getEditor('ehecd_uediter_single_upload', { serverUrl: '@Html.Raw(ViewBag.serverUrl)' });
+        var _callbackImg, _callbackFile; //_callbackImg 上传选择图片后回调；_callbackFile 上传选择附件后回调
+        _editor.ready(function () {
+            _editor.hide();  //隐藏编辑器
+            _editor.addListener('beforeInsertImage', function (t, arg) { _callbackImg && _callbackImg(arg); });//侦听图片上传
+            _editor.addListener('afterUpfile', function (t, arg) { _callbackFile && _callbackFile(arg); });//侦听附件上传
+        });
+        UE.SingleUpLoadImage = function (callback) { _callbackImg = callback; _editor.getDialog("insertimage").open(); }//弹出图片上传的对话框
+        UE.SingleUpLoadFile = function (callback) { _callbackFile = callback; _editor.getDialog("attachment").open(); } //弹出附件上传的对话框
+    })();
+</script>
+<script src="/Content/ueditor/single_upload/uediter-single-upload.js"></script>

@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+    <style>
+
+    </style>
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<i id="backBtn" class="flex_1"></i>
+			<h1 class="flex_1 text-center">维修设备</h1>
+			<p class="flex_1 color-fff font24r text-right"></p>
+		</header>
+
+		<div class="pad20r main-fix">
+
+			<div class="bg-fa font24r p-v-20r p_both10r radius10r" v-if="Info.ID">
+				<p class="color-000 l-h-04rem fw-b">设备类型：
+					<span v-cloak>{{Info.sDeviceTypeName}}</span>
+				</p>
+				<p class="color-666 l-h-04rem">设备编号：
+					<span v-cloak>{{Info.sNumber}}</span>
+				</p>
+				<p class="color-666 l-h-04rem">设备名称：
+					<span v-cloak>{{Info.sName}}</span>
+				</p>
+				<p class="color-666 l-h-04rem">设备位置：
+					<span v-cloak>{{Info.sLocation}}</span>
+				</p>
+			</div>
+
+			<p class="l-h-08rem font24r fw-b">维修说明</p>
+
+			<textarea style="min-height: 1.8rem;" name="" id="" class="bg-fa l-h-03rem placeholderccc font24r" placeholder="请输入维修说明" v-model="text"></textarea>
+
+		</div>
+
+		<!-- 底部按钮 -->
+		<footer onclick="submitDevice()" class="btn-wrap hgt08rem bg-red center-center">
+			<button class="color-fff font24r block">提交</button>
+		</footer>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script>
+    getUserInfo();
+    vue_init({
+        data: {
+            Info: {},
+            text: ''
+        },
+        mounted: function () {
+            go_ajax({
+                url: "/router?method=device.get",
+                data: {
+                    iDeviceID: getUrlParam('id'),
+                },
+                success: function (res) {
+                    if (res.success) {
+                        app.Info = res.data;
+                    } else {
+                        go_alert2(res.message);
+                    }
+                }
+            });
+        }
+    });
+    function submitDevice() {
+        if (app.text == '') {
+            go_alert2('请填写说明');
+            return false;
+        }
+        go_confirm({
+            msg: ["确认维修后将消除设备异常状态，是否继续？"],
+            tag_set: {},
+            extra_dom: {},
+            yesFunc: function () {
+                go_ajax({
+                    url: "/router?method=repair.add",
+                    data: {
+                        iClientID: JSON.parse(localStorage.iClient).ID,
+                        iDeviceID: app.Info.ID,
+                        sDesc: app.text
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            //location.href = 'MyEquipment.html';
+                            goBackFunc();
+                        } else {
+                            go_alert2(res.message);
+                        }
+                    }
+                });
+            }
+        })
+    }
+    //keyword转化
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+            return unescape(r[2]);
+        } else {
+            return null;
+        }
+    }
+    // 后退
+    goBack()
+</script>
+
+</html>

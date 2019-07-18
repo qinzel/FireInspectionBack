@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+    <style>
+        .no_data{
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<i id="backBtn"  class="flex_1"></i>
+			<h1 class="flex_1 text-center">巡检记录</h1>
+			<p class="flex_1 color-fff font24r text-right"></p>
+		</header>
+
+		<div id="scrollWrap" class="p_both20r main-fix p-b-30r">
+            <div id="dragWrap">
+                <!-- 模板 -->
+                <div @click="toDetail(item.ID)" v-for="item in list" class="p-v-25r flex_dom border-b-eee">
+                    <div class="flex_column flex_1">
+                        <p class="color-333 fw-b font24r">
+                            巡检结果：
+                            <!-- <span class="color-blue">正常</span> -->
+                            <span v-if="item.iStatus" class="color-red">异常</span>
+                            <span v-else class="color-blue">正常</span>
+                        </p>
+                        <p class="color-999 font22r">{{item.sOperatorKey + ":"}}<span class="color-333" v-cloak>{{ item.sOperator }}</span></p>
+                    </div>
+                    <div class="m-r-40r">
+                        <p class="font22r color-999" v-text="timeDo(item.dCreateTime)"></p>
+                        <p class="color-999 font22r">类型：<span class="color-333" v-cloak>{{ item.iRecordTypeKey }}</span></p>
+                    </div>
+                    <div class="flex_dom flex_item_mid">
+                        <img style="width: .12rem;" src="../img/slice/icon-angle-r.png" alt="">
+                    </div>
+                </div>
+            </div>
+            <!-- 暂无数据 -->
+            <div v-show="list.length <= 0" class="no_data">
+                <p>暂无记录</p>
+            </div>
+		</div>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script type="text/javascript" src="../lib/dragFenye.js"></script>
+<script>
+    // 初始化vue实例
+    vue_init({
+        data: {
+            list: []
+        },
+        methods: {
+            toDetail(idx) {
+                location.href = `InspectionDetail.html?${idx}`
+            },
+            timeDo(time) {
+                time = time.replace(/T/g, " ").split(".")
+                if (time.length >= 2) {
+                    time = time.slice(0, 1)
+                }
+                time = time[0].replace(/-/g, ".").split(":").slice(0,2).join(":")
+                return time
+            }
+        },
+        watch: {
+            'list': function (val) {
+                let _this = this;
+                $.each(val, function (k,v) {
+                    switch (v.iRecordType) {
+                        case 0:
+                            _this.$set(v, 'sOperatorKey', '巡检人');
+                            _this.$set(v, 'iRecordTypeKey', '巡检');
+                            break;
+                        case 1:
+                            _this.$set(v, 'sOperatorKey', '维修人');
+                            _this.$set(v, 'iRecordTypeKey', '维修');
+                            break;
+                        case 2:
+                            _this.$set(v, 'sOperatorKey', '更换人');
+                            _this.$set(v, 'iRecordTypeKey', '更换');
+                            break;
+                    }
+                })
+            }
+        }
+    })
+
+    $("#dragWrap").fenye_addParam({
+        appKey: 'NhTnHhEJc5ZCJM9FfmlCINZDvDfyPzAN',
+        appSecret: 'EpD70oATq6d7TgUoOHkbODQjVg7CUGaWw7thptHPt3KMWLcEN8rWD6V7RjP5fz7a',
+        timestamp: new Date().valueOf()
+    });
+
+    $("#dragWrap").dragFenye({
+        url: host + "/router?method=ins.getlist",
+        data: { page: 1, rows: 15, iDeviceID: location.search.substring(1).replace('xId=', '') },//这里的属性名和要传给后台的页数和每页数的属性名不需要一致，固定名字；data可以附加其他参数，这两个为必须参数
+        rows_string: ".data",//拼接ajax回调获取列表的字符串
+        updateVue: "app.list",//拼接VUE变量赋值的字符串
+        page_txt: "page",//表示当前页数的属性字符串，可不传，默认"page"
+        rows_txt: "rows",//表示当前页请求数据条数的属性字符串，可不传，默认"rows"
+        dragBlock: true,//是否为整体模式
+        scrollDom: "#scrollWrap"//滚动区域，可不传，默认bod
+    })
+
+
+    // 后退按钮
+    goBack()
+
+</script>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+
+</html>

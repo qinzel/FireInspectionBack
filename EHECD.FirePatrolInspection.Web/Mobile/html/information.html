@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/global.css">
+		<link rel="stylesheet" type="text/css" href="../css/zyl.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/myh.css"/>
+	</head>
+
+	<body>
+		<section class="main hgt_all flex_column">
+			<header>
+				<i id="backBtn" class="flex_1"></i>
+				<h1 class="flex_1 text-center">个人信息</h1>
+				<p class="flex_1 color-fff  font24r text-right"></p>
+			</header>
+			<div class="person_about p_both20r font24r">
+				<a href="javscrpt:;" class="l-h-09rem flex_dom flex_item_between flex_item_mid">
+					修改头像<span onclick="updateimg(1)"><img style="border-radius:50%;" v-bind:src="Info.sImageSrc?Info.sImageSrc:'../img/slice/touxiang1.png'" /><i class="fa fa-angle-right font24 color-999"></i></span>
+				</a>
+				<a href="settingPwd.html" class="l-h-09rem flex_dom flex_item_between flex_item_mid">
+					修改登录密码<span><i  class="fa fa-angle-right font24 color-999"></i></span>
+				</a>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+	<script type="text/javascript" src="../lib/uploadPreview.js"></script> 
+	<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+	<script type="text/javascript" src="../lib/vue.js"></script>
+	<script type="text/javascript" src="../lib/swiper.min.js"></script>
+	<script type="text/javascript" src="../lib/date-choice.js"></script>
+	<script type="text/javascript" src="../lib/form-check.js"></script>
+	<script type="text/javascript" src="../lib/dragDown.js"></script>
+	<script type="text/javascript" src="../lib/wx_func.js"></script>
+	<script type="text/javascript" src="../lib/page.js"></script>
+	<script>
+        getUserInfo();
+        vue_init({
+            data: {
+                Info: JSON.parse(localStorage.iClient),
+                ImgSrc:'',
+            },
+            mounted: function () {
+                
+            },
+            methods: {
+
+            }
+        })
+
+        function updateimgsuccess(sImg) {
+            app.ImgSrc = sImg;
+            go_ajax({
+                url: "/router?method=client.changeimage",
+                data: {
+                    "iClientID": JSON.parse(localStorage.iClient).ID,
+                    "sImageSrc": sImg
+                },
+                success: function (res) {
+                    go_alert2(res.message)
+                    if (res.success) {
+                        app.Info.sImageSrc = sImg;
+                        localStorage.iClient = JSON.stringify(app.Info);
+                        location.reload();
+                    } else {
+                       
+                    }
+
+                }
+            })
+        }
+        // 后退按钮
+        goBack()
+	</script>
+	
+
+</html>

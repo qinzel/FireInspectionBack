@@ -1,0 +1,188 @@
+﻿			
+@{
+    ViewBag.Title = "设备分类管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="datagrid_list_toolbar_devicetype">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="showSetDialog(0,'添加设备分类')">添加</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="Edit()">编辑</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="Delete()">删除</a>
+    <form id="search_form_devicetype">
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sName" type="text" data-options="prompt:'请输入分类名称'" class="easyui-textbox"/>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_devicetype"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_devicetype').datagrid({
+            checkbox: true,
+            // singleSelect: true, //是否单选
+            title: '设备分类管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_devicetype",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_devicetype").serializeObject(),
+            url: '/UseDept/DeviceType/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'ID', checkbox: true 
+                    },
+                    {
+						field: 'sName', title: '分类名称', width: 200
+                    },
+                    {
+                        field: 'sUnitName', title: '添加单位', width: 300, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (row["iUseDeptID"] == 0) {
+                                return "总平台";
+                            }
+                            return value;
+                        }
+                    },
+                    {
+						field: 'dCreateTime', title: '添加时间', width: 150
+                    }
+                ]
+            ],
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('hideColumn', 'ID');
+                    $(this).datagrid('appendRow', { sName: '<div style="text-align:center;color:#7f99be">暂无设备分类信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sName', colspan: 3 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).datagrid('showColumn', 'ID');
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_devicetype").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_devicetype').datagrid('load', $("#search_form_devicetype").serializeObject());
+        $('#datagrid_devicetype').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_devicetype').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+    //编辑功能
+    function Edit() {
+        var rows = $('#datagrid_devicetype').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个设备分类!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个设备分类!', 'warning');
+            return;
+        }
+        if (rows[0].iUseDeptID == 0) {
+            msgShow('提示', '无法修改由总平台添加的分类!', 'warning');
+            return;
+        }
+        showSetDialog(rows[0].ID, '编辑设备分类');
+    }
+    //打开编辑页面
+    function showSetDialog(id, title) {
+        window.setWindow = $('<div />').dialog({
+            title: title,
+            iconCls: 'icon-save',
+            width: 400,
+            height: 300,
+            closed: false,
+            cache: false,
+            href: '/UseDept/DeviceType/Set/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_devicetype',
+                    handler: function(e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function(e) {
+                        setWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function() {
+                setWindow.dialog('destroy');
+            }
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_devicetype').datagrid('clearSelections');
+    }
+	
+	 //删除设备分类
+    function Delete() {
+        var selectIds = [];
+        var rows = $('#datagrid_devicetype').datagrid("getSelections");
+        if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].iUseDeptID == 0) {
+                    msgShow('提示', '删除项中包含了总平台添加的分类!', 'warning');
+                    return;
+                }
+                selectIds.push(rows[i].ID);
+            }
+        }
+
+        //判断是否选择数据
+        if (selectIds.length < 1) {
+            msgShow('提示', '至少选择一条信息进行删除操作', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定删除所有选中的信息共" + selectIds.length + "条数目？", function(ok) {
+            if (ok) {
+                $.post('/UseDept/DeviceType/Delete', { sIds: selectIds.join() }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+						clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+</script>

@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "点检员列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="datagrid_list_toolbar_dept_inspector">
+    <form id="search_form_dept_inspector">
+        <input type="hidden" name="condition.iOrganID" value="@ViewBag.iOrganID" />
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入账号/姓名'" class="easyui-textbox"/>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="insDatagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_dept_inspector"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_dept_inspector').datagrid({
+            checkbox: true,
+            // singleSelect: true, //是否单选
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_dept_inspector",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_dept_inspector").serializeObject(),
+            url: '/UseDept/Dept/GetInspectorsByDeptIDGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'ID', checkbox: true 
+                    },
+                    {
+                        field: 'sPhone', title: '账号', width: 100
+                    },
+                    {
+                        field: 'sName', title: '姓名', width: 150
+                    },
+                    {
+                        field: 'sUnitName', title: '所属使用单位', width: 200
+                    },
+                    {
+                        field: 'iDeviceCount', title: '负责设备总数', width: 100
+                    },
+                    {
+                        field: 'dCreateTime', title: '操作', width: 100, align: 'center', formatter: function (value, row, index) {
+                            var btn = "<a class=\"easyui-linkbutton l-btn l-btn-small l-btn-plain\" data-options=\"iconCls:'icon-detail',plain:true\" onclick=\"showDeviceList(" + row.ID + ")\">" +
+	                                      "<span class=\"l-btn-left l-btn-icon-left\">" +
+		                                      "<span class=\"l-btn-text\">查看设备</span>" +
+		                                      "<span class=\"l-btn-icon icon-detail\">&nbsp;</span>" +
+	                                      "</span>" +
+                                      "</a>";
+                            return btn;
+                        }, styler: function (value, row, index) {
+                            return 'cursor: pointer;';
+                        }
+                    }
+                ]
+			],
+            onDblClickRow: function (rowIndex, rowData) {
+                showDeviceList(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('hideColumn', 'ID');
+                    $(this).datagrid('appendRow', { sPhone: '<div style="text-align:center;color:#7f99be">暂无点检员信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sPhone', colspan: 5 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).datagrid('showColumn', 'ID');
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_dept_inspector").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                insDatagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function insDatagridReload() {
+        $('#datagrid_dept_inspector').datagrid('load', $("#search_form_dept_inspector").serializeObject());
+        $('#datagrid_dept_inspector').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_dept_inspector').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_dept_inspector').datagrid('clearSelections');
+    }
+
+    //该使用单位下辖所有点检员
+    function showDeviceList(id) {
+        window.devListWindow = $('<div />').dialog({
+            title: '设备列表',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/UseDept/Dept/DeviceList/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        devListWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function () {
+                devListWindow.dialog('destroy');
+            }
+        });
+    }
+</script>

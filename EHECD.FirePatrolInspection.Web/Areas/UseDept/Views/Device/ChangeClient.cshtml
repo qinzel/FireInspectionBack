@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Title = "设置责任人";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Device
+<form id="form_device_client_change">
+    <input type="hidden" id="sIds" value="@ViewBag.sIds"/>
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 80px">责任人：</td>
+                <td>
+                    @Html.DropDownList("iClientID", ViewBag.clientlist as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "iClientID" })
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script>
+    $(function () {
+        window.saveModel = function () {
+            if (!$("select[name=iClientID]").val().length) {
+                msgShow('提示', '请选择责任人!', 'warning');
+                return;
+            }
+
+            $("#save_window_okbtn_device_client_change").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/UseDept/Device/ChangeClient", //用与处理ajax的地址及函数
+                data: {
+                    sIds: $(".panel.window #sIds").val(),
+                    iClientID: parseInt($(".panel.window #iClientID").val())
+                },
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_device_client_change').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.changeClientWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_device_client_change').linkbutton('enable');
+                }
+            });
+        }
+    });
+</script>

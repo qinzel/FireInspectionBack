@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "查看值班室详情";
+}
+
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_DutyRoom
+
+<table class="gridtable">
+	
+	<tr>
+        <td style="width: 12%">所属使用单位ID：</td>
+        <td>
+		            
+			@Model.iUseDeptID
+		        
+		</td>
+    </tr>
+	
+	<tr>
+        <td style="width: 12%">值班室名称：</td>
+        <td>
+		            
+			@Model.sName
+		        
+		</td>
+    </tr>
+	
+	<tr>
+        <td style="width: 12%">值班室二维码地址：</td>
+        <td>
+		            
+			@Model.sQRCode
+		        
+		</td>
+    </tr>
+	
+	<tr>
+        <td style="width: 12%">创建时间：</td>
+        <td>
+		            
+			@Model.dCreateTime
+		        
+		</td>
+    </tr>
+
+</table>

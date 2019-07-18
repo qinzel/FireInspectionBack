@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html>
+<!-- zyl -->
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<!--<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css" />
+	<link rel="stylesheet" type="text/css" href="../css/myh.css" />
+</head>
+
+<body>
+	<section class="main hgt_all flex_column">
+
+		<!-- 公共header -->
+		<header>
+			<i id="backBtn" class="flex_1"></i>
+			<h1 class="flex_2 text-center font32r">选择账号类型</h1>
+			<a class="flex_1" href="javascript:void(0);"></a>
+		</header>
+
+		<!-- 主要内容 -->
+		<div>
+			<!-- 单位账号注册 -->
+			<div id="unitAcc" class="p-v-30r p_both20r bg-f8 flex_column m-b-20r">
+				<h3 class="font28r m-b-10r">单位账号注册</h3>
+				<p class=" font22r color-red l-h-2">平台使用单位、消防部门、维保公司、器材供应商由单位指定专人选择本模块完成注册。单位不能重复注册，请确认没有单位其他人员在本系统注册过单位账户</p>
+				<p class="text-right">
+						<img style="width: .3rem" src="../img/slice/icon-arrow-r.png" alt="">
+					</p>
+			</div>
+			<!-- 个人账号注册 -->
+			<div id="personalAcc" class="p-v-30r p_both20r bg-f8 flex_column">
+				<h3 class="font28r m-b-10r">个人账号注册</h3>
+				<p class=" font22r color-red l-h-2">单位安全员、点检员、值班人员、维保公司维保人员、器材供应商员工请选择本模块完成注册</p>
+				<p class="text-right">
+					<img style="width: .3rem" src="../img/slice/icon-arrow-r.png" alt="">
+				</p>
+
+			</div>
+			<p class="color-yellow p-l-20r p-t-20r font22r">请注意一旦成功创建账户，类型不可改变</p>
+		</div>
+
+	</section>
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/date-choice.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/dragDown.js"></script>
+<script type="text/javascript" src="../lib/wx_func.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script>
+
+	// 单位账号注册跳转
+    $("#unitAcc").click(function () {
+	    location.href = "UnitType.html"
+	})
+	// 个人账号注册跳转
+	$("#personalAcc").click(function(){
+	    location.href = "PersonalAccReg.html"
+	})
+
+    // 后退按钮
+	goBack()
+
+</script>
+<!--<script src="http://www.lelinmei.com/html/weixin2.php?callback="></script>-->
+
+</html>

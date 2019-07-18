@@ -1,0 +1,283 @@
+﻿@{
+    ViewBag.Title = "维护公司管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/ueditor/ueditor.config.js"></script>
+<script src="~/Content/ueditor/ueditor.all.min.js"></script>
+<div id="datagrid_list_toolbar_repair_unit">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-lock',plain:true" onclick="Frozen()">冻结</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-unlock',plain:true" onclick="UnFrozen()">解冻</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="Edit()">编辑</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Detail()">查看详情</a>&nbsp;&nbsp;
+    <form id="search_form_repair_unit">
+        <span style="margin-left: 5px">模糊查询：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入账号/单位名称'" class="easyui-textbox" />
+        <span style="margin-left: 5px">状态：</span>
+        <select name="condition.iStatus" class="query-sel">
+            <option value="">全部</option>
+            <option value="0">正常</option>
+            <option value="1">冻结</option>
+        </select>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+</div>
+<table id="datagrid_repair_unit"></table>
+<script type="text/javascript">
+    $(function() {
+        window.datagrid = $('#datagrid_repair_unit').datagrid({
+            //checkbox: true,
+            singleSelect: true, //是否单选
+            title: '维护公司管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_repair_unit",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_repair_unit").serializeObject(),
+            url: '/Admin/Unit/GetAdoptedRepairDeptGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'sPhone', title: '账号', width: 100
+                    },
+                    {
+                        field: 'sName', title: '单位名称', width: 150
+                    },
+                    {
+                        field: 'sAddress', title: '单位地址', width: 200, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            return value.length > 20 ? value.substr(0, 20) + '...' : value;
+                        }
+                    },
+                    {
+						field: 'sAdminName', title: '平台管理员', width: 100
+                    },
+                    {
+						field: 'sContact', title: '联系电话', width: 100
+                    },
+                    {
+                        field: 'iDeptCount', title: '关联使用单位数', width: 150
+                    },
+                    {
+                        field: 'iDeviceCount', title: '负责使用单位设备数', width: 150
+                    },
+                    {
+                        field: 'iStatus', title: '状态', width: 100, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (value) {
+                                return "冻结";
+                            }
+                            return "正常";
+                        }
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDialog(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('appendRow', { sPhone: '<div style="text-align:center;color:#7f99be">暂无维护公司信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sPhone', colspan: 8 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            }
+        });
+
+        $("#search_form_repair_unit").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_repair_unit').datagrid('load', $("#search_form_repair_unit").serializeObject());
+        $('#datagrid_repair_unit').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_repair_unit').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_repair_unit').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个维护公司!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个维护公司!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无维护公司!', 'warning');
+            return;
+        }
+        showDialog(rows[0].ID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无维护公司!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看维护公司详情',
+            iconCls: 'icon-save',
+            width: 650,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/Admin/Unit/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //编辑功能
+    function Edit() {
+        var rows = $('#datagrid_repair_unit').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个维护公司!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个维护公司!', 'warning');
+            return;
+        }
+        showSetDialog(rows[0].ID, '编辑维护公司');
+    }
+    //打开编辑页面
+    function showSetDialog(id, title) {
+        window.setWindow = $('<div />').dialog({
+            title: title,
+            iconCls: 'icon-save',
+            width: 650,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/Admin/Unit/Set/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_repair_unit',
+                    handler: function(e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function(e) {
+                        setWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function() {
+                setWindow.dialog('destroy');
+            }
+        });
+    }
+
+    
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_repair_unit').datagrid('clearSelections');
+    }
+
+    //单位冻结
+    function Frozen() {
+        var rows = $('#datagrid_repair_unit').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个维护公司冻结!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个维护公司冻结!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无维护公司!', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定冻结该维护公司？", function (ok) {
+            if (ok) {
+                $.post('/Admin/Unit/Frozen', { iUnitID: rows[0].ID }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+                        clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+
+    //单位解冻
+    function UnFrozen() {
+        var rows = $('#datagrid_repair_unit').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个维护公司解冻!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个维护公司解冻!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无维护公司!', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定解冻该维护公司？", function (ok) {
+            if (ok) {
+                $.post('/Admin/Unit/UnFrozen', { iUnitID: rows[0].ID }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+                        clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+</script>

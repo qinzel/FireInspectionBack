@@ -1,0 +1,77 @@
+﻿				
+@{
+    ViewBag.Title = "设置文章";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Article
+<script src="~/Content/ueditor/ueditor.config.js"></script>
+<script src="~/Content/ueditor/ueditor.all.min.js"></script>
+<form id="form_article">
+    <input type="hidden" name="ID" value="@Model.ID"/>
+    <div>
+        <table class="gridtable">
+            <tr>
+                <td style="width: 15%">内容：</td>
+                <td>
+                    <textarea id="sContent" style="width: 630px; height: 350px"></textarea>
+                    <input type="hidden" name="sContent" value="@Model.sContent" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: left">
+                    <a href="javascript:void(0)" class="l-btn l-btn-small" style="margin-left: 255px" group="" id="save_window_okbtn_article">
+                        <span class="l-btn-left l-btn-icon-left">
+                            <span class="l-btn-text">保存</span>
+                            <span class="l-btn-icon icon-ok">&nbsp;</span>
+                        </span>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+@Html.Action("Init", "Uediter", new { area = "", module = "Article", field = "Article" })
+<script>
+    $(function () {
+        UE.ehecd_editer_init('sContent', '@Html.Raw(Model.sContent)');
+
+        $("#save_window_okbtn_article").on("click", function () {
+            var $self = $(this);
+
+            if (!$("#form_article").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+
+            var content = UE.getEditor('sContent').getContent().replace(/[']/g, "").replace(/[\x00-\x1f\x7f]/i, "").replace("\n", "<br/>");
+            if ($.trim(content) == '') {
+                msgShow('提示', '请输入内容!', 'warning');
+                return;
+            }
+
+            $("input[name=sContent]").val(content);
+
+            $self.attr("diabled", "disabled");
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Article/About", //用与处理ajax的地址及函数
+                data: $("#form_article").serialize(),
+                dataType: "json",
+                success: function (res) {
+                    $self.removeAttr("disabled");
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $self.removeAttr("disabled");
+                }
+            });
+        });
+    });
+</script>

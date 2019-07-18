@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "查看轮播详情";
+}
+
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Banner
+
+<table class="gridtable">
+	
+	<tr>
+        <td style="width: 18%">图片地址：</td>
+        <td>
+		   @if (Model.sImageSrc.Length > 0)
+           {
+            <img src="@Model.sImageSrc" style="width: 300px" />
+           }
+           else
+           {
+            <span>-</span>
+           }
+		</td>
+    </tr>
+    <tr>
+        <td style="width: 18%">文章类别：</td>
+        <td>
+            @switch (Model.iArticleType)
+            {
+                case 0:
+                    <span>无</span>
+                    break;
+                case 1:
+                    <span>法律知识文章</span>
+                    break;
+                case 2:
+                    <span>消防知识文章</span>
+                    break;
+                case 3:
+                    <span>资讯</span>
+                    break;
+                case 4:
+                    <span>帮助中心文章</span>
+                    break;
+                case 5:
+                    <span>关于我们</span>
+                    break;
+            }
+        </td>
+    </tr>
+    @if (Model.sLink.Length > 0)
+    {
+        <tr>
+            <td style="width: 18%">链接地址：</td>
+            <td>
+                @Model.sLink
+            </td>
+        </tr>
+    }
+	<tr>
+        <td style="width: 18%">创建时间：</td>
+        <td>
+			@Model.dCreateTime.ToString("yyyy-MM-dd HH:mm:ss")
+		</td>
+    </tr>
+</table>

@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "设置用户信息";
+}
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Client
+<form id="form_client">
+    <input type="hidden" name="ID" value="@Model.ID"/>
+    <div>
+        <table class="gridtable">
+			<tr>
+                <td style="width: 15%">姓名：</td>
+                <td>
+					<input type="text" name="sName" value="@Model.sName" style="width: 120px" class="easyui-textbox easyui-validatebox" data-options="validType:['checkHtml', 'maxLength[20]'],required:true" missingmessage="请输入用户姓名."/>
+                </td>
+            </tr>
+			<tr>
+                <td style="width: 15%">证件照：</td>
+                <td>
+                    <div id="imgsrc" title="证件照"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<input type="hidden" value="@Model.sCredentials" id="v-imgsrc" />
+@Html.Action("FilesInit", "Uediter", new { area = "", module = "Client", field = "Client" })
+<script>
+    $(function () {
+        var img = $('#v-imgsrc').val();
+        img = img ? img.split(',') : [];
+        UE.ehecd_upload_image_init('imgsrc', img, 3);
+
+        window.saveModel = function() {
+            if (!$("#form_client").form('validate')) {
+                msgShow('提示', '请核对相关信息!', 'warning');
+                return;
+            }
+
+            var imgList = $('#imgsrc ul li:gt(0)');
+            var imgStr = [];
+            for (var i = 0; i < imgList.length; i++) {
+                imgStr.push($(imgList[i]).find('img').attr('src'));
+            }
+
+            var data = $("#form_client").serialize();
+            data += "&sCredentials=" + (!imgStr.length ? "" : imgStr.join(','));
+
+            $("#save_window_okbtn_client").linkbutton('disable');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Client/Update", //用与处理ajax的地址及函数
+                data: data,
+                dataType: "json",
+                success: function (res) {
+                    $('#save_window_okbtn_client').linkbutton('enable');
+                    if (res.success) {
+                        msgShow('提示', res.message, 'info');
+                        window.setWindow.dialog('close');//关闭新建窗口
+                        if (res.code == 0) {
+                            reload(1);
+                        }
+                        else {
+                            clearSelections();
+                            reload();
+                        }
+                    }
+                    else {
+                        msgShow('提示', res.message, 'warning');
+                    }
+                },
+                error: function (xhr, msg, e) {
+                    msgShow('提示', '操作出错了!', 'warning');
+                    $('#save_window_okbtn_client').linkbutton('enable');
+                }
+            });
+        }
+    });
+</script>

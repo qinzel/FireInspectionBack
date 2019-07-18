@@ -1,0 +1,448 @@
+﻿@{
+    ViewBag.Title = "设备管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/backstage/js/My97DatePicker/WdatePicker.js"></script>
+<style>
+    body {
+        margin: 0 !important;
+        height: 100%;
+    }
+    ul li {
+        padding: 3px 0;
+    }
+</style>
+<div id="datagrid_list_toolbar_device">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="showSetDialog(0,'添加设备')">添加</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="Edit()">编辑</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="Delete()">删除</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Detail()">查看详情</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-excel',plain:true" onclick="Export()">导出</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Record()">查看状态</a>
+    <form id="search_form_device">
+        <div>
+            <span style="margin-left: 5px">关键字：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入设备编号/名称'" class="easyui-textbox" />
+            <span style="margin-left: 5px">设备类型：</span>
+            @Html.DropDownList("condition.iDeviceTypeID", ViewBag.typelist as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iDeviceTypeID" })
+            <span style="margin-left: 5px">设备状态：</span>
+            <select name="condition.iAbnormalStatus" class="query-sel">
+                <option value="">全部</option>
+                <option value="0">正常</option>
+                <option value="1">异常</option>
+            </select>
+            <span style="margin-left: 5px">责任人：</span><input name="condition.sClientName" type="text" data-options="prompt:'请输入责任人姓名'" class="easyui-textbox" />
+            <span style="margin-left: 5px">所属使用单位：</span>
+            @Html.DropDownList("condition.iUseDeptID", ViewBag.unitList as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iUseDeptID" })
+        </div>
+        <div>
+            <span style="margin-left: 5px">安装日期：</span>
+            <input type="text" name="condition.dStartTime" readonly="readonly" placeholder="开始时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />&nbsp;~
+            <input type="text" name="condition.dEndTime" readonly="readonly" placeholder="结束时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />&nbsp;&nbsp;
+            <span style="margin-left: 5px">过期日期：</span>
+            <input type="text" name="condition.dExpStartTime" readonly="readonly" placeholder="开始时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />&nbsp;~
+            <input type="text" name="condition.dExpEndTime" readonly="readonly" placeholder="结束时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />&nbsp;&nbsp;
+            <span style="margin-left: 5px">强制报废日期：</span>
+            <input type="text" name="condition.dFocStartTime" readonly="readonly" placeholder="开始时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />&nbsp;~
+            <input type="text" name="condition.dFocEndTime" readonly="readonly" placeholder="结束时间" onclick="WdatePicker({ skin: 'twoer', dateFmt: 'yyyy-MM-dd' })" class="Wdate query-datepicker" />
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+        </div>
+        <div>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-sum',plain:true">
+                当前搜索结果统计，设备数量：<div style="color: red; display: inline-block"><span id="sumNumber">0</span></div>
+            </a>
+            <span style="margin-left:20px;line-height:normal;vertical-align:middle;">
+                已选择:<span style="color: red; display: inline-block" id="selectedRowNumber">0</span>条
+            </span>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" id="btn_clearSelected">清空选择项</a>
+            <input type="hidden" id="datagrid_selected" value="" />
+        </div>
+    </form>
+</div>
+<table id="datagrid_device"></table>
+<script type="text/javascript">
+    $(function () {
+        var refreshSelectedRowNumber = function () {
+            var rows = $('#datagrid_device').datagrid("getSelections");
+            $("#selectedRowNumber").html(rows.length);
+        }
+
+        $("#btn_clearSelected").on('click', function () {
+            $('#datagrid_device').datagrid("clearSelections");
+        })
+
+        window.datagrid = $('#datagrid_device').datagrid({
+            checkbox: true,
+            // singleSelect: true, //是否单选
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_device",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_device").serializeObject(),
+            url: '/FireDept/Device/GetGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'ID', checkbox: true 
+                    },
+                    {
+						field: 'sNumber', title: '设备编号', width: 100
+                    },
+                    {
+                        field: 'sName', title: '设备名称', width: 100
+                    },
+                    {
+                        field: 'sDeviceTypeName', title: '设备类型', width: 90
+                    },
+                    {
+                        field: 'iAbnormalStatus', title: '设备状态', width: 60, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (value) {
+                                return "<span style=\"color: red\">异常</span>";
+                            }
+                            return "<span style=\"color: cornflowerblue\">正常</span>";
+                        }
+                    },
+                    {
+                        field: 'sLocation', title: '设备位置', width: 100
+                    },
+                    {
+                        field: 'sInstallDate', title: '安装日期', width: 90
+                    },
+                    {
+                        field: 'sProductionDate', title: '生产日期', width: 90
+                    },
+                    {
+                        field: 'iExpiredYears', title: '过期日期', width: 90, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            var prcDate = row["sProductionDate"];
+                            if (prcDate.length) {
+                                var date = new Date(prcDate);
+                                date.setFullYear(date.getFullYear() + value);
+                                var year = date.getFullYear();
+                                var month = date.getMonth() + 1;
+                                var day = date.getDate();
+                                return year + "-" + (month > 9 ? month : "0" + month) + "-" + (day > 9 ? day : "0" + day);
+                            }
+                        }
+                    },
+                    {
+                        field: 'iForciblyScrappedYears', title: '强制报废日期', width: 90, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            var prcDate = row["sProductionDate"];
+                            if (prcDate.length) {
+                                var date = new Date(prcDate);
+                                date.setFullYear(date.getFullYear() + value);
+                                var year = date.getFullYear();
+                                var month = date.getMonth() + 1;
+                                var day = date.getDate();
+                                return year + "-" + (month > 9 ? month : "0" + month) + "-" + (day > 9 ? day : "0" + day);
+                            }
+                        }
+                    },
+                    {
+                        field: 'sUnitName', title: '所属使用单位', width: 100
+                    },
+                    {
+                        field: 'sClientName', title: '责任人', width: 80
+                    },
+                    {
+                        field: 'sOrganName', title: '所属部门', width: 100
+                    },
+                    {
+                        field: 'sManufacturer', title: '生产厂家', width: 100
+                    },
+                    {
+                        field: 'sLastRepairDate', title: '最近维修日期', width: 100
+                    },
+                    {
+                        field: 'sQRCode', title: '设备二维码', width: 80, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            return "<img src=\"" + value + "\" style=\"width: 60px; height: 60px; margin: .3rem 0; display: block\" />";
+                        }
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDialog(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('hideColumn', 'ID');
+                    $(this).datagrid('appendRow', { sNumber: '<div style="text-align:center;color:#7f99be">暂无设备信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sNumber', colspan: 15 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).datagrid('showColumn', 'ID');
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+                getSumTotal();
+            },
+            onSelect: function (index, row) {
+                refreshSelectedRowNumber();
+            },
+            onUnselect: function (index, row) {
+                refreshSelectedRowNumber();
+            },
+            onSelectAll: function () {
+                refreshSelectedRowNumber();
+            },
+            onUnselectAll: function () {
+                refreshSelectedRowNumber();
+            }
+        });
+
+        $("#search_form_device").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+
+    // 获取设备数量统计
+    function getSumTotal() {
+        $.ajax({
+            type: "POST",
+            url: "/FireDept/Device/GetDeviceCount",
+            data: {
+                sKeyword: $("input[name='condition.sKeyword']").val(),
+                iAbnormalStatus: $("select[name='condition.iAbnormalStatus']").val(),
+                iDeviceTypeID: $("select[name='condition.iDeviceTypeID']").val(),
+                iUseDeptID: $("select[name='condition.iUseDeptID']").val(),
+                sClientName: $("input[name='condition.sClientName']").val(),
+                dStartTime: $("input[name='condition.dStartTime']").val(),
+                dEndTime: $("input[name='condition.dEndTime']").val(),
+                dExpStartTime: $("input[name='condition.dExpStartTime']").val(),
+                dExpEndTime: $("input[name='condition.dExpEndTime']").val(),
+                dFocStartTime: $("input[name='condition.dFocStartTime']").val(),
+                dFocEndTime: $("input[name='condition.dFocEndTime']").val()
+            },
+            dataType: "json",
+            success: function (res) {
+                $("#sumNumber").text(res);
+            }
+        });
+    }
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_device').datagrid('load', $("#search_form_device").serializeObject());
+        $('#datagrid_device').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_device').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_device').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个设备!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个设备!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无设备!', 'warning');
+            return;
+        }
+        showDialog(rows[0].ID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无设备!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看设备详情',
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/FireDept/Device/Detail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //编辑功能
+    function Edit() {
+        var rows = $('#datagrid_device').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个设备!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个设备!', 'warning');
+            return;
+        }
+        showSetDialog(rows[0].ID, '编辑设备');
+    }
+    //打开编辑页面
+    function showSetDialog(id, title) {
+        window.setWindow = $('<div />').dialog({
+            title: title,
+            iconCls: 'icon-save',
+            width: 800,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: '/FireDept/Device/Set/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_device',
+                    handler: function(e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function(e) {
+                        setWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function() {
+                setWindow.dialog('destroy');
+            }
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_device').datagrid('clearSelections');
+    }
+	
+	 //删除设备
+    function Delete() {
+        var selectIds = [];
+        var rows = $('#datagrid_device').datagrid("getSelections");
+        if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                selectIds.push(rows[i].ID);
+            }
+        }
+
+        //判断是否选择数据
+        if (selectIds.length < 1) {
+            msgShow('提示', '至少选择一条信息进行删除操作', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定删除所有选中的信息共" + selectIds.length + "条数目？", function(ok) {
+            if (ok) {
+                $.post('/FireDept/Device/Delete', { sIds: selectIds.join() }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+						clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+
+    // 导出Excel
+    function Export() {
+        var param = "sKeyword=" + $("input[name='condition.sKeyword']").val();
+        param += "&iAbnormalStatus=" + $("select[name='condition.iAbnormalStatus']").val();
+        param += "&iDeviceTypeID=" + $("select[name='condition.iDeviceTypeID']").val();
+        param += "&iUseDeptID=" + $("select[name='condition.iUseDeptID']").val();
+        param += "&sClientName=" + $("input[name='condition.sClientName']").val();
+        param += "&dStartTime=" + $("input[name='condition.dStartTime']").val();
+        param += "&dEndTime=" + $("input[name='condition.dEndTime']").val();
+        param += "&dExpStartTime=" + $("input[name='condition.dExpStartTime']").val();
+        param += "&dExpEndTime=" + $("input[name='condition.dExpEndTime']").val();
+        param += "&dFocStartTime=" + $("input[name='condition.dFocStartTime']").val();
+        param += "&dFocEndTime=" + $("input[name='condition.dFocEndTime']").val();
+
+        window.open("/FireDept/Device/GetExportData?" + param);
+    }
+
+    //查看状态详情
+    function Record() {
+        var rows = $('#datagrid_device').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个设备!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个设备!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无设备!', 'warning');
+            return;
+        }
+        showLastRecordDialog(rows[0].ID);
+    }
+
+    //打开详情页面
+    function showLastRecordDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无设备!', 'warning');
+            return;
+        }
+        window.lastRecordDetailWindow = $('<div />').dialog({
+            title: '查看设备状态详情',
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/FireDept/Device/LastRecordDetail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        lastRecordDetailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+</script>

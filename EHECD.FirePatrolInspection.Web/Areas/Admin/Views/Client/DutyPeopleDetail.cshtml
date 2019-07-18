@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "查看用户详情";
+}
+
+@using EHECD.FirePatrolInspection.Entity
+@model EHECD_Client
+<table class="gridtable">
+	<tr>
+        <td style="width: 80px">账号：</td>
+        <td>
+			@Model.sPhone
+		</td>
+        <td style="width: 80px">姓名：</td>
+        <td>
+            @Model.sName
+        </td>
+    </tr>
+    @if (Model.DeptList != null && Model.DeptList.Count > 0)
+    {
+        <tr>
+            <td style="width: 80px">所属部门：</td>
+            <td colspan="3">
+                @if (Model.DeptList != null && Model.DeptList.Count > 0)
+                {
+                    foreach (EHECD_Dept dept in Model.DeptList)
+                    {
+                        <span style="margin-right: 15px">@((dept.sUnitName.Length > 15 ? dept.sUnitName.Substring(0, 15) + "..." : dept.sUnitName) + "（" + dept.sName + (dept.iAuditState == 0 ? "【待审】" : "") + "）")</span><br />
+                    }
+                }
+            </td>
+        </tr>
+    }
+</table>
+
+<div id="win" class="easyui-window" title="查看大图" closed="true" style="width: 100%; height: 100%"
+     data-options="iconCls:'icon-save',modal:true,collapsible:false,minimizable:false,maximizable:false,maximized:true">
+    <div style="display: block; width: 100%; height: 100%; text-align: center">
+        <img src="" style="height: 100%; display: block" />
+    </div>
+</div>
+
+<script>
+    function test(src) {
+        $("#win img").attr("src", src);
+        $("#win").window('open');
+    }
+</script>

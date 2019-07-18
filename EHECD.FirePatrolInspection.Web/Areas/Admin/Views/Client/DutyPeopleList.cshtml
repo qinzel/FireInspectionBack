@@ -1,0 +1,308 @@
+﻿@{
+    ViewBag.Title = "值班人员管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="datagrid_list_toolbar_duty_people">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="showSetDialog(0,'添加值班人员')">添加</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="Edit()">编辑</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton l-btn-new-plain" data-options="iconCls:'icon-lock',plain:true" onclick="Reset()">重置密码</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="Delete()">删除</a>&nbsp;&nbsp;
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-detail',plain:true" onclick="Detail()">查看详情</a>
+    <form id="search_form_duty_people">
+        <input type="hidden" name="condition.iType" value="4" />
+        <span style="margin-left: 5px">关键字：</span><input name="condition.sKeyword" type="text" data-options="prompt:'请输入账号/姓名'" class="easyui-textbox"/>
+        <span style="margin-left: 5px">所属使用单位：</span>
+        @Html.DropDownList("condition.iUseDeptID", ViewBag.unitList as IEnumerable<SelectListItem>, new { @class = "query-sel", name = "condition.iUseDeptID" })
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="datagridReload();">查询</a>
+    </form>
+    <div>
+        <span style="margin-left:5px;line-height:normal;vertical-align:middle;">
+            已选择:<span style="color: red; display: inline-block" id="selectedRowNumber">0</span>条
+        </span>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" id="btn_clearSelected">清空选择项</a>
+    </div>
+</div>
+<table id="datagrid_duty_people"></table>
+<script type="text/javascript">
+    $(function () {
+        var refreshSelectedRowNumber = function () {
+            var rows = $('#datagrid_duty_people').datagrid("getSelections");
+            $("#selectedRowNumber").html(rows.length);
+        }
+
+        $("#btn_clearSelected").on('click', function () {
+            $('#datagrid_duty_people').datagrid("clearSelections");
+        })
+
+        window.datagrid = $('#datagrid_duty_people').datagrid({
+            checkbox: true,
+            // singleSelect: true, //是否单选
+            title: '值班人员管理',
+            remoteSort: false,
+            pagination: true,
+            striped: true,
+            pageSize: 20,
+            toolbar: "#datagrid_list_toolbar_duty_people",
+            border: false,
+            pageList: [20, 30, 50],
+            rownumbers: true, //行号
+            method: "post",
+            loadMsg: '数据加载中请稍后……',
+            queryParams: $("#search_form_duty_people").serializeObject(),
+            url: '/Admin/Client/GetDutyGridData',
+            fit: true, //自动大小 
+            idField: 'ID',
+            columns: 
+			[
+                [
+                    {
+						field: 'ID', checkbox: true 
+                    },
+                    {
+						field: 'sPhone', title: '账号/电话', width: 100
+                    },
+                    {
+						field: 'sName', title: '姓名', width: 100
+                    },
+                    {
+                        field: 'sUnitName', title: '所属使用单位', width: 150
+                    },
+                    {
+                        field: 'iTimeLength', title: '值班时长', width: 150, formatter: function (value, row, index) {
+                            if (row["ID"] == undefined) {
+                                return value;
+                            }
+                            if (value) {
+                                var dtSub = value * 60 * 1000//时间差的毫秒数      
+                                //------------------------------
+                                //计算出相差天数
+                                var days = Math.floor(dtSub / (24 * 3600 * 1000))
+                                //计算出小时数
+                                var leave1 = dtSub % (24 * 3600 * 1000)    //计算天数后剩余的毫秒数
+                                var hours = Math.floor(leave1 / (3600 * 1000))
+                                //计算相差分钟数
+                                var leave2 = leave1 % (3600 * 1000)        //计算小时数后剩余的毫秒数
+                                var minutes = Math.floor(leave2 / (60 * 1000))
+                                //计算相差秒数
+                                var leave3 = leave2 % (60 * 1000)      //计算分钟数后剩余的毫秒数
+                                var seconds = Math.round(leave3 / 1000)
+
+                                return (days > 0 ? days + "天 " : "") + (hours > 0 ? hours + "小时 " : "") + minutes + "分钟";
+                            }
+                            else {
+                                return "-";
+                            }
+                        }
+                    }
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData) {
+                showDialog(rowData.ID);
+            },
+            onLoadSuccess: function(data) {
+                if (data.total == 0) {
+                    $(this).datagrid('hideColumn', 'ID');
+                    $(this).datagrid('appendRow', { sPhone: '<div style="text-align:center;color:#7f99be">暂无值班人员信息！</div>' }).datagrid('mergeCells', { index: 0, field: 'sPhone', colspan: 4 });
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                }
+                else {
+                    $(this).datagrid('showColumn', 'ID');
+                    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            },
+            onSelect: function (index, row) {
+                refreshSelectedRowNumber();
+            },
+            onUnselect: function (index, row) {
+                refreshSelectedRowNumber();
+            },
+            onSelectAll: function () {
+                refreshSelectedRowNumber();
+            },
+            onUnselectAll: function () {
+                refreshSelectedRowNumber();
+            }
+        });
+
+
+        $("#search_form_duty_people").keydown(function (e) { 
+            if (e.keyCode == 13) {
+                e.preventDefault(); //阻止冒泡
+                datagridReload();
+                return;
+            }
+        });
+    });
+	
+	 //查询
+    function datagridReload() {
+        $('#datagrid_duty_people').datagrid('load', $("#search_form_duty_people").serializeObject());
+        $('#datagrid_duty_people').datagrid('clearSelections');
+
+    };
+
+    //直接加载
+    function reload(init) {
+        var getPager = $('#datagrid_duty_people').datagrid('getPager');
+        if (init)
+            getPager.pagination('select', 1);
+        else
+            getPager.pagination('select');
+    }
+
+    //查看详情
+    function Detail() {
+        var rows = $('#datagrid_duty_people').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个值班人员!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个值班人员!', 'warning');
+            return;
+        }
+        if (rows[0].ID == undefined) {
+            msgShow('提示', '暂无值班人员!', 'warning');
+            return;
+        }
+        showDialog(rows[0].ID);
+    }
+
+    //打开详情页面
+    function showDialog(id, title) {
+        if (id == undefined) {
+            msgShow('提示', '暂无值班人员!', 'warning');
+            return;
+        }
+        window.detailWindow = $('<div />').dialog({
+            title: '查看值班人员详情',
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/Admin/Client/DutyPeopleDetail/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function (e) {
+                        detailWindow.dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    //编辑功能
+    function Edit() {
+        var rows = $('#datagrid_duty_people').datagrid("getSelections");
+        if (rows.length == 0) {
+            msgShow('提示', '请选择一个值班人员!', 'warning');
+            return;
+        }
+        if (rows.length > 1) {
+            msgShow('提示', '只能选择一个值班人员!', 'warning');
+            return;
+        }
+        showSetDialog(rows[0].ID, '编辑值班人员');
+    }
+    //打开编辑页面
+    function showSetDialog(id, title) {
+        window.setWindow = $('<div />').dialog({
+            title: title,
+            iconCls: 'icon-save',
+            width: 500,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '/Admin/Client/SetPeople/' + id,
+            modal: true,
+            buttons: [
+                {
+                    text: '保存',
+                    iconCls: 'icon-ok',
+                    id: 'save_window_okbtn_duty_people',
+                    handler: function(e) {
+                        window.saveModel();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-no',
+                    handler: function(e) {
+                        setWindow.dialog('close');
+                    }
+                }
+            ],
+            onClose: function() {
+                setWindow.dialog('destroy');
+            }
+        });
+    }
+
+    //清除所选项
+    function clearSelections() {
+        $('#datagrid_duty_people').datagrid('clearSelections');
+    }
+	
+	 //删除值班人员
+    function Delete() {
+        var selectIds = [];
+        var rows = $('#datagrid_duty_people').datagrid("getSelections");
+        if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                selectIds.push(rows[i].ID);
+            }
+        }
+
+        //判断是否选择数据
+        if (selectIds.length < 1) {
+            msgShow('提示', '至少选择一条信息进行删除操作', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定删除所有选中的信息共" + selectIds.length + "条数目？", function(ok) {
+            if (ok) {
+                $.post('/Admin/Client/Delete', { sIds: selectIds.join() }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+						clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+
+    // 重置密码
+    function Reset() {
+        var selectIds = [];
+        var rows = $('#datagrid_duty_people').datagrid("getSelections");
+        if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                selectIds.push(rows[i].ID);
+            }
+        }
+
+        //判断是否选择数据
+        if (selectIds.length < 1) {
+            msgShow('提示', '至少选择一条信息进行重置密码操作', 'warning');
+            return;
+        }
+        $.messager.confirm('确认', "你确定重置所有选中的数据的密码，共" + selectIds.length + "条数目？", function (ok) {
+            if (ok) {
+                $.post('/Admin/Client/Reset', { sIds: selectIds.join() }, function (res) {
+                    if (res && res.success) {
+                        reload(1);
+                        clearSelections();
+                        msgShow('提示', res.message, 'info');
+                    } else {
+                        res && (msgShow('提示', res.message, 'warning'));
+                    }
+                }, 'json');
+            }
+        });
+    }
+</script>

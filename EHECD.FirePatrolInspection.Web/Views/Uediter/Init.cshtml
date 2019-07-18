@@ -1,0 +1,6 @@
+﻿<script type="text/javascript">
+    UE.ehecd_editer_init = function (id, v) {
+        var ue = UE.getEditor(id, { serverUrl: '@Html.Raw(ViewBag.serverUrl)' });
+        (v && v.length > 0) && (ue.ready(function () { ue.setContent(v); }));//设置初始值
+    }
+</script>

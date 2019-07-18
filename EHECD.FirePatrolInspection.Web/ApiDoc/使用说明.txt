@@ -1,0 +1,17 @@
+安装方法：
+http://blog.csdn.net/xialei199023/article/details/63251482
+
+使用方法：
+http://blog.csdn.net/soslinken/article/details/50468896
+
+
+生成API接口文档
+打开控制台程序 转到apidoc的路面目录下输入如下代码生成api接口
+CMD > apidoc -o html/
+
+
+
+1.执行安装文件 node-v6.11.2-x64.msi 安装
+2.进入cmd 输入 node 回车 输入  console.info("hello world") 如输出：hello word; 表示安装成功
+3.安装apidoc 在 cmd 中输入 npm install apidoc -g 等待安装完成
+4.输入 apidoc -v 查看安装的版本
