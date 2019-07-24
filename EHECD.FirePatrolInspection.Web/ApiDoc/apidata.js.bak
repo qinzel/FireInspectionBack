@@ -1,7 +1,7 @@
 ﻿/**
  * @apiDescription 说明
- * appKey：NhTnHhEJc5ZCJM9FfmlCINZDvDfyPzAN
  * appSecret：EpD70oATq6d7TgUoOHkbODQjVg7CUGaWw7thptHPt3KMWLcEN8rWD6V7RjP5fz7a
+ * superToken: SIVB
  * 签名算法：将appKey、appSecret、timestamp、echostr排序后MD5加密
  */
  
@@ -12,7 +12,6 @@
 /**
 @apiDefine Banner 轮播
 */
-
 
 /**
 @apiDefine Client 用户
@@ -77,7 +76,7 @@
 
 /**
 @api {post} article.get 获取文章详情
-@apiName article.get
+@apiName article.get 
 @apiGroup Article
 
 @apiParam {int} iArticleID    文章ID
@@ -107,8 +106,8 @@
 
 /**
 @api {post} article.about 获取关于我们
-@apiName article.about
-@apiGroup Article
+@apiName article.about 
+@apiGroup Article 
 
 @apiSuccessExample 返回信息
 {
@@ -130,7 +129,7 @@
 
 /**
 @api {post} article.getlist 获取文章列表
-@apiName article.getlist
+@apiName article.getlist 
 @apiGroup Article
 
 @apiParam {int} iType       文章类别[0:法律知识,1:消防知识,2:资讯,3:帮助,4:关于我们]
@@ -166,7 +165,7 @@
 
 /**
 @api {post} article.client.getlist 获取文章列表(不含文章内容)
-@apiName article.client.getlist
+@apiName article.client.getlist 
 @apiGroup Article
 
 @apiParam {string} lm        最后更新时间
@@ -208,7 +207,7 @@
 
 /**
 @api {post} banner.getlist 获取轮播列表
-@apiName banner.getlist
+@apiName banner.getlist 
 @apiGroup Banner
 
 @apiSuccessExample 返回信息
@@ -230,7 +229,7 @@
 */
 
 /**
-@api {post} banner.get 获取轮播详情
+@api {post} banner.get 获取轮播详情(过时)
 @apiName banner.get
 @apiGroup Banner
 
@@ -263,7 +262,7 @@
 
 /**
 @api {post} client.register 用户注册
-@apiName client.register
+@apiName client.register  
 @apiGroup Client
 
 @apiParam {string} sPhone   手机号
@@ -296,7 +295,7 @@
 
 /**
 @api {post} client.login 用户登录
-@apiName client.login
+@apiName client.login  
 @apiGroup Client
 
 @apiParam {string} sPhone   手机号
@@ -330,8 +329,32 @@
 */
 
 /**
+@api {post} client.logout 用户登出
+@apiName client.logout  
+@apiGroup Client
+
+@apiParam {string} iClientID   用户ID
+@apiParam {string} deviceID    设备标识
+
+@apiParamExample {json} 请求样例
+{
+    "iClientID": "31",
+    "deviceID": "QWERTYUIOPASDFGHJKLZXCVBNM"
+}
+
+@apiSuccessExample 返回信息
+{
+    "success": true,
+    "code": 0,
+    "message": "用户登出成功",
+    "data": {
+    }
+}
+*/
+
+/**
 @api {post} client.get 获取用户信息
-@apiName client.get
+@apiName client.get  
 @apiGroup Client
 
 @apiParam {int} iClientID   前端用户ID
@@ -358,7 +381,7 @@
 
 /**
 @api {post} client.self 获取当前用户信息
-@apiName client.self
+@apiName client.self  
 @apiGroup Client
 
 @apiParam {int} iClientID   前端用户ID
@@ -396,8 +419,8 @@
 
 /**
 @api {post} client.editpwd 修改登录密码
-@apiName client.editpwd
-@apiGroup Client
+@apiName client.editpwd  
+@apiGroup Client 
 
 @apiParam {int} iClientID       用户ID
 @apiParam {string} sOldPwd      旧登录密码（MD5加密）
@@ -421,7 +444,7 @@
 
 /**
 @api {post} client.findpwd 找回密码
-@apiName client.findpwd
+@apiName client.findpwd  
 @apiGroup Client
 
 @apiParam {string} sPhone       手机号
@@ -446,7 +469,7 @@
 
 /**
 @api {post} client.changeimage 修改用户头像
-@apiName client.changeimage
+@apiName client.changeimage  
 @apiGroup Client
 
 @apiParam {int} iClientID       用户ID
@@ -468,7 +491,7 @@
 */
 
 /**
-@api {post} client.getlist 获取点检员列表
+@api {post} client.getlist 获取点检员列表(过时)
 @apiName client.getlist
 @apiGroup Client
 
@@ -496,7 +519,7 @@
 
 /**
 @api {post} client.getdutylist 获取单位值班列表
-@apiName client.getdutylist
+@apiName client.getdutylist  
 @apiGroup Client
 
 @apiParam {int} iClientID     点检员ID
@@ -524,7 +547,7 @@
 
 /**
 @api {post} client.setcid 设置用户设备号
-@apiName client.setcid
+@apiName client.setcid  
 @apiGroup Client
 
 @apiParam {string} iClientID     点检员ID
@@ -538,7 +561,7 @@
 	"deviceType":"IOS"
 }
 
-@apiSuccessExample 返回信息
+@apiSuccessExample 返回信息2019/7/24
 {
     "success": true,
     "code": 0,
@@ -553,7 +576,7 @@
 
 /**
 @api {post} sms.regcode 发送注册短信验证码
-@apiName sms.regcode
+@apiName sms.regcode  
 @apiGroup Sms
 
 @apiParam {string} sPhone   手机号
@@ -599,7 +622,7 @@
 
 /**
 @api {post} settings.get 获取基础设置信息
-@apiName settings.get
+@apiName settings.get  
 @apiGroup Settings
 
 @apiSuccessExample 返回信息
@@ -634,7 +657,7 @@
 
 /**
 @api {post} msg.unreadcount 获取未读站内信条数
-@apiName msg.unreadcount
+@apiName msg.unreadcount  
 @apiGroup SiteMsg
 
 @apiParam {int} iClientID     用户ID
@@ -655,7 +678,7 @@
 
 /**
 @api {post} msg.getlist 获取用户站内信列表
-@apiName msg.getlist
+@apiName msg.getlist  
 @apiGroup SiteMsg
 
 @apiParam {int} iClientID   用户ID
@@ -691,7 +714,7 @@
 
 /**
 @api {post} msg.get 获取站内信详情
-@apiName msg.get
+@apiName msg.get  
 @apiGroup SiteMsg
 
 @apiParam {int} iSiteMsgID  站内信ID
@@ -724,7 +747,7 @@
 
 /**
 @api {post} msg.delete 删除站内信
-@apiName msg.delete
+@apiName msg.delete  
 @apiGroup SiteMsg
 
 @apiParam {int} iSiteMsgID  站内信ID
@@ -747,214 +770,12 @@
 
 ////////////////////////////////////////////////////////站内信//////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////朋友圈//////////////////////////////////////////////////////////////////
-
-/**
-@api {post} tl.add 发布帖子
-@apiName tl.add
-@apiGroup Timeline
-
-@apiParam {int} iClientID       用户ID
-@apiParam {string} sTitle       标题
-@apiParam {string} sContent     内容
-@apiParam {string} sImageSrc    图片
-
-@apiParamExample {json} 请求样例
-{
-    "iClientID": 5,
-    "sTitle": "标题",
-    "sContent": "内容",
-    "sImageSrc": "http://xxx,http://xxx"
-}
-
-@apiSuccessExample 返回信息
-{
-    "success": true,
-    "code": 0,
-    "message": "发表帖子成功",
-    "data": null
-}
-*/
-
-/**
-@api {post} tl.getlist 获取朋友圈帖子列表
-@apiName tl.getlist
-@apiGroup Timeline
-
-@apiParam {int} iClientID       用户ID
-@apiParam {int} page            页码
-
-@apiParamExample {json} 请求样例
-{
-    "iClientID": 2,
-    "page": 1
-}
-
-@apiSuccessExample 返回信息
-{
-    "success": true,
-    "code": 0,
-    "message": "获取朋友圈帖子列表成功",
-    "data": [
-        {
-            "ID": 1,                                    //评论ID
-            "iClientID": 2,                             //发帖人ID
-            "sTitle": "标题",                             //标题
-            "sContent": "内容",                           //内容
-            "sImageSrc": "http://xxx,http://xxx",       //评论图片
-            "iReplyCount": 2,                           //评论数
-            "dCreateTime": "2017-10-20T16:50:34.743",   //评论时间
-            "bIsDeleted": false                         //删除标识[0:未删除,1:已删除]
-        }
-    ]
-}
-*/
-
-/**
-@api {post} tl.get 获取朋友圈帖子详情
-@apiName tl.get
-@apiGroup Timeline
-
-@apiParam {int} iTieziID       帖子ID
-
-@apiParamExample {json} 请求样例
-{
-    "iTieziID": 2
-}
-
-@apiSuccessExample 返回信息
-{
-    "success": true,
-    "code": 0,
-    "message": "获取朋友圈帖子详情成功",
-    "data": {
-        "ID": 1,                                    //评论ID
-        "iClientID": 2,                             //发帖人ID
-        "sClientName": "张三",                        //发帖人姓名
-        "sClientImageSrc": "https://xxx",           //发帖人头像
-        "sTitle": "标题",                             //标题
-        "sContent": "内容",                           //内容
-        "sImageSrc": "http://xxx,http://xxx",       //评论图片
-        "iReplyCount": 2,                           //评论数
-        "dCreateTime": "2017-10-20T16:50:34.743",   //发帖时间
-        "bIsDeleted": false,                        //删除标识[0:未删除,1:已删除]
-        "CommentList": [                            //评论集合
-            {
-                "ID": 1,                            //评论ID
-                "iTieziID": 1,                      //帖子ID
-                "iClientID": 1,                     //评论人ID
-                "sName": "张三",                    //评论人名称
-                "sImageSrc": "http://xxx",          //评论人头像
-                "sTarName": "",                     //目标用户名称
-                "sContent": "看个鸡蛋",             //评论内容
-                "iTarClientID": 0,                  //目标用户ID
-                "dCreateTime": "2018-05-21T13:57:12.27",//评论时间
-                "bIsDeleted": false                 //删除标识[0:未删除,1:已删除]
-            }
-        ]
-    }
-}
-*/
-
-/**
-@api {post} tl.getmylist 获取我的帖子列表
-@apiName tl.getmylist
-@apiGroup Timeline
-
-@apiParam {int} iClientID       用户ID
-@apiParam {int} page            页码
-
-@apiParamExample {json} 请求样例
-{
-    "iClientID": 1,
-    "page": 1
-}
-
-@apiSuccessExample 返回信息
-{
-    "success": true,
-    "code": 0,
-    "message": "获取我的帖子列表成功",
-    "data": [
-        {
-            "ID": 1,                                    //评论ID
-            "iClientID": 2,                             //发帖人ID
-            "sTitle": "标题",                             //标题
-            "sContent": "内容",                           //内容
-            "sImageSrc": "http://xxx,http://xxx",       //评论图片
-            "iReplyCount": 2,                           //评论数
-            "dCreateTime": "2017-10-20T16:50:34.743",   //评论时间
-            "bIsDeleted": false                         //删除标识[0:未删除,1:已删除]
-        }
-    ]
-}
-*/
-
-/**
-@api {post} tl.delete 删除我的帖子
-@apiName tl.delete
-@apiGroup Timeline
-
-@apiParam {int} iTieziID    帖子ID
-
-@apiParamExample {json} 请求样例
-{
-    "iTieziID": 1
-}
-
-@apiSuccessExample 返回信息
-{
-    "success": true,
-    "code": 0,
-    "message": "删除帖子成功",
-    "data": null
-}
-*/
-
-////////////////////////////////////////////////////////朋友圈//////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////评论//////////////////////////////////////////////////////////////////
-
-/**
-@api {post} cmt.add 发布评论
-@apiName cmt.add
-@apiGroup Comment
-
-@apiParam {int} iTieziID        帖子ID
-@apiParam {int} iClientID       评论人ID
-@apiParam {string} sName        评论人名称
-@apiParam {string} sImageSrc    评论人头像
-@apiParam {string} sContent     评论内容
-@apiParam {int} iTarClientID    评论人目标ID
-@apiParam {string} sTarName     评论人目标名称
-
-@apiParamExample {json} 请求样例
-{
-    "iTieziID": 2,
-    "iClientID": 1,
-    "sName": "张三",
-    "sImageSrc": "http://xxx",
-    "sContent": "花都谢了",
-    "iTarClientID": 0,
-    "sTarName": ""
-}
-
-@apiSuccessExample 返回信息
-{
-    "success": true,
-    "code": 0,
-    "message": "评论成功",
-    "data": null
-}
-*/
-
-////////////////////////////////////////////////////////评论//////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////意见反馈//////////////////////////////////////////////////////////////////
 
 /**
 @api {post} fb.add 提交意见反馈
-@apiName fb.add
+@apiName fb.add  
 @apiGroup Feedback
 
 @apiParam {int} iClientID       用户ID
@@ -983,7 +804,7 @@
 
 /**
 @api {post} fb.getlist 获取反馈列表
-@apiName fb.getlist
+@apiName fb.getlist  
 @apiGroup Feedback
 
 @apiParam {int} iClientID       用户ID
@@ -1017,7 +838,7 @@
 
 /**
 @api {post} fb.get 获取反馈详情
-@apiName fb.get
+@apiName fb.get  
 @apiGroup Feedback
 
 @apiParam {int} iFeedbackID     意见反馈ID
@@ -1049,7 +870,7 @@
 
 /**
 @api {post} fb.delete 删除反馈
-@apiName fb.delete
+@apiName fb.delete  
 @apiGroup Feedback
 
 @apiParam {int} iFeedbackID  意见反馈ID
@@ -1076,7 +897,7 @@
 
 /**
 @api {post} unit.register 单位账号注册
-@apiName unit.register
+@apiName unit.register  
 @apiGroup Unit
 
 @apiParam {string} sPhone           手机号
@@ -1117,7 +938,7 @@
 
 /**
 @api {post} unit.getlist 获取单位列表
-@apiName unit.getlist
+@apiName unit.getlist   
 @apiGroup Unit
 
 @apiSuccessExample 返回信息
@@ -1153,7 +974,7 @@
 */
 
 /**
-@api {post} unit.getrellist 获取使用单位列表
+@api {post} unit.getrellist 获取使用单位列表(过时)
 @apiName unit.getrellist
 @apiGroup Unit
 
@@ -1184,7 +1005,7 @@
 
 /**
 @api {post} unit.get 获取单位详情
-@apiName unit.get
+@apiName unit.get  
 @apiGroup Unit
 
 @apiParam {int} iUnitID   单位ID
@@ -1216,7 +1037,7 @@
 
 /**
 @api {post} unit.getrprlist 获取使用单位已关联的维护公司列表
-@apiName unit.getrprlist
+@apiName unit.getrprlist  
 @apiGroup Unit
 
 @apiParam {int} iUnitID   单位ID
@@ -1250,7 +1071,7 @@
 
 /**
 @api {post} duty.getlist 获取值班列表
-@apiName duty.getlist
+@apiName duty.getlist  
 @apiGroup Duty
 
 @apiParam {int} iClientID   前端人员ID
@@ -1316,7 +1137,7 @@
 
 /**
 @api {post} dutyrec.getstatus 获取签到状态
-@apiName dutyrec.getstatus
+@apiName dutyrec.getstatus  
 @apiGroup DutyRecord
 
 @apiParam {int} iDutyRoomID 值班室ID
@@ -1339,7 +1160,7 @@
 
 /**
 @api {post} dutyrec.add 值班签到 
-@apiName dutyrec.add
+@apiName dutyrec.add  
 @apiGroup DutyRecord
 
 @apiParam {int} iClientID   前端人员ID
@@ -1362,7 +1183,7 @@
 
 /**
 @api {post} dutyrec.finish 值班签退 
-@apiName dutyrec.finish
+@apiName dutyrec.finish  
 @apiGroup DutyRecord
 
 @apiParam {int} iClientID       值班人员ID
@@ -1389,7 +1210,7 @@
 
 /**
 @api {post} dutyrec.get 获取值班记录详情
-@apiName dutyrec.get
+@apiName dutyrec.get  
 @apiGroup DutyRecord
 
 @apiParam {int} iDutyRecordID   值班记录ID
@@ -1419,7 +1240,7 @@
 
 /**
 @api {post} dutyrec.getlist 获取值班记录列表
-@apiName dutyrec.getlist
+@apiName dutyrec.getlist  
 @apiGroup DutyRecord
 
 @apiParam {int} iClientID   值班人员ID
@@ -1462,7 +1283,7 @@
 
 /**
 @api {post} device.add 添加设备
-@apiName device.add
+@apiName device.add  
 @apiGroup Device
 
 @apiParam {int} iClientID       点检员ID
@@ -1514,7 +1335,7 @@
 */
 
 /**
-@api {post} device.param 获取新增设备需要的参数
+@api {post} device.param 获取新增设备需要的参数(过时)
 @apiName device.param
 @apiGroup Device
 
@@ -1543,7 +1364,7 @@
 
 /**
 @api {post} device.getlist 获取设备列表
-@apiName device.getlist
+@apiName device.getlist  
 @apiGroup Device
 
 @apiParam {int} iClientID   点检员ID
@@ -1589,7 +1410,7 @@
 */
 
 /**
-@api {post} device.getalllist 获取所有设备
+@api {post} device.getalllist 获取所有设备(过时)
 @apiName device.getalllist
 @apiGroup Device
 
@@ -1618,7 +1439,7 @@
 
 /**
 @api {post} device.getlistbyunit 获取单位下辖设备列表
-@apiName device.getlistbyunit
+@apiName device.getlistbyunit  
 @apiGroup Device
 
 @apiParam {int} iUnitID 使用单位ID
@@ -1664,7 +1485,7 @@
 
 /**
 @api {post} device.get 获取设备详情
-@apiName device.get
+@apiName device.get  
 @apiGroup Device
 
 @apiParam {int} iDeviceID  设备ID
@@ -1713,7 +1534,7 @@
 */
 
 /**
-@api {post} device.ulately 获取单位最近添加的设备
+@api {post} device.ulately 获取单位最近添加的设备(过时)
 @apiName device.ulately
 @apiGroup Device
 
@@ -1756,7 +1577,7 @@
 
 /**
 @api {post} device.clately 获取点检员最近添加的设备
-@apiName device.clately
+@apiName device.clately  
 @apiGroup Device
 
 @apiParam {int} iClientID  点检员ID
@@ -1798,8 +1619,8 @@
 
 
 /**
-@api {post} device.client.getlist 获取设备列表
-@apiName device.client.getlist
+@api {post} device.client.getlist 获取设备列表(移动端)
+@apiName device.client.getlist  
 @apiGroup Device
 
 @apiParam {int} iClientID  点检员ID
@@ -1852,7 +1673,7 @@
 
 /**
 @api {post} device.client.getDeviceParam 查询设备指标(移动端)
-@apiName device.client.getDeviceParam
+@apiName device.client.getDeviceParam  
 @apiGroup Device
 
 @apiParam {int} iClientID  点检员ID
@@ -1897,7 +1718,7 @@
 
 /**
 @api {post} devicetype.getlist 获取设备分类列表
-@apiName devicetype.getlist
+@apiName devicetype.getlist  
 @apiGroup DeviceType
 
 @apiParam {int} iUnitID   单位ID
@@ -1930,7 +1751,7 @@
 
 /**
 @api {post} ins.add 添加巡检记录
-@apiName ins.add
+@apiName ins.add  
 @apiGroup Inspection
 
 @apiParam {int} iClientID       点检员ID
@@ -1957,7 +1778,7 @@
 
 /**
 @api {post} ins.adds 批量添加巡检记录
-@apiName ins.adds
+@apiName ins.adds  
 @apiGroup Inspection
 
 @apiParam {int} iClientID       点检员ID
@@ -1980,7 +1801,7 @@
 
 /**
 @api {post} ins.getlist 获取巡检记录列表
-@apiName ins.getlist
+@apiName ins.getlist  
 @apiGroup Inspection
 
 @apiParam {int} iDeviceID  设备ID
@@ -2012,7 +1833,7 @@
 
 /**
 @api {post} ins.get 获取巡检记录详情
-@apiName ins.get
+@apiName ins.get  
 @apiGroup Inspection
 
 @apiParam {int} iInspectionRecordID  巡检记录ID
@@ -2044,7 +1865,7 @@
 
 /**
 @api {post} repair.add 添加维修记录
-@apiName repair.add
+@apiName repair.add  
 @apiGroup Repair
 
 @apiParam {int} iClientID       点检员ID
@@ -2069,7 +1890,7 @@
 
 /**
 @api {post} repair.getlist 获取维修记录列表
-@apiName repair.getlist
+@apiName repair.getlist  
 @apiGroup Repair
 
 @apiParam {int} iDeviceID  设备ID
@@ -2104,7 +1925,7 @@
 
 /**
 @api {post} change.add 添加更换记录
-@apiName change.add
+@apiName change.add  
 @apiGroup Change
 
 @apiParam {int} iClientID           点检员ID
@@ -2141,7 +1962,7 @@
 
 /**
 @api {post} change.getlist 获取更换记录列表
-@apiName change.getlist
+@apiName change.getlist  
 @apiGroup Change
 
 @apiParam {int} iDeviceID   设备ID

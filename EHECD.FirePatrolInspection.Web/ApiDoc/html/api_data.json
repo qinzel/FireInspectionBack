@@ -172,7 +172,7 @@
   {
     "type": "post",
     "url": "banner.get",
-    "title": "获取轮播详情",
+    "title": "获取轮播详情(过时)",
     "name": "banner_get",
     "group": "Banner",
     "parameter": {
@@ -646,7 +646,7 @@
   {
     "type": "post",
     "url": "client.getlist",
-    "title": "获取点检员列表",
+    "title": "获取点检员列表(过时)",
     "name": "client_getlist",
     "group": "Client",
     "parameter": {
@@ -735,6 +735,57 @@
     "sampleRequest": [
       {
         "url": "http://114.115.250.165/router/ApiTest?method=client.login"
+      }
+    ]
+  },
+  {
+    "type": "post",
+    "url": "client.logout",
+    "title": "用户登出",
+    "name": "client_logout",
+    "group": "Client",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "iClientID",
+            "description": "<p>用户ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "deviceID",
+            "description": "<p>设备标识</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "请求样例",
+          "content": "{\n    \"iClientID\": \"31\",\n    \"deviceID\": \"QWERTYUIOPASDFGHJKLZXCVBNM\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "返回信息",
+          "content": "{\n    \"success\": true,\n    \"code\": 0,\n    \"message\": \"用户登出成功\",\n    \"data\": {\n    }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./apidata.js",
+    "groupTitle": "用户",
+    "sampleRequest": [
+      {
+        "url": "http://114.115.250.165/router/ApiTest?method=client.logout"
       }
     ]
   },
@@ -911,7 +962,7 @@
     "success": {
       "examples": [
         {
-          "title": "返回信息",
+          "title": "返回信息2019/7/24",
           "content": "{\n    \"success\": true,\n    \"code\": 0,\n    \"message\": \"\",\n    \"data\": null\n}",
           "type": "json"
         }
@@ -927,99 +978,13 @@
     ]
   },
   {
-    "type": "post",
-    "url": "cmt.add",
-    "title": "发布评论",
-    "name": "cmt_add",
-    "group": "Comment",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "iTieziID",
-            "description": "<p>帖子ID</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "iClientID",
-            "description": "<p>评论人ID</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "sName",
-            "description": "<p>评论人名称</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "sImageSrc",
-            "description": "<p>评论人头像</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "sContent",
-            "description": "<p>评论内容</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "iTarClientID",
-            "description": "<p>评论人目标ID</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "sTarName",
-            "description": "<p>评论人目标名称</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "请求样例",
-          "content": "{\n    \"iTieziID\": 2,\n    \"iClientID\": 1,\n    \"sName\": \"张三\",\n    \"sImageSrc\": \"http://xxx\",\n    \"sContent\": \"花都谢了\",\n    \"iTarClientID\": 0,\n    \"sTarName\": \"\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "返回信息",
-          "content": "{\n    \"success\": true,\n    \"code\": 0,\n    \"message\": \"评论成功\",\n    \"data\": null\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./apidata.js",
-    "groupTitle": "评论",
-    "sampleRequest": [
-      {
-        "url": "http://114.115.250.165/router/ApiTest?method=cmt.add"
-      }
-    ]
-  },
-  {
-    "description": "<p>说明 appKey：NhTnHhEJc5ZCJM9FfmlCINZDvDfyPzAN appSecret：EpD70oATq6d7TgUoOHkbODQjVg7CUGaWw7thptHPt3KMWLcEN8rWD6V7RjP5fz7a 签名算法：将appKey、appSecret、timestamp、echostr排序后MD5加密</p>",
+    "description": "<p>说明 appSecret：EpD70oATq6d7TgUoOHkbODQjVg7CUGaWw7thptHPt3KMWLcEN8rWD6V7RjP5fz7a superToken: SIVB 签名算法：将appKey、appSecret、timestamp、echostr排序后MD5加密</p>",
     "type": "",
     "url": "",
     "version": "0.0.0",
     "filename": "./apidata.js",
-    "group": "D__HX______lexiao_git______EHECD_FirePatrolInspection_Web_ApiDoc_apidata_js",
-    "groupTitle": "D__HX______lexiao_git______EHECD_FirePatrolInspection_Web_ApiDoc_apidata_js",
+    "group": "D__HX______FireInspectionBack_EHECD_FirePatrolInspection_Web_ApiDoc_apidata_js",
+    "groupTitle": "D__HX______FireInspectionBack_EHECD_FirePatrolInspection_Web_ApiDoc_apidata_js",
     "name": ""
   },
   {
@@ -1046,8 +1011,8 @@
     "url": "",
     "version": "0.0.0",
     "filename": "./html/main.js",
-    "group": "D__HX______lexiao_git______EHECD_FirePatrolInspection_Web_ApiDoc_html_main_js",
-    "groupTitle": "D__HX______lexiao_git______EHECD_FirePatrolInspection_Web_ApiDoc_html_main_js",
+    "group": "D__HX______FireInspectionBack_EHECD_FirePatrolInspection_Web_ApiDoc_html_main_js",
+    "groupTitle": "D__HX______FireInspectionBack_EHECD_FirePatrolInspection_Web_ApiDoc_html_main_js",
     "name": ""
   },
   {
@@ -1443,7 +1408,7 @@
   {
     "type": "post",
     "url": "device.getalllist",
-    "title": "获取所有设备",
+    "title": "获取所有设备(过时)",
     "name": "device_getalllist",
     "group": "Device",
     "success": {
@@ -1639,7 +1604,7 @@
   {
     "type": "post",
     "url": "device.param",
-    "title": "获取新增设备需要的参数",
+    "title": "获取新增设备需要的参数(过时)",
     "name": "device_param",
     "group": "Device",
     "parameter": {
@@ -2886,261 +2851,6 @@
   },
   {
     "type": "post",
-    "url": "tl.add",
-    "title": "发布帖子",
-    "name": "tl_add",
-    "group": "Timeline",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "iClientID",
-            "description": "<p>用户ID</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "sTitle",
-            "description": "<p>标题</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "sContent",
-            "description": "<p>内容</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "string",
-            "optional": false,
-            "field": "sImageSrc",
-            "description": "<p>图片</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "请求样例",
-          "content": "{\n    \"iClientID\": 5,\n    \"sTitle\": \"标题\",\n    \"sContent\": \"内容\",\n    \"sImageSrc\": \"http://xxx,http://xxx\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "返回信息",
-          "content": "{\n    \"success\": true,\n    \"code\": 0,\n    \"message\": \"发表帖子成功\",\n    \"data\": null\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./apidata.js",
-    "groupTitle": "朋友圈",
-    "sampleRequest": [
-      {
-        "url": "http://114.115.250.165/router/ApiTest?method=tl.add"
-      }
-    ]
-  },
-  {
-    "type": "post",
-    "url": "tl.delete",
-    "title": "删除我的帖子",
-    "name": "tl_delete",
-    "group": "Timeline",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "iTieziID",
-            "description": "<p>帖子ID</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "请求样例",
-          "content": "{\n    \"iTieziID\": 1\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "返回信息",
-          "content": "{\n    \"success\": true,\n    \"code\": 0,\n    \"message\": \"删除帖子成功\",\n    \"data\": null\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./apidata.js",
-    "groupTitle": "朋友圈",
-    "sampleRequest": [
-      {
-        "url": "http://114.115.250.165/router/ApiTest?method=tl.delete"
-      }
-    ]
-  },
-  {
-    "type": "post",
-    "url": "tl.get",
-    "title": "获取朋友圈帖子详情",
-    "name": "tl_get",
-    "group": "Timeline",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "iTieziID",
-            "description": "<p>帖子ID</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "请求样例",
-          "content": "{\n    \"iTieziID\": 2\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "返回信息",
-          "content": "{\n    \"success\": true,\n    \"code\": 0,\n    \"message\": \"获取朋友圈帖子详情成功\",\n    \"data\": {\n        \"ID\": 1,                                    //评论ID\n        \"iClientID\": 2,                             //发帖人ID\n        \"sClientName\": \"张三\",                        //发帖人姓名\n        \"sClientImageSrc\": \"https://xxx\",           //发帖人头像\n        \"sTitle\": \"标题\",                             //标题\n        \"sContent\": \"内容\",                           //内容\n        \"sImageSrc\": \"http://xxx,http://xxx\",       //评论图片\n        \"iReplyCount\": 2,                           //评论数\n        \"dCreateTime\": \"2017-10-20T16:50:34.743\",   //发帖时间\n        \"bIsDeleted\": false,                        //删除标识[0:未删除,1:已删除]\n        \"CommentList\": [                            //评论集合\n            {\n                \"ID\": 1,                            //评论ID\n                \"iTieziID\": 1,                      //帖子ID\n                \"iClientID\": 1,                     //评论人ID\n                \"sName\": \"张三\",                    //评论人名称\n                \"sImageSrc\": \"http://xxx\",          //评论人头像\n                \"sTarName\": \"\",                     //目标用户名称\n                \"sContent\": \"看个鸡蛋\",             //评论内容\n                \"iTarClientID\": 0,                  //目标用户ID\n                \"dCreateTime\": \"2018-05-21T13:57:12.27\",//评论时间\n                \"bIsDeleted\": false                 //删除标识[0:未删除,1:已删除]\n            }\n        ]\n    }\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./apidata.js",
-    "groupTitle": "朋友圈",
-    "sampleRequest": [
-      {
-        "url": "http://114.115.250.165/router/ApiTest?method=tl.get"
-      }
-    ]
-  },
-  {
-    "type": "post",
-    "url": "tl.getlist",
-    "title": "获取朋友圈帖子列表",
-    "name": "tl_getlist",
-    "group": "Timeline",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "iClientID",
-            "description": "<p>用户ID</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "page",
-            "description": "<p>页码</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "请求样例",
-          "content": "{\n    \"iClientID\": 2,\n    \"page\": 1\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "返回信息",
-          "content": "{\n    \"success\": true,\n    \"code\": 0,\n    \"message\": \"获取朋友圈帖子列表成功\",\n    \"data\": [\n        {\n            \"ID\": 1,                                    //评论ID\n            \"iClientID\": 2,                             //发帖人ID\n            \"sTitle\": \"标题\",                             //标题\n            \"sContent\": \"内容\",                           //内容\n            \"sImageSrc\": \"http://xxx,http://xxx\",       //评论图片\n            \"iReplyCount\": 2,                           //评论数\n            \"dCreateTime\": \"2017-10-20T16:50:34.743\",   //评论时间\n            \"bIsDeleted\": false                         //删除标识[0:未删除,1:已删除]\n        }\n    ]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./apidata.js",
-    "groupTitle": "朋友圈",
-    "sampleRequest": [
-      {
-        "url": "http://114.115.250.165/router/ApiTest?method=tl.getlist"
-      }
-    ]
-  },
-  {
-    "type": "post",
-    "url": "tl.getmylist",
-    "title": "获取我的帖子列表",
-    "name": "tl_getmylist",
-    "group": "Timeline",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "iClientID",
-            "description": "<p>用户ID</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "page",
-            "description": "<p>页码</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "请求样例",
-          "content": "{\n    \"iClientID\": 1,\n    \"page\": 1\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "返回信息",
-          "content": "{\n    \"success\": true,\n    \"code\": 0,\n    \"message\": \"获取我的帖子列表成功\",\n    \"data\": [\n        {\n            \"ID\": 1,                                    //评论ID\n            \"iClientID\": 2,                             //发帖人ID\n            \"sTitle\": \"标题\",                             //标题\n            \"sContent\": \"内容\",                           //内容\n            \"sImageSrc\": \"http://xxx,http://xxx\",       //评论图片\n            \"iReplyCount\": 2,                           //评论数\n            \"dCreateTime\": \"2017-10-20T16:50:34.743\",   //评论时间\n            \"bIsDeleted\": false                         //删除标识[0:未删除,1:已删除]\n        }\n    ]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./apidata.js",
-    "groupTitle": "朋友圈",
-    "sampleRequest": [
-      {
-        "url": "http://114.115.250.165/router/ApiTest?method=tl.getmylist"
-      }
-    ]
-  },
-  {
-    "type": "post",
     "url": "unit.get",
     "title": "获取单位详情",
     "name": "unit_get",
@@ -3210,7 +2920,7 @@
   {
     "type": "post",
     "url": "unit.getrellist",
-    "title": "获取使用单位列表",
+    "title": "获取使用单位列表(过时)",
     "name": "unit_getrellist",
     "group": "Unit",
     "parameter": {
