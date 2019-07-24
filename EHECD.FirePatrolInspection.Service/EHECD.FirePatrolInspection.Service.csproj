@@ -141,6 +141,7 @@
     <Compile Include="Hubs\PushHub.cs" />
     <Compile Include="InspectionRecordService.cs" />
     <Compile Include="AliSmsService.cs" />
+    <Compile Include="TokenService.cs" />
     <Compile Include="PushService.cs" />
     <Compile Include="UnitModuleActionService.cs" />
     <Compile Include="ModuleActionService.cs" />

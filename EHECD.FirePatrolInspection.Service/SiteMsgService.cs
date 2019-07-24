@@ -9,6 +9,7 @@ using EHECD.WebApi.Attributes;
 using System.Linq;
 using MongoDB.Driver;
 using EHECD.Core.Push;
+using EHECD.Core.APIHelper;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -309,6 +310,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="page"></param>
         /// <returns></returns>
         [APIAttribute(name: "msg.getlist", desc: "获取用户站内信列表")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage GetMemberMessageList(int iClientID, int page)
         {
             var iTotalRecord = 0;
@@ -452,6 +454,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iClientID"></param>
         /// <returns></returns>
         [APIAttribute(name: "msg.get", desc: "获取站内信详情")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage GetSiteMsgInfo(int iSiteMsgID, int iClientID)
         {
             ResultMessage result = new ResultMessage();
@@ -520,6 +523,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iClientID"></param>
         /// <returns></returns>
         [APIAttribute(name: "msg.unreadcount", desc: "获取用户未读的站内信条数")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage GetMemberMessageCount(int iClientID)
         {
             ResultMessage result = new ResultMessage();
@@ -611,6 +615,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iClientID"></param>
         /// <returns></returns>
         [APIAttribute(name: "msg.delete", desc: "删除站内信")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage DeleteFeedback(long iSiteMsgID, int iClientID)
         {
             ResultMessage result = new ResultMessage();

@@ -176,6 +176,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sTitle"></param>
         /// <returns></returns>
         [APIAttribute(name: "article.getlist", desc: "获取文章列表")]
+        [ClientAPI]
         public ResultMessage GetArticleList(int iType, int page, string sTitle = "")
         {
             var iTotalRecord = 0;
@@ -260,6 +261,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iArticleID"></param>
         /// <returns></returns>
         [APIAttribute(name: "article.get", desc: "获取文章详情")]
+        [ClientAPI]
         public ResultMessage GetArticle(int iArticleID)
         {
             ResultMessage result = new ResultMessage();
@@ -292,6 +294,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// </summary>
         /// <returns></returns>
         [APIAttribute(name: "article.about", desc: "获取关于我们")]
+        [ClientAPI]
         public ResultMessage GetAbout()
         {
             ResultMessage result = new ResultMessage();

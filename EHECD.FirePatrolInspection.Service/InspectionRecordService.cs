@@ -8,6 +8,7 @@ using EHECD.FirePatrolInspection.Entity;
 using EHECD.WebApi.Attributes;
 using System.Linq;
 using Newtonsoft.Json;
+using EHECD.Core.APIHelper;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -348,6 +349,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sRecordList"></param>
         /// <returns></returns>
         [APIAttribute(name: "ins.adds", desc: "批量添加巡检记录")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage CreateInspectionRecords(int iClientID, List<EHECD_InspectionRecord> sRecordList)
         {
             ResultMessage result = new ResultMessage();
@@ -441,6 +443,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sDesc"></param>
         /// <returns></returns>
         [APIAttribute(name: "repair.add", desc: "添加维修记录")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage CreateRepairRecord(int iClientID, long iDeviceID, string sDesc = "")
         {
             ResultMessage result = new ResultMessage();
@@ -483,6 +486,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sDesc"></param>
         /// <returns></returns>
         [APIAttribute(name: "change.add", desc: "添加更换记录")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage CreateChangeRecord(int iClientID, long iDeviceID, int iNumber = 0, string sModel = "", string sSpec = "",string sInstallDate = "", string sManufacturer = "", string sProductionDate = "", string sDesc = "")
         {
             ResultMessage result = new ResultMessage();

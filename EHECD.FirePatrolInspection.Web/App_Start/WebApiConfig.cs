@@ -9,8 +9,7 @@ namespace EHECD.FirePatrolInspection.Web
     {
         public static void Register(HttpConfiguration config)
         {
-            string isSign = ConfigurationManager.AppSettings["IsClientSign"];
-            if (isSign == "1")
+            if(ConfigurationManager.AppSettings["api.check"] == "1")
             {
                 config.Filters.Add(new ClientSignFiler());
             }

@@ -9,6 +9,7 @@ using EHECD.WebApi.Attributes;
 using System.Linq;
 using MongoDB.Driver;
 using Microsoft.AspNet.SignalR;
+using EHECD.Core.APIHelper;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -113,6 +114,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sImageSrc"></param>
         /// <returns></returns>
         [APIAttribute(name: "fb.add", desc: "提交意见反馈")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage CreateFeedback(int iClientID, string sTitle, string sContent, int iUnitID = 0, string sImageSrc = "")
         {
             ResultMessage result = new ResultMessage();
@@ -292,6 +294,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iClientID"></param>
         /// <returns></returns>
         [APIAttribute(name: "fb.delete", desc: "删除反馈")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage DeleteFeedback(long iFeedbackID, int iClientID)
         {
             ResultMessage result = new ResultMessage();

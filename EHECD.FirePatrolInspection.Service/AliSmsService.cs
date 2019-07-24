@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading;
+using EHECD.Core.APIHelper;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -61,11 +62,18 @@ namespace EHECD.FirePatrolInspection.Service
                     try
                     {
                         QueueInfo msg = msgQueue.Dequeue();
-                        SendPhoneMsg(msg.sPhone, msg.sTemplateCode, msg.sJson);
+                        if(msg != null)
+                        {
+                            SendPhoneMsg(msg.sPhone, msg.sTemplateCode, msg.sJson);
+                        }
                     }
                     catch (Exception ex)
                     {
-                        
+
+                    }
+                    finally
+                    {
+                        Thread.Sleep(1000);
                     }
                 }
                 else
@@ -83,6 +91,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sPhone"></param>
         /// <returns></returns>
         [APIAttribute(name: "sms.regcode", desc: "用户注册发送短信验证码")]
+        [ClientAPI]
         public ResultMessage SendMemberRegisterMessage(string sPhone)
         {
             return SendCode(sPhone, MsgType.Reg);
@@ -98,6 +107,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sPhone"></param>
         /// <returns></returns>
         [APIAttribute(name: "sms.findcode", desc: "用户找回登录密码发送短信验证码")]
+        [ClientAPI]
         public ResultMessage SendMemberFindPwdMessage(string sPhone)
         {
             return SendCode(sPhone, MsgType.FindPwd);
@@ -113,6 +123,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sPhone"></param>
         /// <returns></returns>
         [APIAttribute(name: "sms.applyadopt", desc: "账号审核通过通知")]
+        [ClientAPI]
         public ResultMessage SendApplyAdoptMessage(string sPhone)
         {
             Ali_MessageConfig mPaySuccess = Ali_SendMessageConfig.ReadMessageNode(TemplateType.ApplyAdopt.ToString());
@@ -126,6 +137,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sPhone"></param>
         /// <returns></returns>
         [APIAttribute(name: "sms.applyrefused", desc: "账号审核拒绝通知")]
+        [ClientAPI]
         public ResultMessage SendApplyRefusedMessage(string sPhone,string sOperator)
         {
             Ali_MessageConfig mPaySuccess = Ali_SendMessageConfig.ReadMessageNode(TemplateType.ApplyRefused.ToString());

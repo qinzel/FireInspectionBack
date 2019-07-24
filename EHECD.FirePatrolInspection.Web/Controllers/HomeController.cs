@@ -10,7 +10,8 @@ namespace EHECD.FirePatrolInspection.Web.Controllers
     {
         public ActionResult Index()
         {
-            return Redirect("/Admin/User/Login");
+            //return Redirect("/Admin/User/Login");
+            return View();
         }
     }
 }

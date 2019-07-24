@@ -75,6 +75,7 @@
     <Compile Include="ClientMessage.cs" />
     <Compile Include="DeviceClientModel.cs" />
     <Compile Include="EHECD_Article.cs" />
+    <Compile Include="EHECD_Token.cs" />
     <Compile Include="EHECD_CID.cs" />
     <Compile Include="EHECD_DeviceHis.cs" />
     <Compile Include="EHECD_DeviceRel.cs" />

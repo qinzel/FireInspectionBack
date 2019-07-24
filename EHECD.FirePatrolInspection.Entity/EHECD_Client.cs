@@ -115,5 +115,11 @@ namespace EHECD.FirePatrolInspection.Entity
         /// 所属部门集合
         /// </summary>
         public List<EHECD_Dept> DeptList { set; get; }
+
+
+        /// <summary>
+        /// 登录人token
+        /// </summary>
+        public string Token { get; set; }
     }
 }

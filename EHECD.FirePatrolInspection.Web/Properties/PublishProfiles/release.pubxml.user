@@ -790,22 +790,22 @@
       <publishTime>01/15/2019 16:58:34</publishTime>
     </File>
     <File Include="bin/EHECD.Core.dll">
-      <publishTime>07/11/2019 11:53:36</publishTime>
+      <publishTime>07/19/2019 16:20:49</publishTime>
     </File>
     <File Include="bin/EHECD.EntityFramework.dll">
       <publishTime>06/13/2019 17:31:10</publishTime>
     </File>
     <File Include="bin/EHECD.FirePatrolInspection.DAL.dll">
-      <publishTime>07/18/2019 13:58:21</publishTime>
+      <publishTime>07/19/2019 16:40:12</publishTime>
     </File>
     <File Include="bin/EHECD.FirePatrolInspection.Entity.dll">
-      <publishTime>07/16/2019 17:02:22</publishTime>
+      <publishTime>07/19/2019 16:40:12</publishTime>
     </File>
     <File Include="bin/EHECD.FirePatrolInspection.Service.dll">
-      <publishTime>07/18/2019 16:19:11</publishTime>
+      <publishTime>07/22/2019 11:37:02</publishTime>
     </File>
     <File Include="bin/EHECD.FirePatrolInspection.Web.dll">
-      <publishTime>07/18/2019 16:19:17</publishTime>
+      <publishTime>07/22/2019 11:37:06</publishTime>
     </File>
     <File Include="bin/EHECD.WebApi.dll">
       <publishTime>01/15/2019 16:58:35</publishTime>
@@ -3819,6 +3819,9 @@
     <File Include="Scripts/_references.js">
       <publishTime>07/02/2018 16:45:09</publishTime>
     </File>
+    <File Include="Views/Home/Index.cshtml">
+      <publishTime>07/19/2019 10:14:00</publishTime>
+    </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>05/15/2018 10:42:26</publishTime>
     </File>
@@ -3841,7 +3844,7 @@
       <publishTime>05/14/2018 10:31:09</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>07/10/2019 16:43:30</publishTime>
+      <publishTime>07/19/2019 16:14:26</publishTime>
     </File>
   </ItemGroup>
 </Project>

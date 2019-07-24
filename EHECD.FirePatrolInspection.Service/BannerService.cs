@@ -5,6 +5,7 @@ using EHECD.FirePatrolInspection.DAL;
 using EHECD.FirePatrolInspection.Entity;
 using System.Linq;
 using EHECD.WebApi.Attributes;
+using EHECD.Core.APIHelper;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -143,6 +144,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// </summary>
         /// <returns></returns>
         [APIAttribute(name: "banner.getlist", desc: "获取轮播列表")]
+        [ClientAPI]
         public ResultMessage GetBannerList()
         {
             ResultMessage result = new ResultMessage();
@@ -173,6 +175,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iBannerID"></param>
         /// <returns></returns>
         [APIAttribute(name: "banner.get", desc: "获取轮播详情")]
+        [ClientAPI]
         public ResultMessage GetRepairRecord(int iBannerID)
         {
             ResultMessage result = new ResultMessage();

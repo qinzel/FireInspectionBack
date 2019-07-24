@@ -27,5 +27,10 @@ namespace EHECD.Core.APIHelper
         /// Token错误
         /// </summary>
         public static int TokenError = 10004;
+
+        /// <summary>
+        /// 签名验证失败
+        /// </summary>
+        public static int SecretError = 10005;
     }
 }

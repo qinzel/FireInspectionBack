@@ -7,6 +7,7 @@ using EHECD.FirePatrolInspection.DAL;
 using EHECD.FirePatrolInspection.Entity;
 using EHECD.WebApi.Attributes;
 using System.Linq;
+using EHECD.Core.APIHelper;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -222,6 +223,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sQualifications"></param>
         /// <returns></returns>
         [APIAttribute(name: "unit.register", desc: "平台账号注册")]
+        [ClientAPI(LoginCheck = false)]
         public ResultMessage Register(string sPhone, string sValidate, string sPwd, string sName, string sAddress,
             string sAdminName, string sContact, int iType = 0, string sCredentials = "", string sLegalPerson = "", string sQualifications = "")
         {

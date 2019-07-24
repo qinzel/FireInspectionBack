@@ -349,6 +349,13 @@ namespace EHECD.FirePatrolInspection.Service
                 success = Dao.Delete(sIds)
             };
             result.message = result.success ? "删除前端用户成功" : "删除前端用户失败";
+
+            //删除token
+            string[] ids = sIds.Split(',');
+            foreach(string id in ids)
+            {
+               TokenService.Instance.DelToken(id);
+            }
             return result;
         }
 
@@ -387,6 +394,9 @@ namespace EHECD.FirePatrolInspection.Service
                 success = Dao.Frozen(iClientID)
             };
             result.message = result.success ? "冻结成功" : "冻结失败";
+
+            //删除token
+            TokenService.Instance.DelToken(iClientID.ToString());
             return result;
         }
 
@@ -426,6 +436,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sImageSrc"></param>
         /// <returns></returns>
         [APIAttribute(name: "client.register", desc: "用户注册")]
+        [ClientAPI]
         public ResultMessage Register(string sPhone, string sValidate, string sPwd, string sName, string sUnitIds = "", string sDeptIds = "", string sCredentials = "", string sImageSrc = "")
         {
             ResultMessage result = new ResultMessage();
@@ -518,7 +529,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <returns></returns>
         [APIAttribute(name: "client.login", desc: "用户登录")]
         [ClientAPI]
-        public ResultMessage Login(string sPhone, string sPwd)
+        public ResultMessage Login(string sPhone, string sPwd, string systemType, string deviceID)
         {
             ResultMessage result = new ResultMessage();
             lock (async)
@@ -572,6 +583,14 @@ namespace EHECD.FirePatrolInspection.Service
                 HttpCookie cookie = new HttpCookie("ClientID", entity.ID.ToString());
                 cookie.Expires = DateTime.Now.AddDays(30);
                 HttpContext.Current.Response.Cookies.Add(cookie);
+
+                //生成token
+                string token = Sign.CreateToken();
+                HttpCookie tokenCookie = new HttpCookie("Token", token);
+                HttpContext.Current.Response.Cookies.Add(tokenCookie);
+                TokenService.Instance.AddToken(entity.ID.ToString(), token, entity.sPhone, systemType, deviceID);
+                entity.Token = token;
+
                 result.success = true;
                 result.message = "登录成功";
                 entity.sPwd = string.Empty;
@@ -581,6 +600,30 @@ namespace EHECD.FirePatrolInspection.Service
         }
 
         #endregion
+
+        #region 用户退出
+
+        /// <summary>
+        /// 用户退出
+        /// </summary>
+        /// <param name="sPhone"></param>
+        /// <param name="sPwd"></param>
+        /// <returns></returns>
+        [APIAttribute(name: "client.logout", desc: "用户退出")]
+        [ClientAPI(LoginCheck = false)]
+        public ResultMessage LogOut(string iClientID,string deviceID)
+        {
+            ResultMessage result = new ResultMessage();
+            lock (async)
+            {
+                TokenService.Instance.DelToken(iClientID,deviceID);
+            }
+            result.success = true;
+            return result;
+        }
+
+        #endregion
+
 
         #region 获取前端用户详情
 
@@ -642,6 +685,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sPwd"></param>
         /// <returns></returns>
         [APIAttribute(name: "client.findpwd", desc: "找回密码")]
+        [ClientAPI]
         public ResultMessage FindPwd(string sPhone, string sValidate, string sPwd)
         {
             ResultMessage result = new ResultMessage();
@@ -681,6 +725,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sPwd"></param>
         /// <returns></returns>
         [APIAttribute(name: "client.editpwd", desc: "修改登录密码")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage EditPwd(int iClientID, string sOldPwd, string sPwd)
         {
             ResultMessage result = new ResultMessage();
@@ -716,6 +761,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sImageSrc"></param>
         /// <returns></returns>
         [APIAttribute(name: "client.changeimage", desc: "修改会员头像")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage ChangeHeadImageByID(int iClientID, string sImageSrc)
         {
             ResultMessage result = new ResultMessage();
@@ -734,6 +780,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iUnitID"></param>
         /// <returns></returns>
         [APIAttribute(name: "client.getlist", desc: "获取点检员列表")]
+        [ClientAPI]
         public ResultMessage GetParam(int iUnitID)
         {
             ResultMessage result = new ResultMessage();
@@ -899,6 +946,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iClientID"></param>
         /// <returns></returns>
         [APIAttribute(name: "client.getdutylist", desc: "获取值班列表")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage GetDutyList(int iClientID)
         {
             ResultMessage result = new ResultMessage();
@@ -1006,7 +1054,7 @@ namespace EHECD.FirePatrolInspection.Service
         #region 用户设备ID信息
 
         [APIAttribute(name: "client.setcid", desc: "设置用户设备号")]
-        [ClientAPI]
+        [ClientAPI(LoginCheck = true)]
 
         public ResultMessage SetClientCID(string iClientID,string cid, string deviceType)
         {

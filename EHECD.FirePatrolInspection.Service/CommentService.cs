@@ -6,6 +6,7 @@ using EHECD.Common;
 using EHECD.FirePatrolInspection.DAL;
 using EHECD.FirePatrolInspection.Entity;
 using EHECD.WebApi.Attributes;
+using EHECD.Core.APIHelper;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -110,6 +111,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sImageSrc"></param>
         /// <returns></returns>
         [APIAttribute(name: "cmt.add", desc: "发布评论")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage CreateComment(long iTieziID, int iClientID, string sName, string sContent, int iTarClientID = 0, string sTarName = "", string sImageSrc = "")
         {
             ResultMessage result = new ResultMessage();

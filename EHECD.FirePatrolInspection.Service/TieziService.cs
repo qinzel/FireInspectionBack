@@ -7,6 +7,7 @@ using EHECD.FirePatrolInspection.DAL;
 using EHECD.FirePatrolInspection.Entity;
 using EHECD.WebApi.Attributes;
 using System.Linq;
+using EHECD.Core.APIHelper;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -257,6 +258,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sImageSrc"></param>
         /// <returns></returns>
         [APIAttribute(name: "tl.add", desc: "发布帖子")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage CreateTiezi(int iClientID, string sTitle, string sContent, string sImageSrc = "")
         {
             ResultMessage result = new ResultMessage();

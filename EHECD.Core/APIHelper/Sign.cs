@@ -8,16 +8,9 @@ namespace EHECD.Core.APIHelper
 {
     public class Sign
     {
-        public static bool Valid(string token, string serviceSign, string time)
+        public static string CreateToken()
         {
-            if (string.IsNullOrEmpty(time) || string.IsNullOrEmpty(token))
-            {
-                return false;
-            }
-            
-            var sign = StringExtensions.MD5(serviceSign);
-            return true;
-            //return token.Equals(sign, StringComparison.CurrentCultureIgnoreCase);
+            return Guid.NewGuid().ToString("N");
         }
     }
 }

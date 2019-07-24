@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="ArticleDao.cs" />
     <Compile Include="BannerDao.cs" />
+    <Compile Include="TokenDao.cs" />
     <Compile Include="ClientDao.cs" />
     <Compile Include="CommentDao.cs" />
     <Compile Include="DataExtension.cs" />

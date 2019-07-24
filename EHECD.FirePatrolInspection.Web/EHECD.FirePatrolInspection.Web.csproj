@@ -1533,6 +1533,7 @@
     <Content Include="Views\Uediter\FilesInit.cshtml" />
     <Content Include="Views\Uediter\Init.cshtml" />
     <Content Include="Views\Uediter\SigleImageInit.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\login\css\" />

@@ -280,6 +280,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sRelDeviceIDs"></param>
         /// <returns></returns>
         [APIAttribute(name: "device.add", desc: "添加设备")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage CreateDevice(int iClientID, string sNumber, int iDeviceTypeID, string sName, string sLocation, 
             int iRepairDeptID, int iUseDeptID, int iNumber = 0, string sModel = "", string sSpec = "", string sInstallDate = "", string sManufacturer = "",
             int iCreateUnitID = 0, string sProductionDate = "", int iExpiredYears = 0, int iForciblyScrappedYears = 0, string sRelDeviceIDs = "")
@@ -490,7 +491,7 @@ namespace EHECD.FirePatrolInspection.Service
         #region 客户端设备数据
 
         [APIAttribute(name: "device.client.getlist", desc: "获取设备列表")]
-        [ClientAPI]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage GetUpdatedDeviceList(int iClientID,string lm)
         {
             ResultMessage result = new ResultMessage();
@@ -1111,6 +1112,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iClientID"></param>
         /// <returns></returns>
         [APIAttribute(name: "device.clately", desc: "获取点检员最近添加的设备详情")]
+        [ClientAPI(LoginCheck =true)]
         public ResultMessage GetClientAddLately(int iClientID)
         {
             ResultMessage result = new ResultMessage();

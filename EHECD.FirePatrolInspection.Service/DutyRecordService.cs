@@ -8,6 +8,7 @@ using EHECD.FirePatrolInspection.Entity;
 using EHECD.WebApi.Attributes;
 using System.Linq;
 using System.Dynamic;
+using EHECD.Core.APIHelper;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -130,6 +131,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iDutyRoomID"></param>
         /// <returns></returns>
         [APIAttribute(name: "dutyrec.add", desc: "值班签到")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage CreateDutyRecord(int iClientID, int iDutyRoomID)
         {
             ResultMessage result = new ResultMessage();
@@ -164,6 +166,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="sImageSrc"></param>
         /// <returns></returns>
         [APIAttribute(name: "dutyrec.finish", desc: "值班签退")]
+        [ClientAPI(LoginCheck = true)]
         public ResultMessage FinishDutyRecord(int iClientID, int iDutyRoomID, string sDesc = "", string sImageSrc = "")
         {
             ResultMessage result = new ResultMessage();
