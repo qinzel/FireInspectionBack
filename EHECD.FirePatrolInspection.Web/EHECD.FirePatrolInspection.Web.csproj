@@ -761,6 +761,13 @@
     <Content Include="Content\css\wqx.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\home\bg4.jpg" />
+    <Content Include="Content\home\css\default.css" />
+    <Content Include="Content\home\css\demo2.css" />
+    <Content Include="Content\home\css\demo_styles.css" />
+    <Content Include="Content\home\css\main.css" />
+    <Content Include="Content\home\css\normalize.css" />
+    <Content Include="Content\home\fonts\icomoon.svg" />
+    <Content Include="Content\home\js\vendor\jquery-1.10.2.min.js" />
     <Content Include="Content\image\bgBlue.png" />
     <Content Include="Content\image\bgOrange.png" />
     <Content Include="Content\image\bgPink.png" />
@@ -1506,6 +1513,9 @@
     <Content Include="Areas\Admin\Views\Article\DetailHelp.cshtml" />
     <Content Include="Areas\Admin\Views\Article\DetailNews.cshtml" />
     <Content Include="Areas\Admin\Views\Article\DetailLegalKnowledge.cshtml" />
+    <Content Include="Content\home\fonts\icomoon.eot" />
+    <Content Include="Content\home\fonts\icomoon.ttf" />
+    <Content Include="Content\home\fonts\icomoon.woff" />
     <None Include="Properties\PublishProfiles\Fire.pubxml" />
     <None Include="Properties\PublishProfiles\release.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -1539,9 +1549,6 @@
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\home\css\" />
-    <Folder Include="Content\home\fonts\" />
-    <Folder Include="Content\home\js\" />
     <Folder Include="Content\login\css\" />
   </ItemGroup>
   <ItemGroup>
