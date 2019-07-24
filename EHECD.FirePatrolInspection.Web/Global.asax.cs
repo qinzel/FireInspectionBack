@@ -1,4 +1,5 @@
 ﻿using EHECD.WebApi;
+using System.Web.Configuration;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -15,6 +16,7 @@ namespace EHECD.FirePatrolInspection.Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
 
             //初始化所有接口配置
             ApiConfigManager.Initialize();

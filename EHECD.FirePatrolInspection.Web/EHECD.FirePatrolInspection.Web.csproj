@@ -760,6 +760,7 @@
     <Content Include="Content\css\NumberBank.css" />
     <Content Include="Content\css\wqx.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\home\bg4.jpg" />
     <Content Include="Content\image\bgBlue.png" />
     <Content Include="Content\image\bgOrange.png" />
     <Content Include="Content\image\bgPink.png" />
@@ -1526,7 +1527,9 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -1536,6 +1539,9 @@
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Content\home\css\" />
+    <Folder Include="Content\home\fonts\" />
+    <Folder Include="Content\home\js\" />
     <Folder Include="Content\login\css\" />
   </ItemGroup>
   <ItemGroup>

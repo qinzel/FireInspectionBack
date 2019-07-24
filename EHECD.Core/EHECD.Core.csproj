@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EHECD.Common">
-      <HintPath>..\..\..\lexiao.git\消防巡检\Lib\EHECD.Common.dll</HintPath>
+      <HintPath>..\Lib\EHECD.Common.dll</HintPath>
     </Reference>
     <Reference Include="EHECD.WebApi">
       <HintPath>..\Lib\EHECD.WebApi.dll</HintPath>

@@ -1,0 +1,164 @@
+﻿<!doctype html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="~/Content/home/css/normalize.css" />
+    <link rel="stylesheet" href="~/Content/home/css/main.css">
+    <link rel="stylesheet" href="~/Content/home/css/demo_styles.css">
+    <link rel="stylesheet" href="~/Content/home/css/demo2.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/home/css/default.css">
+</head>
+<style>
+    html,
+    body {
+        overflow: hidden;
+    }
+
+    .overlay .wrap {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+    }
+
+    .overlay {
+        overflow: hidden;
+    }
+
+    iframe {
+        overflow: hidden;
+    }
+
+    .nav {
+        margin-top: 20px;
+    }
+
+    .nav-el {
+        padding-bottom: 25%;
+    }
+
+    .title {
+        width: 100%;
+        color: #fff;
+        font-weight: 500;
+        margin: 50px auto;
+        ;
+        padding: 0;
+        text-align: center;
+        color: #fff;
+        margin-left: -25px;
+        font-size: 35px;
+        font-weight: bold;
+        text-shadow: 0px 1px 1px #555;
+    }
+
+    .title sup {
+        font-size: 18px;
+        font-style: normal;
+        margin-left: 10px;
+        vertical-align: super;
+        font-family: Tahoma, Verdana, '微软雅黑', '新宋体';
+    }
+
+    .second_title {
+        display: inline-block;
+        font-size: 25px;
+        margin-bottom: 70px;
+    }
+
+    .htmleaf-container {
+        background-image: url(./bg4.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+</style>
+
+<body class="dm-demo2">
+    <div class="htmleaf-container">
+        <div class="htmleaf-demo center">
+            <h1 class="title">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;乐消APP后台管理系统
+                <sup> V 1.0</sup>
+            </h1>
+        </div>
+        <script type="text/javascript">
+			// var a =
+        </script>
+        </header>
+        <!-- Demo Navigation -->
+        <nav class="nav clearfix">
+            <button class="nav-el" id="el-btmleft" data-id="ov-btmleft"    data-url="Admin/User/Login"><span class="second_title">总平台</span><span class="icon-data"></span></button>
+            <button class="nav-el" id="el-topleft" data-id="ov-topleft"    data-url="FireDept/UnitUser/Login"><span class="second_title">消防部门</span><span class="icon-fire"></span></button>
+            <button class="nav-el" id="el-btmright" data-id="ov-btmright"  data-url="UseDept/UnitUser/Login"><span class="second_title">使用单位</span><span class="icon-tag"></span></button>
+            <button class="nav-el" id="el-topright" data-id="ov-topright"  data-url="RepairDept/UnitUser/Login"><span class="second_title">维护公司</span><span class="icon-heart"></span></button>
+        </nav>
+        <!-- Overlay (hidden by default)-->
+        @*<section class="overlay" id="ov-topleft">
+            <div class="wrap">
+                <iframe name="content_frame" id="FireDept" marginwidth=0 marginheight=0 width=100% height=100% frameborder=0></iframe>
+            </div>
+            <button class="close"><span class="mfg-cancel"></span></button>
+        </section>
+
+        <section class="overlay" id="ov-topright">
+            <div class="wrap">
+                <iframe name="content_frame" id="RepairDept" marginwidth=0 marginheight=0 width=100% height=100% frameborder=0></iframe>
+            </div>
+            <button class="close"><span class="mfg-cancel"></span></button>
+        </section>
+
+        <section class="overlay" id="ov-btmleft">
+            <div class="wrap">
+                <iframe name="content_frame" id="Admin" marginwidth=0 marginheight=0 width=100% height=100% frameborder=0></iframe>
+
+            </div>
+
+            <button class="close"><span class="mfg-cancel"></span></button>
+        </section>
+
+        <section class="overlay" id="ov-btmright">
+            <div class="wrap">
+                <iframe name="content_frame" id="UseDept" marginwidth=0 marginheight=0 width=100% height=100% frameborder=0></iframe>
+
+            </div>
+            <button class="close"><span class="mfg-cancel"></span></button>
+        </section>*@
+
+        <div class="browser_msg">
+            <p>
+                对不起，你的浏览器不支持CSS3特性！</a>
+            </p>
+        </div>
+        <input type="hidden" id="rootUrl" value="@HttpContext.Current.Request.Url.AbsoluteUri"/>
+    </div>
+    <script src="js/vendor/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript">
+		(function(window) {
+		    var params = {}
+		    params.url = $("#rootUrl").val();
+			params.AnimEnd = 'animationend webkitAnimationEnd mozAnimationEnd MSAnimationEnd oAnimationEnd';
+			params.nav = $('.nav');
+			params.navButton = $('.nav-el');
+			params.overlay = $('.overlay');
+			window.$variable = params
+		})(window)
+		//$('#FireDept').attr("src", $variable.url+'FireDept/UnitUser/Login');
+		//$('#RepairDept').attr("src", $variable.url+'RepairDept/UnitUser/Login');
+		//$('#Admin').attr("src", $variable.url+'Admin/User/Login');
+		//$('#UseDept').attr("src", $variable.url+'UseDept/UnitUser/Login');
+		//var overlay = $('.overlay');
+		window.onload = function () {
+		    $('.nav-el').click(function (event) {
+		        window.location = $variable.url + $(event.currentTarget).attr("data-url");
+
+		    });
+		}
+    </script>
+</body>
+
+</html>
