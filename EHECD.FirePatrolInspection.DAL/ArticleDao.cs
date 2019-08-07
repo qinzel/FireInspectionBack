@@ -175,8 +175,8 @@ namespace EHECD.FirePatrolInspection.DAL
         {
             sIds = "'" + string.Join("','", sIds.Split(',')) + "'";
             string sSql =
-                @"Update EHECD_Article Set bIsDeleted=1 Where ID In ("+sIds+ ") and lastModifyTime = @lastModifyTime";
-			return DBHelper.Execute(sSql, DateTime.Now) > 0;
+                @"Update EHECD_Article Set bIsDeleted=1, lastModifyTime = @lastModifyTime Where ID In (" + sIds+ ")";
+			return DBHelper.Execute(sSql, new EHECD_Article { lastModifyTime = DateTime.Now }) > 0;
         }
 		
 		#endregion

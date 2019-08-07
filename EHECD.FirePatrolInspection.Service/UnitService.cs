@@ -650,6 +650,7 @@ namespace EHECD.FirePatrolInspection.Service
         /// <param name="iUnitID"></param>
         /// <returns></returns>
         [APIAttribute(name: "unit.getrprlist", desc: "获取使用单位已关联的维护公司列表")]
+        [ClientAPI(LoginCheck = false)]
         public ResultMessage GetRepairDeptList(int iUnitID)
         {
             ResultMessage result = new ResultMessage();

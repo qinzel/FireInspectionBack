@@ -313,30 +313,39 @@ namespace EHECD.FirePatrolInspection.Service
                     iNumber = iNumber,
                     sName = sName,
                     sLocation = sLocation,
-                    sModel = sModel,
-                    sSpec = sSpec,
+                    sModel = sModel == null ? "":sModel,
+                    sSpec = sSpec == null ? "":sSpec,
                     sInstallDate = sInstallDate,
-                    sManufacturer = sManufacturer,
+                    sManufacturer = sManufacturer == null ? "":sManufacturer,
                     iRepairDeptID = iRepairDeptID,
                     iUseDeptID = iUseDeptID,
                     iCreateUnitID = iCreateUnitID,
                     sProductionDate = sProductionDate,
                     iExpiredYears = iExpiredYears,
                     iForciblyScrappedYears = iForciblyScrappedYears,
-                    sDeviceIDs = sRelDeviceIDs
+                    sDeviceIDs = null
                 };
 
-                var iVal = Dao.Insert(entity);
-                result.success = iVal > 0 ? true : false;
-                if (result.success)
+                int iVal = Dao.Insert(entity);
+                if(iVal < 0)
                 {
-                    // 生成设备二维码（iQRCodeType：0为设备，1为值班室）
-                    string qrText = "{ \"iQRCodeType\": 0, \"sQRCodeName\": \"" + entity.sName + "\", \"iClientID\": " + entity.iClientID + ",\"sNumber\":\"" + entity.sNumber + "\", \"iTargetID\": " + iVal + " }";
-                    EHECD_Device device = Dao.Get(iVal);
-                    device.sQRCode = QrCodeHelper.CreateQrCode(qrText, "Device");
-                    Dao.UpdateQRCode(device);
+                    result.success = false;
+                    result.message = "该单位已存在同编号的设备";
+                    return result;
+                }else if(iVal == 0)
+                {
+                    result.success = false;
+                    result.message = "设备新增失败：服务器错误";
+                    return result;
                 }
-                result.message = result.success ? "添加设备成功" : "该单位已存在同编号的设备";
+                
+                // 生成设备二维码（iQRCodeType：0为设备，1为值班室）
+                string qrText = "{ \"iQRCodeType\": 0, \"sQRCodeName\": \"" + entity.sName + "\", \"iClientID\": " + entity.iClientID + ",\"sNumber\":\"" + entity.sNumber + "\", \"iTargetID\": " + iVal + " }";
+                EHECD_Device device = Dao.Get(iVal);
+                device.sQRCode = QrCodeHelper.CreateQrCode(qrText, "Device");
+                Dao.UpdateQRCode(device);
+                result.success = true;
+                result.message = "添加设备成功";
                 return result;
             }
         }

@@ -1245,11 +1245,11 @@ namespace EHECD.FirePatrolInspection.DAL
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public long Insert(EHECD_Device entity)
+        public Int32 Insert(EHECD_Device entity)
         {
             StringBuilder sParam = new StringBuilder();
             entity.LastModifyTime = DateTime.Now;
-            if (!string.IsNullOrWhiteSpace(entity.sDeviceIDs))
+            if (!string.IsNullOrEmpty(entity.sDeviceIDs))
             {
                 var sRelDeviceIDParam = entity.sDeviceIDs.Split(',');
 
@@ -1263,6 +1263,7 @@ namespace EHECD.FirePatrolInspection.DAL
                 }
             }
 
+            entity.sDeviceIDs = entity.sDeviceIDs == null ? "" : entity.sDeviceIDs;
             string sSql = @"
                     DECLARE @deviceID BIGINT
                     If Not Exists(Select * From EHECD_Device Where sNumber = @sNumber And iUseDeptID = @iUseDeptID And bIsDeleted = 0) 
@@ -1279,9 +1280,9 @@ namespace EHECD.FirePatrolInspection.DAL
                         Select @deviceID;
                     END
                     ELSE
-                        Select -1 
+                        Select -1
                 ";
-            return TConvert.toInt32(DBHelper.ExecuteScalar(sSql, entity));
+            return Convert.ToInt32(DBHelper.ExecuteScalar(sSql, entity));
         }
 		
 		#endregion
@@ -1373,7 +1374,7 @@ namespace EHECD.FirePatrolInspection.DAL
         {
             sIds = "'" + string.Join("','", sIds.Split(',')) + "'";
             string sSql =
-                @"Update EHECD_Device Set bIsDeleted=1 Where ID In (" + sIds + ") and lastModifyTime = @LastModifyTime";
+                @"Update EHECD_Device Set bIsDeleted=1,lastModifyTime = @LastModifyTime Where ID In (" + sIds + ")";
             return DBHelper.Execute(sSql, new EHECD_Device { LastModifyTime = DateTime.Now }) > 0;
         }
 

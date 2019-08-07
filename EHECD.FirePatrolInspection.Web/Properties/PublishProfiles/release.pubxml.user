@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <File Include="ApiDoc/apidata.js">
-      <publishTime>07/15/2019 11:33:39</publishTime>
+      <publishTime>07/24/2019 15:08:30</publishTime>
     </File>
     <File Include="ApiDoc/apidoc.json">
       <publishTime>07/15/2019 11:06:55</publishTime>
@@ -790,22 +790,22 @@
       <publishTime>01/15/2019 16:58:34</publishTime>
     </File>
     <File Include="bin/EHECD.Core.dll">
-      <publishTime>07/19/2019 16:20:49</publishTime>
+      <publishTime>07/24/2019 14:17:33</publishTime>
     </File>
     <File Include="bin/EHECD.EntityFramework.dll">
       <publishTime>06/13/2019 17:31:10</publishTime>
     </File>
     <File Include="bin/EHECD.FirePatrolInspection.DAL.dll">
-      <publishTime>07/19/2019 16:40:12</publishTime>
+      <publishTime>08/06/2019 16:01:02</publishTime>
     </File>
     <File Include="bin/EHECD.FirePatrolInspection.Entity.dll">
       <publishTime>07/19/2019 16:40:12</publishTime>
     </File>
     <File Include="bin/EHECD.FirePatrolInspection.Service.dll">
-      <publishTime>07/22/2019 11:37:02</publishTime>
+      <publishTime>08/06/2019 16:33:52</publishTime>
     </File>
     <File Include="bin/EHECD.FirePatrolInspection.Web.dll">
-      <publishTime>07/22/2019 11:37:06</publishTime>
+      <publishTime>08/06/2019 16:33:57</publishTime>
     </File>
     <File Include="bin/EHECD.WebApi.dll">
       <publishTime>01/15/2019 16:58:35</publishTime>
@@ -2316,6 +2316,39 @@
     <File Include="Content/fonts/FontAwesome.otf">
       <publishTime>05/15/2018 10:41:18</publishTime>
     </File>
+    <File Include="Content/home/bg4.jpg">
+      <publishTime>07/24/2019 09:41:34</publishTime>
+    </File>
+    <File Include="Content/home/css/default.css">
+      <publishTime>07/24/2019 09:41:24</publishTime>
+    </File>
+    <File Include="Content/home/css/demo2.css">
+      <publishTime>07/24/2019 09:41:24</publishTime>
+    </File>
+    <File Include="Content/home/css/demo_styles.css">
+      <publishTime>07/24/2019 09:41:24</publishTime>
+    </File>
+    <File Include="Content/home/css/main.css">
+      <publishTime>07/24/2019 09:41:24</publishTime>
+    </File>
+    <File Include="Content/home/css/normalize.css">
+      <publishTime>07/24/2019 09:41:24</publishTime>
+    </File>
+    <File Include="Content/home/fonts/icomoon.eot">
+      <publishTime>07/24/2019 09:41:24</publishTime>
+    </File>
+    <File Include="Content/home/fonts/icomoon.svg">
+      <publishTime>07/24/2019 09:41:24</publishTime>
+    </File>
+    <File Include="Content/home/fonts/icomoon.ttf">
+      <publishTime>07/24/2019 09:41:24</publishTime>
+    </File>
+    <File Include="Content/home/fonts/icomoon.woff">
+      <publishTime>07/24/2019 09:41:24</publishTime>
+    </File>
+    <File Include="Content/home/js/vendor/jquery-1.10.2.min.js">
+      <publishTime>07/24/2019 09:41:24</publishTime>
+    </File>
     <File Include="Content/image/bgBlue.png">
       <publishTime>05/15/2018 10:41:18</publishTime>
     </File>
@@ -3274,7 +3307,7 @@
       <publishTime>05/15/2018 10:41:22</publishTime>
     </File>
     <File Include="Content/ueditor/ueditor.config.js">
-      <publishTime>05/15/2018 10:41:22</publishTime>
+      <publishTime>07/26/2019 14:33:15</publishTime>
     </File>
     <File Include="Content/ueditor/ueditor.parse.js">
       <publishTime>05/15/2018 10:41:22</publishTime>
@@ -3820,7 +3853,7 @@
       <publishTime>07/02/2018 16:45:09</publishTime>
     </File>
     <File Include="Views/Home/Index.cshtml">
-      <publishTime>07/19/2019 10:14:00</publishTime>
+      <publishTime>07/24/2019 14:28:43</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>05/15/2018 10:42:26</publishTime>
@@ -3844,7 +3877,7 @@
       <publishTime>05/14/2018 10:31:09</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>07/19/2019 16:14:26</publishTime>
+      <publishTime>07/24/2019 13:50:10</publishTime>
     </File>
   </ItemGroup>
 </Project>
