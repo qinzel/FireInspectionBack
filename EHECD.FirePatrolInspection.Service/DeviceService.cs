@@ -10,6 +10,7 @@ using System.Linq;
 using System.Dynamic;
 using System.IO;
 using EHECD.Core.APIHelper;
+using EHECD.Core.Excel;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -514,7 +515,7 @@ namespace EHECD.FirePatrolInspection.Service
             EHECD_Client entity = ClientDao.Instance.GetClient(iClientID);
 
             var list = new List<EHECD_Device>();
-            //责任人/维修公司发生变更的设备列表
+            //责任人发生变更的设备列表
             var delList = new List<EHECD_Device>();
             List<DeviceClientModel> clientList = new List<DeviceClientModel>();
             DateTime? lastModified = null;

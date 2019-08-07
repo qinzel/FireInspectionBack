@@ -2046,7 +2046,7 @@ namespace EHECD.FirePatrolInspection.DAL
         public bool ChangeRepair(string sIds, int iRepairDeptID)
         {
             sIds = "'" + string.Join("','", sIds.Split(',')) + "'";
-            string sSql = @"Update EHECD_Device Set iRepairDeptID = @iRepairDeptID ,LastModifyTime = @LastModifyTime, lastiRepairDeptID = iRepairDeptID  Where ID In (" + sIds + ")";
+            string sSql = @"Update EHECD_Device Set iRepairDeptID = @iRepairDeptID ,LastModifyTime = @LastModifyTime  Where ID In (" + sIds + ")";
             EHECD_Device entity = new EHECD_Device { iRepairDeptID = iRepairDeptID, LastModifyTime = DateTime.Now };
             return DBHelper.Execute(sSql, entity) > 0;
         }

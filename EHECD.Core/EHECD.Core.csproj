@@ -69,6 +69,7 @@
     <Compile Include="Cache\NopNullCache.cs" />
     <Compile Include="Cache\RedisCacheManager.cs" />
     <Compile Include="Cache\SortedSetModel.cs" />
+    <Compile Include="Excel\ExportHeader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Push\GeTuiConfig.cs" />
     <Compile Include="Push\GeTuiPushManager.cs" />

@@ -581,7 +581,7 @@ namespace EHECD.FirePatrolInspection.Web.Areas.UseDept.Controllers
             int _failCount = 0;
             String _log = String.Empty;
             int _deviceCount = 0;
-
+            string _msg = "";
             try
             {
                 // 文件存放路径
@@ -607,28 +607,34 @@ namespace EHECD.FirePatrolInspection.Web.Areas.UseDept.Controllers
 
                 // 设备信息
                 var deviceList = DeviceService.Instance.GetAllList();
-
-                try
+                _deviceCount = dtData.Rows.Count;
+                LoginUser user = AuthHelper.GetLogUseUser();
+                List<EHECD_DeviceType> deviceTypeList = DeviceTypeService.Instance.GetAllList().Where(x=>x.iUseDeptID == user.iUnitID).ToList();
+                foreach (DataRow row in dtData.Rows)
                 {
-                    _deviceCount = dtData.Rows.Count;
-                    LoginUser user = AuthHelper.GetLogUseUser();
+                    if (string.IsNullOrEmpty(row[0].ToString()))
+                    {
+                        break;
+                    }
 
-                    foreach (DataRow row in dtData.Rows)
+                    try
                     {
                         EHECD_Device entity = new EHECD_Device();
 
                         entity.sNumber = row[0].ToString();
                         entity.sName = row[1].ToString();
-                        entity.iNumber = string.IsNullOrWhiteSpace(row[2].ToString()) ? 0 : Convert.ToInt32(row[2].ToString());
-                        entity.sLocation = row[3].ToString();
-                        entity.sModel = row[4].ToString();
-                        entity.sSpec = row[5].ToString();
-                        entity.sInstallDate = row[6].ToString();
-                        entity.sManufacturer = row[7].ToString();
-                        entity.sProductionDate = row[8].ToString();
-                        entity.iExpiredYears = string.IsNullOrWhiteSpace(row[9].ToString()) ? 0 : Convert.ToInt32(row[9].ToString());
-                        entity.iForciblyScrappedYears = string.IsNullOrWhiteSpace(row[10].ToString()) ? 0 : Convert.ToInt32(row[10].ToString());
-                        entity.iDeviceTypeID = 0;
+                        entity.sDeviceTypeName = row[2].ToString();
+                        entity.iNumber = string.IsNullOrWhiteSpace(row[3].ToString()) ? 0 : Convert.ToInt32(row[3].ToString());
+                        entity.sLocation = row[4].ToString();
+                        entity.sModel = row[5].ToString();
+                        entity.sSpec = row[6].ToString();
+                        entity.sInstallDate = row[7].ToString();
+                        entity.sManufacturer = row[8].ToString();
+                        entity.sProductionDate = row[9].ToString();
+                        entity.iExpiredYears = string.IsNullOrWhiteSpace(row[10].ToString()) ? 0 : Convert.ToInt32(row[10].ToString());
+                        entity.iForciblyScrappedYears = string.IsNullOrWhiteSpace(row[11].ToString()) ? 0 : Convert.ToInt32(row[11].ToString());
+                        EHECD_DeviceType type = deviceTypeList.Find(x => x.sName == entity.sDeviceTypeName);
+                        entity.iDeviceTypeID = type == null ? 0: type.ID;
                         entity.iRepairDeptID = 0;
                         entity.iClientID = 0;
                         entity.sQRCode = string.Empty;
@@ -648,19 +654,22 @@ namespace EHECD.FirePatrolInspection.Web.Areas.UseDept.Controllers
                         {
                             _failCount++;
                             _log += "设备编号「" + entity.sNumber + "」已存在，将不再增加\r\n";
+                            _msg += "设备编号「" + entity.sNumber + "」已存在，将不再增加;</br>";
                         }
                     }
+                    catch (Exception e)
+                    {
+                        _failCount++;
+                        _log += "设备编号[" + row[0].ToString() + "]导入失败\r\n";
+                        _msg += "设备编号「" + row[0].ToString() + "」导入失败;</br>";
+                    }
                 }
-                catch
-                {
-                    TTracer.WriteLog("导入完成，失败「" + _failCount + "」条，详细信息：\r\n" + _log);
-                    return Json(TCommon.setSucc(false, "导入失败"));
-                }
+
 
                 if (_failCount > 0)
                 {
                     TTracer.WriteLog("导入完成，失败「" + _failCount + "」条，详细信息：\r\n" + _log);
-                    return Json(TCommon.setSucc(true, "导入成功，但有" + _failCount + "条失败"));
+                    return Json(TCommon.setSucc(true, "导入成功，但有" + _failCount + "条失败</br>" + _msg));
                 }
                 else
                 {

@@ -127,7 +127,7 @@
       <publishTime>04/23/2019 15:20:17</publishTime>
     </File>
     <File Include="Areas/Admin/Views/Device/LastRecordDetail.cshtml">
-      <publishTime>06/22/2018 16:18:30</publishTime>
+      <publishTime>08/07/2019 10:57:30</publishTime>
     </File>
     <File Include="Areas/Admin/Views/Device/List.cshtml">
       <publishTime>04/26/2019 09:44:26</publishTime>
@@ -187,7 +187,7 @@
       <publishTime>06/27/2018 11:31:38</publishTime>
     </File>
     <File Include="Areas/Admin/Views/InspectionRecord/Detail.cshtml">
-      <publishTime>06/22/2018 16:17:53</publishTime>
+      <publishTime>08/07/2019 10:53:47</publishTime>
     </File>
     <File Include="Areas/Admin/Views/InspectionRecord/DeviceRecordList.cshtml">
       <publishTime>06/27/2018 11:32:45</publishTime>
@@ -199,7 +199,7 @@
       <publishTime>06/27/2018 11:32:14</publishTime>
     </File>
     <File Include="Areas/Admin/Views/InspectionRecord/Set.cshtml">
-      <publishTime>05/23/2018 17:15:13</publishTime>
+      <publishTime>08/07/2019 10:54:58</publishTime>
     </File>
     <File Include="Areas/Admin/Views/Module/Create.cshtml">
       <publishTime>05/22/2018 10:56:50</publishTime>
@@ -322,7 +322,7 @@
       <publishTime>06/07/2018 10:15:57</publishTime>
     </File>
     <File Include="Areas/FireDept/Views/Device/LastRecordDetail.cshtml">
-      <publishTime>06/22/2018 16:18:48</publishTime>
+      <publishTime>08/07/2019 10:54:27</publishTime>
     </File>
     <File Include="Areas/FireDept/Views/Device/List.cshtml">
       <publishTime>04/26/2019 09:44:12</publishTime>
@@ -349,7 +349,7 @@
       <publishTime>06/27/2018 11:33:52</publishTime>
     </File>
     <File Include="Areas/FireDept/Views/InspectionRecord/Detail.cshtml">
-      <publishTime>06/22/2018 16:18:53</publishTime>
+      <publishTime>08/07/2019 10:55:37</publishTime>
     </File>
     <File Include="Areas/FireDept/Views/InspectionRecord/DeviceRecordList.cshtml">
       <publishTime>06/27/2018 11:33:58</publishTime>
@@ -361,7 +361,7 @@
       <publishTime>06/27/2018 11:34:09</publishTime>
     </File>
     <File Include="Areas/FireDept/Views/InspectionRecord/Set.cshtml">
-      <publishTime>06/07/2018 10:16:48</publishTime>
+      <publishTime>08/07/2019 10:55:55</publishTime>
     </File>
     <File Include="Areas/FireDept/Views/SiteMsg/Detail.cshtml">
       <publishTime>07/04/2018 09:16:12</publishTime>
@@ -451,7 +451,7 @@
       <publishTime>06/07/2018 10:15:15</publishTime>
     </File>
     <File Include="Areas/RepairDept/Views/Device/LastRecordDetail.cshtml">
-      <publishTime>06/22/2018 16:18:58</publishTime>
+      <publishTime>08/07/2019 10:56:01</publishTime>
     </File>
     <File Include="Areas/RepairDept/Views/Device/List.cshtml">
       <publishTime>04/26/2019 09:46:21</publishTime>
@@ -484,7 +484,7 @@
       <publishTime>06/27/2018 11:32:24</publishTime>
     </File>
     <File Include="Areas/RepairDept/Views/InspectionRecord/Detail.cshtml">
-      <publishTime>06/22/2018 16:19:03</publishTime>
+      <publishTime>08/07/2019 10:56:07</publishTime>
     </File>
     <File Include="Areas/RepairDept/Views/InspectionRecord/DeviceRecordList.cshtml">
       <publishTime>06/27/2018 11:32:36</publishTime>
@@ -496,7 +496,7 @@
       <publishTime>06/27/2018 11:33:02</publishTime>
     </File>
     <File Include="Areas/RepairDept/Views/InspectionRecord/Set.cshtml">
-      <publishTime>06/07/2018 10:17:09</publishTime>
+      <publishTime>08/07/2019 10:56:19</publishTime>
     </File>
     <File Include="Areas/RepairDept/Views/SiteMsg/Detail.cshtml">
       <publishTime>07/04/2018 09:16:15</publishTime>
@@ -622,7 +622,7 @@
       <publishTime>06/07/2018 17:18:41</publishTime>
     </File>
     <File Include="Areas/UseDept/Views/Device/LastRecordDetail.cshtml">
-      <publishTime>06/22/2018 16:19:07</publishTime>
+      <publishTime>08/07/2019 10:56:27</publishTime>
     </File>
     <File Include="Areas/UseDept/Views/Device/List.cshtml">
       <publishTime>04/29/2019 15:13:31</publishTime>
@@ -682,7 +682,7 @@
       <publishTime>06/27/2018 11:33:17</publishTime>
     </File>
     <File Include="Areas/UseDept/Views/InspectionRecord/Detail.cshtml">
-      <publishTime>06/22/2018 16:19:12</publishTime>
+      <publishTime>08/07/2019 10:56:32</publishTime>
     </File>
     <File Include="Areas/UseDept/Views/InspectionRecord/DeviceRecordList.cshtml">
       <publishTime>06/27/2018 11:33:27</publishTime>
@@ -694,7 +694,7 @@
       <publishTime>06/27/2018 11:33:39</publishTime>
     </File>
     <File Include="Areas/UseDept/Views/InspectionRecord/Set.cshtml">
-      <publishTime>06/07/2018 14:25:02</publishTime>
+      <publishTime>08/07/2019 10:56:45</publishTime>
     </File>
     <File Include="Areas/UseDept/Views/SiteMsg/Detail.cshtml">
       <publishTime>07/04/2018 09:16:18</publishTime>
@@ -790,7 +790,7 @@
       <publishTime>01/15/2019 16:58:34</publishTime>
     </File>
     <File Include="bin/EHECD.Core.dll">
-      <publishTime>07/24/2019 14:17:33</publishTime>
+      <publishTime>08/07/2019 15:51:00</publishTime>
     </File>
     <File Include="bin/EHECD.EntityFramework.dll">
       <publishTime>06/13/2019 17:31:10</publishTime>
@@ -802,10 +802,10 @@
       <publishTime>07/19/2019 16:40:12</publishTime>
     </File>
     <File Include="bin/EHECD.FirePatrolInspection.Service.dll">
-      <publishTime>08/06/2019 16:33:52</publishTime>
+      <publishTime>08/07/2019 15:51:01</publishTime>
     </File>
     <File Include="bin/EHECD.FirePatrolInspection.Web.dll">
-      <publishTime>08/06/2019 16:33:57</publishTime>
+      <publishTime>08/07/2019 16:02:12</publishTime>
     </File>
     <File Include="bin/EHECD.WebApi.dll">
       <publishTime>01/15/2019 16:58:35</publishTime>
@@ -3451,7 +3451,7 @@
       <publishTime>06/13/2018 17:57:37</publishTime>
     </File>
     <File Include="Mobile/html/InspectionDetail.html">
-      <publishTime>12/05/2018 10:15:31</publishTime>
+      <publishTime>08/07/2019 10:56:52</publishTime>
     </File>
     <File Include="Mobile/html/InspectionRecord.html">
       <publishTime>04/25/2019 16:10:03</publishTime>
