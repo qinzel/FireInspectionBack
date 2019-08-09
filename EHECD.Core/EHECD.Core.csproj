@@ -69,13 +69,13 @@
     <Compile Include="Cache\NopNullCache.cs" />
     <Compile Include="Cache\RedisCacheManager.cs" />
     <Compile Include="Cache\SortedSetModel.cs" />
-    <Compile Include="Excel\ExportHeader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Push\GeTuiConfig.cs" />
     <Compile Include="Push\GeTuiPushManager.cs" />
     <Compile Include="Push\IPushManager.cs" />
     <Compile Include="Push\PushFactory.cs" />
     <Compile Include="Push\PushModel.cs" />
+    <Compile Include="Sms\AliErrorCode.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

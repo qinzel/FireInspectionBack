@@ -609,7 +609,7 @@ namespace EHECD.FirePatrolInspection.Web.Areas.UseDept.Controllers
                 var deviceList = DeviceService.Instance.GetAllList();
                 _deviceCount = dtData.Rows.Count;
                 LoginUser user = AuthHelper.GetLogUseUser();
-                List<EHECD_DeviceType> deviceTypeList = DeviceTypeService.Instance.GetAllList().Where(x=>x.iUseDeptID == user.iUnitID).ToList();
+                List<EHECD_DeviceType> deviceTypeList = DeviceTypeService.Instance.GetAllList().Where(x=>x.iUseDeptID == user.iUnitID || x.iUseDeptID == 0).ToList();
                 foreach (DataRow row in dtData.Rows)
                 {
                     if (string.IsNullOrEmpty(row[0].ToString()))

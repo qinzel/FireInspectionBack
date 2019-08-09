@@ -300,6 +300,7 @@ namespace EHECD.FirePatrolInspection.Service
             entity.sOperator = UserSession.GetLogUser().sLoginName;
             result.success = Dao.Adopt(entity);
             result.message = result.success ? "通过审核成功" : "通过审核失败";
+            AliSmsService.Instance.SendApplyAdoptMessage(entity.sPhone);
             return result;
         }
 
@@ -323,6 +324,7 @@ namespace EHECD.FirePatrolInspection.Service
             }
             result.success = Dao.Refused(iUnitID, UserSession.GetLogUser().sLoginName);
             result.message = result.success ? "拒绝通过成功" : "拒绝通过失败";
+            AliSmsService.Instance.SendApplyRefusedMessage(entity.sPhone, UserSession.GetLogUser().sRealName);
             return result;
         }
 

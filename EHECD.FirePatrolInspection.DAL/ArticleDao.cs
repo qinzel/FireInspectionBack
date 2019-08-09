@@ -50,7 +50,7 @@ namespace EHECD.FirePatrolInspection.DAL
                 sCondition.AppendFormat(string.Format(" And iType = {0}", param.condition["iType"]));
             }
 
-            param.sort = "CASE WHEN sSortNumber = '' THEN CONVERT(INT, '9999999') ELSE CONVERT(INT, sSortNumber) END";
+            param.sort = "CASE WHEN sSortNumber = '' THEN CONVERT(INT, '9999999') ELSE CONVERT(INT, sSortNumber) END , ID";
             param.order = "ASC";
 
             return DBHelper.QueryRunSqlByPager<EHECD_Article>(sSql + sCondition, param.page, param.rows,

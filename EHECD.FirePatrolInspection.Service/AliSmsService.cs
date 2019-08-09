@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading;
 using EHECD.Core.APIHelper;
+using EHECD.Core.Sms;
 
 namespace EHECD.FirePatrolInspection.Service
 {
@@ -254,13 +255,14 @@ namespace EHECD.FirePatrolInspection.Service
                 result.success = sendSmsResponse.Code == "OK";
                 if (!result.success)
                 {
-                    TTracer.WriteLog(result.message);
+                    TTracer.WriteLog("Aliyun send message error:" + result.message);
                 }
                 result.message = sendSmsResponse.Message;
             }
             catch (Exception ex)
             {
                 TTracer.WriteLog(ex.ToString());
+                result.message = "发送失败:服务器错误";
             }
             return result;
         }
@@ -285,16 +287,19 @@ namespace EHECD.FirePatrolInspection.Service
             if (entity != null && entity.iStatus)
             {
                 result.message = "该用户已被冻结";
+                result.code = AliErrorCode.StatusError;
                 return result;
             }
             if (msgType == MsgType.Reg && entity != null)
             {
                 result.message = "该手机已被注册";
+                result.code = AliErrorCode.PhoneRegisted;
                 return result;
             }
             if (msgType == MsgType.FindPwd && entity == null)
             {
                 result.message = "该手机已不存在";
+                result.code = AliErrorCode.PhoneNotFound;
                 return result;
             }
 

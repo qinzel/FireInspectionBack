@@ -87,7 +87,8 @@ namespace EHECD.FirePatrolInspection.DAL
             {
                 sCondition.AppendFormat(string.Format(" And T.sEndTime <= CONVERT(varchar(20),'{0}', 120) ", param.condition["sEndTime"]));
             }
-
+            param.sort = "T.sEndTime";
+            param.order = "desc";
             return DBHelper.QueryRunSqlByPager<EHECD_DutyRecord>(sSql + sCondition, param.page, param.rows,
                 ref iTotalRecord, param.sort + " " + param.order);
         }

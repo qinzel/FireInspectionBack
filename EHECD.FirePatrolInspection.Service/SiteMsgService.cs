@@ -353,8 +353,14 @@ namespace EHECD.FirePatrolInspection.Service
                 param.condition.Add("sPhone", client.sPhone);
                 param.condition.Add("iType", iType);
                 param.condition.Add("dClientCreateTime", client.dCreateTime);
-                list = Dao.GetSiteMsgList(param, ref iTotalRecord).ToList();
-                list = PrepareList(list, iClientID);
+                IEnumerable<EHECD_SiteMsg> msgList = Dao.GetSiteMsgList(param, ref iTotalRecord);
+                if(msgList != null)
+                {
+                    list = PrepareList(msgList.ToList(), iClientID);
+                }else
+                {
+                    list = new List<EHECD_SiteMsg>();
+                }
                 result.success = true;
                 result.data = list;
             }

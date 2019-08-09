@@ -47,9 +47,17 @@ namespace EHECD.FirePatrolInspection.DAL
             {
                 sCondition.AppendFormat(string.Format(" And T.sName Like '%{0}%'", param.condition["sName"]));
             }
+            if (TDictionary.IsExitsAndNotEmpty(param.condition, "typeName"))
+            {
+                sCondition.AppendFormat(string.Format(" And T.sName = '{0}'", param.condition["typeName"]));
+            }
             if (TDictionary.IsExitsAndNotEmpty(param.condition, "iUnitDeptID"))
             {
                 sCondition.AppendFormat(string.Format(" And (T.iUseDeptID = {0} OR T.iUseDeptID = 0)", param.condition["iUnitDeptID"]));
+            }
+            if (TDictionary.IsExitsAndNotEmpty(param.condition, "iUseDeptID"))
+            {
+                sCondition.AppendFormat(string.Format(" And (T.iUseDeptID = {0} OR T.iUseDeptID = 0)", param.condition["iUseDeptID"]));
             }
 
             param.sort = "T.ID";

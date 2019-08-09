@@ -72,7 +72,7 @@ namespace EHECD.FirePatrolInspection.Service
             if (entity.ID == 0)
             {
                 QueryParams param = new QueryParams();
-                param.condition.Add("sName", entity.sName);
+                param.condition.Add("typeName", entity.sName);
                 param.condition.Add("iUseDeptID", entity.iUseDeptID);
                 Dao.GetList(param, ref total);
                 if (total > 0)
@@ -88,7 +88,7 @@ namespace EHECD.FirePatrolInspection.Service
             else
             {
                 QueryParams param = new QueryParams();
-                param.condition.Add("sName", entity.sName);
+                param.condition.Add("typeName", entity.sName);
                 param.condition.Add("iUseDeptID", entity.iUseDeptID);
                 IEnumerable<EHECD_DeviceType> list = Dao.GetList(param, ref total);
                 if(list != null && list.Count() > 0 && list.First().ID != entity.ID)
