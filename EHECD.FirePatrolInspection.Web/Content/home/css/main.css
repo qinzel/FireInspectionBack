@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 /******************************
 GENERAL STYLES
 ******************************/
@@ -45,7 +45,7 @@ html {
   width: 100%;
   text-align: center;
   font-size: 30px;
-}
+}@import url('file:///C:\Users\Administrator\Desktop\download\font_1343041_2blyal2ghty\iconfont.css');
 .browser_msg a {
   margin-top: 30px;
   font-size: 15px;
@@ -170,7 +170,8 @@ ICONS
   text-decoration: inherit;
   font-variant: normal;
   text-transform: none;
-  width: 1em;
+  width: 2em;
+  font-size: 35px;
 }
 
 .icon-heart:before {

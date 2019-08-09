@@ -147,7 +147,7 @@ namespace EHECD.FirePatrolInspection.Service
             param.rows = 15;
             param.page = page;
             param.condition.Add("iDeviceID", iDeviceID);
-          //  param.condition.Add("iRecordType", 0);
+            param.condition.Add("iRecordType", 0);
 
             ResultMessage result = new ResultMessage();
 

@@ -57,7 +57,7 @@ EXAMPLE STYLES
   top: 50%;
   left: 50%;
   line-height: 0;
-  margin-left: -0.5em;
+  margin-left: -2.5em;
 }
 .nav-el.active_reverse {
   z-index: 11;
