@@ -1138,5 +1138,9 @@ namespace EHECD.FirePatrolInspection.Service
         }
 
         #endregion
+
+        #region 获取过期设备
+
+        #endregion
     }
 }

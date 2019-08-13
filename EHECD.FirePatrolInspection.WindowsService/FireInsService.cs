@@ -16,11 +16,20 @@ namespace EHECD.FirePatrolInspection.WindowsService
         {
             TTracer.WriteLog("乐消APP监听服务启动 =========> " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
+            //巡检提醒服务
             Registry reg = new Registry();
             reg.Schedule(() =>
                 InspectionMonitor.SendInsSiteMsg()
                     ).WithName("SendInsSiteMsg").ToRunNow().AndEvery(10).Minutes();
             JobManager.Initialize(reg);
+
+            //设备过期服务
+            Registry deviceReg = new Registry();
+            deviceReg.Schedule(() =>
+            {
+
+            }).WithName("ScheduleDeviceOutOfDate").ToRunNow().AndEvery(1).Hours();
+            JobManager.Initialize(deviceReg);
         }
 
         protected override void OnStop()
